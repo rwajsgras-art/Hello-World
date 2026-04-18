@@ -373,6 +373,16 @@ button { font: inherit; }
 }
 .btn:active { transform: scale(0.98); }
 .btn-danger { color: var(--danger); border-color: color-mix(in oklab, var(--danger) 40%, var(--border)); }
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+  font-weight: 700;
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+}
+.sheet-done { padding-top: 8px; }
 
 .sources-list {
   display: grid;

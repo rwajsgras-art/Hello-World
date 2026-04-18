@@ -1,7 +1,7 @@
 // Bump VERSION any time shell assets (index/app/styles/sw) change — the
 // activate handler purges any cache that doesn't match, guaranteeing users
 // pick up new code on next launch.
-const VERSION = "v4";
+const VERSION = "v5";
 const SHELL_CACHE = `dodai-shell-${VERSION}`;
 const DATA_CACHE = `dodai-data-${VERSION}`;
 

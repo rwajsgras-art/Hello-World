@@ -453,15 +453,38 @@ renderSkeletons();
 loadFeed();
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
-  });
-  // When a new SW takes control, reload so the page runs with the fresh
-  // shell/app.js it just installed. Guarded to fire at most once per load.
   let reloaded = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
     if (reloaded) return;
     reloaded = true;
     window.location.reload();
+  });
+
+  const activateWaiting = (reg) => {
+    if (!reg) return;
+    if (reg.waiting && navigator.serviceWorker.controller) {
+      reg.waiting.postMessage("skipWaiting");
+    }
+  };
+
+  window.addEventListener("load", async () => {
+    try {
+      const reg = await navigator.serviceWorker.register("sw.js");
+      activateWaiting(reg);
+      reg.addEventListener("updatefound", () => {
+        const nw = reg.installing;
+        if (!nw) return;
+        nw.addEventListener("statechange", () => {
+          if (nw.state === "installed" && navigator.serviceWorker.controller) {
+            nw.postMessage("skipWaiting");
+          }
+        });
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden) {
+          reg.update().then(() => activateWaiting(reg)).catch(() => {});
+        }
+      });
+    } catch {}
   });
 }
