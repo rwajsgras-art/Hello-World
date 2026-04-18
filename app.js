@@ -61,6 +61,7 @@ const el = {
   toast: document.getElementById("toast"),
   settingsBtn: document.getElementById("settings-btn"),
   sheet: document.getElementById("sheet"),
+  saveExit: document.getElementById("save-exit"),
   notifToggle: document.getElementById("notif-toggle"),
   notifStatus: document.getElementById("notif-status"),
   priorityInput: document.getElementById("priority-input"),
@@ -417,6 +418,12 @@ el.priorityReset.addEventListener("click", () => {
   savePriorityTerms(state.priorityTerms);
   el.priorityInput.value = state.priorityTerms.join(", ");
   render();
+});
+el.saveExit.addEventListener("click", () => {
+  // Commit any pending edits in the priority textarea before closing.
+  onPriorityChange();
+  closeSheet();
+  showToast("Settings saved");
 });
 el.bookmarksClear.addEventListener("click", () => {
   if (!state.bookmarks.size) return;
