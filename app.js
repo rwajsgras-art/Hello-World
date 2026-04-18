@@ -398,7 +398,7 @@ el.chips.forEach((chip) => {
 
 el.settingsBtn.addEventListener("click", openSheet);
 el.sheet.addEventListener("click", (e) => {
-  if (e.target.matches("[data-close]")) closeSheet();
+  if (e.target.closest("[data-close]")) closeSheet();
 });
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !el.sheet.hidden) closeSheet();
