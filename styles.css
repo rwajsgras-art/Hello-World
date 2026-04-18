@@ -276,6 +276,9 @@ button { font: inherit; }
   to { opacity: 1; transform: translate(-50%, 0); }
 }
 
+/* HTML `hidden` attribute must beat explicit display rules below. */
+[hidden] { display: none !important; }
+
 /* Settings sheet */
 .sheet {
   position: fixed;
