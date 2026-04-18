@@ -1,4 +1,7 @@
-const VERSION = "v1";
+// Bump VERSION any time shell assets (index/app/styles/sw) change — the
+// activate handler purges any cache that doesn't match, guaranteeing users
+// pick up new code on next launch.
+const VERSION = "v3";
 const SHELL_CACHE = `dodai-shell-${VERSION}`;
 const DATA_CACHE = `dodai-data-${VERSION}`;
 
@@ -29,17 +32,21 @@ self.addEventListener("activate", (event) => {
           .filter((k) => k !== SHELL_CACHE && k !== DATA_CACHE)
           .map((k) => caches.delete(k))
       )
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
+
+function isShellDoc(url) {
+  const p = url.pathname;
+  return p.endsWith("/") || p.endsWith("/index.html") || p.endsWith("index.html");
+}
 
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   if (req.method !== "GET") return;
-
   const url = new URL(req.url);
 
+  // Feed: network-first, fall back to cache.
   if (url.pathname.endsWith("feed.json")) {
     event.respondWith(
       fetch(req)
@@ -48,20 +55,46 @@ self.addEventListener("fetch", (event) => {
           caches.open(DATA_CACHE).then((c) => c.put(req, copy));
           return res;
         })
-        .catch(() => caches.match(req).then((r) => r || new Response('{"articles":[]}', { headers: { "Content-Type": "application/json" } })))
+        .catch(() =>
+          caches.match(req).then(
+            (r) => r || new Response('{"articles":[]}', { headers: { "Content-Type": "application/json" } })
+          )
+        )
     );
     return;
   }
 
-  if (url.origin === self.location.origin) {
+  if (url.origin !== self.location.origin) return;
+
+  // HTML navigations + index: network-first so new deploys roll out immediately.
+  if (req.mode === "navigate" || isShellDoc(url)) {
     event.respondWith(
-      caches.match(req).then((cached) => cached || fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(SHELL_CACHE).then((c) => c.put(req, copy));
-        return res;
-      }).catch(() => caches.match("index.html")))
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(SHELL_CACHE).then((c) => c.put(req, copy));
+          return res;
+        })
+        .catch(() => caches.match(req).then((r) => r || caches.match("index.html")))
     );
+    return;
   }
+
+  // Code/assets: stale-while-revalidate — serve cache fast, refresh in background.
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      const network = fetch(req)
+        .then((res) => {
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(SHELL_CACHE).then((c) => c.put(req, copy));
+          }
+          return res;
+        })
+        .catch(() => cached);
+      return cached || network;
+    })
+  );
 });
 
 self.addEventListener("notificationclick", (event) => {
@@ -75,4 +108,8 @@ self.addEventListener("notificationclick", (event) => {
       if (clients.openWindow) return clients.openWindow(url);
     })
   );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data === "skipWaiting") self.skipWaiting();
 });
