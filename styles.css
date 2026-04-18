@@ -6,6 +6,7 @@
   --text-dim: #9aa7bd;
   --accent: #ffd166;
   --accent-2: #4cc9f0;
+  --priority: #ff5d6c;
   --border: #243049;
   --danger: #ef4444;
   --radius: 14px;
@@ -23,6 +24,7 @@
     --border: #dfe4ee;
     --accent: #b88700;
     --accent-2: #0369a1;
+    --priority: #c62828;
   }
 }
 
@@ -39,6 +41,7 @@ html, body {
 }
 
 a { color: inherit; text-decoration: none; }
+button { font: inherit; }
 
 .topbar {
   position: sticky;
@@ -57,6 +60,8 @@ a { color: inherit; text-decoration: none; }
   justify-content: space-between;
   gap: 10px;
 }
+
+.topbar-actions { display: flex; gap: 8px; }
 
 .topbar h1 {
   margin: 0;
@@ -129,6 +134,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .card {
+  position: relative;
   background: var(--bg-elev);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -138,6 +144,10 @@ a { color: inherit; text-decoration: none; }
   transition: transform 0.08s ease;
 }
 .card:active { transform: scale(0.995); }
+.card.priority {
+  border-color: color-mix(in oklab, var(--priority) 55%, var(--border));
+  box-shadow: inset 3px 0 0 var(--priority);
+}
 
 .card .meta {
   display: flex;
@@ -145,6 +155,7 @@ a { color: inherit; text-decoration: none; }
   gap: 8px;
   font-size: 12px;
   color: var(--text-dim);
+  flex-wrap: wrap;
 }
 .card .source {
   background: var(--bg-elev-2);
@@ -157,8 +168,19 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.3px;
   text-transform: uppercase;
 }
+.card .priority-badge {
+  background: color-mix(in oklab, var(--priority) 22%, transparent);
+  color: var(--priority);
+  border: 1px solid color-mix(in oklab, var(--priority) 45%, transparent);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
 .card h2 {
-  margin: 2px 0 0;
+  margin: 2px 36px 0 0;
   font-size: 16px;
   line-height: 1.35;
   font-weight: 600;
@@ -184,6 +206,21 @@ a { color: inherit; text-decoration: none; }
   padding: 2px 7px;
   border-radius: 999px;
 }
+
+.bookmark-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-dim);
+  padding: 6px;
+  cursor: pointer;
+  line-height: 0;
+  border-radius: 8px;
+}
+.bookmark-btn:active { transform: scale(0.9); }
+.bookmark-btn.on { color: var(--accent); }
 
 .skeleton {
   height: 96px;
@@ -219,14 +256,137 @@ a { color: inherit; text-decoration: none; }
   border-top: 1px solid var(--border);
 }
 
-.banner {
+.toast {
+  position: fixed;
+  left: 50%;
+  top: calc(var(--safe-top) + 150px);
+  transform: translateX(-50%);
+  background: var(--bg-elev-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  z-index: 20;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  animation: toast-in 0.2s ease;
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translate(-50%, -6px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Settings sheet */
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(2px);
+}
+.sheet-panel {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--bg);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  padding: 14px 16px calc(var(--safe-bottom) + 20px);
+  border-top: 1px solid var(--border);
+  animation: sheet-up 0.22s ease;
+}
+@keyframes sheet-up {
+  from { transform: translateY(14px); opacity: 0.6; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 10px;
   position: sticky;
-  top: calc(var(--safe-top) + 100px);
-  margin: 0 14px;
+  top: 0;
+  background: var(--bg);
+  z-index: 2;
+}
+.sheet-head h2 { margin: 0; font-size: 18px; }
+
+.sheet-section {
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+}
+.sheet-section:first-of-type { border-top: none; }
+.sheet-section h3 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+.sheet-desc { color: var(--text-dim); font-size: 13px; line-height: 1.4; margin: 0 0 10px; }
+.sheet-note { font-size: 12px; color: var(--text-dim); margin-top: 6px; }
+.sheet-row { display: flex; gap: 8px; margin-top: 10px; }
+
+.switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+}
+.switch input { width: 44px; height: 26px; appearance: none; background: var(--bg-elev-2); border: 1px solid var(--border); border-radius: 999px; position: relative; cursor: pointer; transition: background 0.15s; }
+.switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: var(--text); border-radius: 50%; transition: transform 0.15s; }
+.switch input:checked { background: var(--accent); border-color: var(--accent); }
+.switch input:checked::after { transform: translateX(18px); background: var(--bg); }
+
+#priority-input {
+  width: 100%;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.btn {
+  background: var(--bg-elev);
+  color: var(--text);
+  border: 1px solid var(--border);
   padding: 8px 12px;
   border-radius: 10px;
-  background: color-mix(in oklab, var(--danger) 20%, var(--bg));
-  color: var(--text);
   font-size: 13px;
-  border: 1px solid color-mix(in oklab, var(--danger) 40%, transparent);
+  cursor: pointer;
 }
+.btn:active { transform: scale(0.98); }
+.btn-danger { color: var(--danger); border-color: color-mix(in oklab, var(--danger) 40%, var(--border)); }
+
+.sources-list {
+  display: grid;
+  gap: 6px;
+}
+.sources-list label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 14px;
+}
+.sources-list input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); }
+.sources-list .count { margin-left: auto; color: var(--text-dim); font-size: 12px; }

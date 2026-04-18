@@ -63,3 +63,16 @@ self.addEventListener("fetch", (event) => {
     );
   }
 });
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const url = (event.notification.data && event.notification.data.url) || "./";
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((wins) => {
+      for (const w of wins) {
+        if ("focus" in w) return w.focus();
+      }
+      if (clients.openWindow) return clients.openWindow(url);
+    })
+  );
+});
