@@ -1,7 +1,7 @@
 // Bump VERSION any time shell assets (index/app/styles/sw) change — the
 // activate handler purges any cache that doesn't match, guaranteeing users
 // pick up new code on next launch.
-const VERSION = "v3";
+const VERSION = "v4";
 const SHELL_CACHE = `dodai-shell-${VERSION}`;
 const DATA_CACHE = `dodai-data-${VERSION}`;
 
@@ -66,24 +66,19 @@ self.addEventListener("fetch", (event) => {
 
   if (url.origin !== self.location.origin) return;
 
-  // HTML navigations + index: network-first so new deploys roll out immediately.
-  if (req.mode === "navigate" || isShellDoc(url)) {
+  // Code/shell docs: network-first so fixes land on the next launch.
+  // Falls back to cache only when offline.
+  const isCode =
+    req.mode === "navigate" ||
+    isShellDoc(url) ||
+    url.pathname.endsWith(".html") ||
+    url.pathname.endsWith(".js") ||
+    url.pathname.endsWith(".css") ||
+    url.pathname.endsWith(".webmanifest");
+
+  if (isCode) {
     event.respondWith(
       fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(SHELL_CACHE).then((c) => c.put(req, copy));
-          return res;
-        })
-        .catch(() => caches.match(req).then((r) => r || caches.match("index.html")))
-    );
-    return;
-  }
-
-  // Code/assets: stale-while-revalidate — serve cache fast, refresh in background.
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req)
         .then((res) => {
           if (res && res.ok) {
             const copy = res.clone();
@@ -91,8 +86,22 @@ self.addEventListener("fetch", (event) => {
           }
           return res;
         })
-        .catch(() => cached);
-      return cached || network;
+        .catch(() => caches.match(req).then((r) => r || caches.match("index.html")))
+    );
+    return;
+  }
+
+  // Icons and other static assets: cache-first is fine — they rarely change.
+  event.respondWith(
+    caches.match(req).then((cached) => {
+      if (cached) return cached;
+      return fetch(req).then((res) => {
+        if (res && res.ok) {
+          const copy = res.clone();
+          caches.open(SHELL_CACHE).then((c) => c.put(req, copy));
+        }
+        return res;
+      });
     })
   );
 });

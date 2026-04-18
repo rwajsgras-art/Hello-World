@@ -400,6 +400,11 @@ el.settingsBtn.addEventListener("click", openSheet);
 el.sheet.addEventListener("click", (e) => {
   if (e.target.closest("[data-close]")) closeSheet();
 });
+// Defensive: bind close directly on every [data-close] element too, in case
+// the delegated handler misses (e.g. odd event targets on iOS).
+el.sheet.querySelectorAll("[data-close]").forEach((node) => {
+  node.addEventListener("click", (e) => { e.preventDefault(); closeSheet(); });
+});
 window.addEventListener("keydown", (e) => {
   if (e.key === "Escape" && !el.sheet.hidden) closeSheet();
 });
@@ -450,5 +455,13 @@ loadFeed();
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+  // When a new SW takes control, reload so the page runs with the fresh
+  // shell/app.js it just installed. Guarded to fire at most once per load.
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (reloaded) return;
+    reloaded = true;
+    window.location.reload();
   });
 }
