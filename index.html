@@ -90,6 +90,32 @@
         </section>
 
         <section class="sheet-section">
+          <h3>Add a custom source</h3>
+          <p class="sheet-desc">Paste any RSS or Atom feed URL. Articles are fetched in your browser (through a public CORS proxy) and merged into the main feed. The AI-keyword filter still applies; enable “Also require DoD” for general-interest outlets.</p>
+          <div class="custom-form">
+            <input id="cs-name" type="text" placeholder="Name (e.g. Air Force Mag)" autocomplete="off" />
+            <input id="cs-url"  type="url"  placeholder="https://example.com/feed.xml" autocomplete="off" />
+            <div class="custom-row">
+              <select id="cs-category" aria-label="Category">
+                <option value="industry">Industry</option>
+                <option value="pentagon">Pentagon</option>
+                <option value="services">Services</option>
+                <option value="research">Research</option>
+              </select>
+              <label class="checkbox-inline">
+                <input type="checkbox" id="cs-require-dod" />
+                <span>Also require DoD keywords</span>
+              </label>
+            </div>
+            <div class="sheet-row">
+              <button class="btn btn-primary" id="cs-add">Add source</button>
+            </div>
+            <div id="cs-status" class="sheet-note"></div>
+          </div>
+          <div id="custom-sources-list" class="sources-list"></div>
+        </section>
+
+        <section class="sheet-section">
           <h3>Saved stories</h3>
           <p class="sheet-desc"><span id="bookmark-count">0</span> bookmarked.</p>
           <div class="sheet-row">

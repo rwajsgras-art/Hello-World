@@ -7,7 +7,49 @@ const STORAGE = {
   disabledSources: "dodai:disabledSources:v1",
   notifOptIn: "dodai:notif:v1",
   priorityTerms: "dodai:priorityTerms:v1",
+  customSources: "dodai:customSources:v1",
 };
+
+// Public CORS proxy used for browser-side RSS fetches. Swap at your own risk.
+const CORS_PROXY = "https://api.allorigins.win/raw?url=";
+
+const AI_TERMS_CLIENT = [
+  /\bAI\b/i, /artificial intelligence/i, /machine learning/i, /\bML\b/,
+  /large language model/i, /\bLLM\b/, /generative/i, /deep learning/i,
+  /neural network/i, /computer vision/i, /autonomous/i, /autonomy/i,
+  /robotic/i, /swarm/i, /unmanned/i, /Project Maven/i, /\bCDAO\b/,
+  /\bJAIC\b/, /Replicator/i, /Task Force Lima/i, /algorithmic warfare/i,
+  /JADC2/i, /CJADC2/i,
+];
+const DEFENSE_TERMS_CLIENT = [
+  /\bDoD\b/, /Department of Defense/i, /Pentagon/i, /DARPA/i, /\bCDAO\b/,
+  /Air Force/i, /\bArmy\b/, /\bNavy\b/, /Marine Corps/i, /Space Force/i,
+  /\bmilitary\b/i, /\bdefense\b/i, /warfighter/i, /combatant command/i,
+  /CENTCOM|NORTHCOM|INDOPACOM|EUCOM|AFRICOM|SOUTHCOM|SOCOM|STRATCOM|TRANSCOM/,
+];
+const AI_TAG_MAP = [
+  [/\bAI\b|artificial intelligence/i, "AI"],
+  [/machine learning|\bML\b/, "ML"],
+  [/large language model|\bLLM\b/, "LLM"],
+  [/generative/i, "GenAI"],
+  [/autonom|unmanned|swarm/i, "Autonomy"],
+  [/robotic/i, "Robotics"],
+  [/computer vision/i, "Computer Vision"],
+  [/Project Maven/i, "Project Maven"],
+  [/\bCDAO\b/, "CDAO"],
+  [/Replicator/i, "Replicator"],
+  [/JADC2|CJADC2/i, "JADC2"],
+];
+
+function loadCustomSources() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(STORAGE.customSources) || "[]");
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+function saveCustomSources(list) {
+  localStorage.setItem(STORAGE.customSources, JSON.stringify(list));
+}
 
 const DEFAULT_PRIORITY_TERMS = [
   "breaking",
@@ -25,11 +67,14 @@ const DEFAULT_PRIORITY_TERMS = [
 
 const state = {
   articles: [],
+  serverArticles: [],
+  customArticles: [],
   filter: "all",
   query: "",
   bookmarks: loadSet(STORAGE.bookmarks),
   disabledSources: loadSet(STORAGE.disabledSources),
   priorityTerms: loadPriorityTerms(),
+  customSources: loadCustomSources(),
 };
 
 function loadSet(key) {
@@ -71,6 +116,13 @@ const el = {
   bookmarksClear: document.getElementById("bookmarks-clear"),
   metaUpdated: document.getElementById("meta-updated"),
   metaCount: document.getElementById("meta-count"),
+  csName: document.getElementById("cs-name"),
+  csUrl: document.getElementById("cs-url"),
+  csCategory: document.getElementById("cs-category"),
+  csRequireDod: document.getElementById("cs-require-dod"),
+  csAdd: document.getElementById("cs-add"),
+  csStatus: document.getElementById("cs-status"),
+  customSourcesList: document.getElementById("custom-sources-list"),
 };
 
 function fmtTime(iso) {
@@ -223,6 +275,113 @@ async function checkNewArticlesAndNotify() {
   } catch {}
 }
 
+// ---------------- Custom (client-side) sources ----------------
+
+function stripHtmlClient(s) {
+  if (!s) return "";
+  const tmp = document.createElement("div");
+  tmp.innerHTML = s;
+  return (tmp.textContent || tmp.innerText || "").replace(/\s+/g, " ").trim();
+}
+
+function parseFeedXML(xmlString) {
+  const doc = new DOMParser().parseFromString(xmlString, "application/xml");
+  if (doc.querySelector("parsererror")) return [];
+  const nodes = Array.from(doc.querySelectorAll("item, entry"));
+  return nodes.map((n) => {
+    const pick = (sel) => n.querySelector(sel)?.textContent?.trim() || "";
+    let link = pick("link");
+    if (!link) {
+      const l = n.querySelector("link[href]");
+      if (l) link = l.getAttribute("href");
+    }
+    const description =
+      pick("description") ||
+      n.querySelector("content\\:encoded, encoded")?.textContent?.trim() ||
+      pick("summary") ||
+      pick("content") ||
+      "";
+    const pubDate =
+      pick("pubDate") ||
+      pick("published") ||
+      pick("updated") ||
+      n.querySelector("dc\\:date, date")?.textContent?.trim() ||
+      "";
+    return {
+      title: stripHtmlClient(pick("title")),
+      link,
+      description: stripHtmlClient(description),
+      pubDate,
+    };
+  });
+}
+
+function matchesAIClient(text) {
+  return AI_TERMS_CLIENT.some((re) => re.test(text));
+}
+function matchesDefenseClient(text) {
+  return DEFENSE_TERMS_CLIENT.some((re) => re.test(text));
+}
+function deriveTagsClient(text) {
+  const tags = new Set();
+  for (const [re, tag] of AI_TAG_MAP) if (re.test(text)) tags.add(tag);
+  return Array.from(tags).slice(0, 5);
+}
+
+async function fetchCustomSource(src) {
+  const proxied = CORS_PROXY + encodeURIComponent(src.url);
+  const res = await fetch(proxied, { cache: "no-cache" });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const xml = await res.text();
+  const items = parseFeedXML(xml);
+  const out = [];
+  for (const it of items) {
+    if (!it.title || !it.link) continue;
+    const text = `${it.title} ${it.description}`;
+    if (!matchesAIClient(text)) continue;
+    if (src.requireDod && !matchesDefenseClient(text)) continue;
+    const published = new Date(it.pubDate || Date.now());
+    out.push({
+      title: it.title,
+      summary: (it.description || "").slice(0, 320),
+      link: it.link,
+      source: src.name,
+      category: src.category || "industry",
+      published: isNaN(published) ? new Date().toISOString() : published.toISOString(),
+      tags: deriveTagsClient(text),
+      _custom: true,
+    });
+  }
+  return out;
+}
+
+async function loadCustomArticles() {
+  const sources = state.customSources;
+  if (!sources.length) { state.customArticles = []; return; }
+  const results = await Promise.all(
+    sources.map((s) =>
+      fetchCustomSource(s).catch((e) => {
+        console.warn(`Custom source "${s.name}" failed:`, e.message);
+        return [];
+      })
+    )
+  );
+  state.customArticles = results.flat();
+}
+
+function mergeAndSortArticles() {
+  const seen = new Set();
+  const all = [];
+  for (const a of [...state.serverArticles, ...state.customArticles]) {
+    const key = (a.link || "").toLowerCase();
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    all.push(a);
+  }
+  all.sort((a, b) => new Date(b.published) - new Date(a.published));
+  state.articles = all;
+}
+
 async function loadFeed({ force = false, notify = true } = {}) {
   el.refresh.classList.add("spin");
   el.status.textContent = "Loading…";
@@ -231,15 +390,15 @@ async function loadFeed({ force = false, notify = true } = {}) {
     const res = await fetch(url, { cache: force ? "no-cache" : "default" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    state.articles = (data.articles || []).sort(
-      (a, b) => new Date(b.published) - new Date(a.published)
-    );
+    state.serverArticles = data.articles || [];
     try { localStorage.setItem(STORAGE.feed, JSON.stringify(data)); } catch {}
     const updatedStr = data.generatedAt ? `Updated ${fmtTime(data.generatedAt)}` : "";
     el.updated.textContent = updatedStr;
     el.metaUpdated.textContent = data.generatedAt
       ? new Date(data.generatedAt).toLocaleString()
       : "—";
+    await loadCustomArticles();
+    mergeAndSortArticles();
     el.metaCount.textContent = String(state.articles.length);
     el.status.textContent = `${state.articles.length} stories`;
     rebuildSourcesList();
@@ -249,9 +408,8 @@ async function loadFeed({ force = false, notify = true } = {}) {
     if (cached) {
       try {
         const data = JSON.parse(cached);
-        state.articles = (data.articles || []).sort(
-          (a, b) => new Date(b.published) - new Date(a.published)
-        );
+        state.serverArticles = data.articles || [];
+        mergeAndSortArticles();
         el.status.textContent = "Offline — showing cached";
         rebuildSourcesList();
       } catch { el.status.textContent = "Failed to load feed"; }
@@ -272,8 +430,86 @@ function openSheet() {
   updateNotifUI();
   el.priorityInput.value = state.priorityTerms.join(", ");
   rebuildSourcesList();
+  rebuildCustomSourcesList();
   updateSheetCounts();
   document.body.style.overflow = "hidden";
+}
+
+function rebuildCustomSourcesList() {
+  if (!state.customSources.length) {
+    el.customSourcesList.innerHTML =
+      '<div class="sheet-note">No custom sources yet.</div>';
+    return;
+  }
+  el.customSourcesList.innerHTML = state.customSources
+    .map((s, i) => `
+      <label>
+        <span>${escapeHtml(s.name)}</span>
+        <span class="count">${escapeHtml(s.category)}${s.requireDod ? " · +DoD" : ""}</span>
+        <button type="button" class="remove" data-idx="${i}" aria-label="Remove ${escapeHtml(s.name)}">Remove</button>
+      </label>
+    `)
+    .join("");
+  el.customSourcesList.querySelectorAll("button.remove").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const idx = Number(btn.dataset.idx);
+      const removed = state.customSources.splice(idx, 1)[0];
+      saveCustomSources(state.customSources);
+      rebuildCustomSourcesList();
+      if (removed) {
+        state.customArticles = state.customArticles.filter((a) => a.source !== removed.name);
+        mergeAndSortArticles();
+        rebuildSourcesList();
+        render();
+        showToast(`Removed ${removed.name}`);
+      }
+    });
+  });
+}
+
+async function addCustomSource() {
+  const name = el.csName.value.trim();
+  const url = el.csUrl.value.trim();
+  const category = el.csCategory.value;
+  const requireDod = el.csRequireDod.checked;
+
+  if (!name || !url) {
+    el.csStatus.textContent = "Name and URL are both required.";
+    return;
+  }
+  try { new URL(url); }
+  catch { el.csStatus.textContent = "That URL doesn't look valid."; return; }
+  if (state.customSources.some((s) => s.name === name)) {
+    el.csStatus.textContent = "A source with that name already exists.";
+    return;
+  }
+
+  const src = { name, url, category, requireDod };
+  el.csStatus.textContent = "Testing feed…";
+  el.csAdd.disabled = true;
+
+  try {
+    const items = await fetchCustomSource(src);
+    state.customSources.push(src);
+    saveCustomSources(state.customSources);
+    state.customArticles = state.customArticles.concat(items);
+    mergeAndSortArticles();
+    rebuildSourcesList();
+    rebuildCustomSourcesList();
+    render();
+    el.csName.value = "";
+    el.csUrl.value = "";
+    el.csRequireDod.checked = false;
+    el.csStatus.textContent =
+      items.length > 0
+        ? `Added — ${items.length} matching stor${items.length === 1 ? "y" : "ies"}.`
+        : "Added — no matching stories right now (AI-keyword filter).";
+  } catch (e) {
+    el.csStatus.textContent = `Couldn't fetch feed: ${e.message}. Check the URL or CORS.`;
+  } finally {
+    el.csAdd.disabled = false;
+  }
 }
 function closeSheet() {
   el.sheet.hidden = true;
@@ -425,6 +661,7 @@ el.saveExit.addEventListener("click", () => {
   closeSheet();
   showToast("Settings saved");
 });
+el.csAdd.addEventListener("click", (e) => { e.preventDefault(); addCustomSource(); });
 el.bookmarksClear.addEventListener("click", () => {
   if (!state.bookmarks.size) return;
   if (!confirm("Remove all saved stories?")) return;
