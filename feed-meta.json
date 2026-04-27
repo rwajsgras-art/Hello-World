@@ -1,0 +1,170 @@
+{
+  "generatedAt": "2026-04-27T10:58:50.534Z",
+  "sources": [
+    {
+      "name": "DoD News",
+      "url": "https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=945",
+      "category": "pentagon",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:45.999Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "DoD Contracts",
+      "url": "https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?ContentType=800&Site=945",
+      "category": "pentagon",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:46.582Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Air Force",
+      "url": "https://www.af.mil/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=343",
+      "category": "services",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:46.635Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Army",
+      "url": "https://www.army.mil/rss/static/2.xml",
+      "category": "services",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:47.085Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Navy",
+      "url": "https://www.navy.mil/Press-Office/News-Stories/rss/",
+      "category": "services",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:47.599Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Space Force",
+      "url": "https://www.spaceforce.mil/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=1060",
+      "category": "services",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:47.880Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "DARPA",
+      "url": "https://www.darpa.mil/news.xml",
+      "category": "research",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:48.131Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "AFRL",
+      "url": "https://www.afrl.af.mil/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=392",
+      "category": "research",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:48.381Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Breaking Defense",
+      "url": "https://breakingdefense.com/feed/",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:48.559Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "DefenseScoop",
+      "url": "https://defensescoop.com/feed/",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:48.711Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Defense News",
+      "url": "https://www.defensenews.com/arc/outboundfeeds/rss/?outputType=xml",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:49.070Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "C4ISRNET",
+      "url": "https://www.c4isrnet.com/arc/outboundfeeds/rss/?outputType=xml",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:49.432Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Nextgov",
+      "url": "https://www.nextgov.com/rss/all/",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:49.678Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "FedScoop",
+      "url": "https://fedscoop.com/feed/",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:50.064Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "The War Zone",
+      "url": "https://www.twz.com/feed",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-27T10:58:50.321Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    }
+  ]
+}

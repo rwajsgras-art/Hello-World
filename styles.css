@@ -115,6 +115,37 @@ button { font: inherit; }
   border-color: var(--accent);
 }
 
+.topics {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 0 2px;
+  scrollbar-width: none;
+}
+.topics::-webkit-scrollbar { display: none; }
+
+.topic-chip {
+  flex: 0 0 auto;
+  background: color-mix(in oklab, var(--accent-2) 12%, var(--bg-elev));
+  color: var(--accent-2);
+  border: 1px solid color-mix(in oklab, var(--accent-2) 30%, transparent);
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.topic-chip.active {
+  background: var(--accent-2);
+  color: var(--bg);
+  border-color: var(--accent-2);
+}
+.topic-chip .x {
+  margin-left: 6px;
+  opacity: 0.85;
+}
+
 .search-wrap { padding-top: 8px; }
 #search {
   width: 100%;
@@ -205,7 +236,11 @@ button { font: inherit; }
   border: 1px solid color-mix(in oklab, var(--accent-2) 30%, transparent);
   padding: 2px 7px;
   border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
 }
+.tag:active { transform: scale(0.96); }
+.tag.active { background: var(--accent-2); color: var(--bg); }
 
 .bookmark-btn {
   position: absolute;
@@ -445,3 +480,37 @@ button { font: inherit; }
   color: var(--text-dim);
 }
 .checkbox-inline input { width: 18px; height: 18px; accent-color: var(--accent); }
+
+.health-list {
+  display: grid;
+  gap: 6px;
+}
+.health-row {
+  display: grid;
+  grid-template-columns: 8px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 10px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  color: inherit;
+}
+.health-row:active { transform: scale(0.997); }
+.health-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-dim);
+}
+.health-dot.ok { background: #22c55e; }
+.health-dot.fail { background: var(--danger); }
+.health-dot.stale { background: #f59e0b; }
+.health-name { font-weight: 600; }
+.health-meta { color: var(--text-dim); font-size: 11px; margin-top: 2px; }
+.health-count { color: var(--text-dim); font-size: 12px; }

@@ -298,11 +298,34 @@ function matchesRelevance(article, source) {
 
 async function main() {
   const all = [];
+  const metaPath = path.join(__dirname, "..", "feed-meta.json");
+  let prevMeta = {};
+  try {
+    const prev = JSON.parse(fs.readFileSync(metaPath, "utf8"));
+    if (prev && Array.isArray(prev.sources)) {
+      for (const s of prev.sources) prevMeta[s.name] = s;
+    }
+  } catch {}
+
+  const sourceReports = [];
   for (const src of SOURCES) {
+    const startedAt = new Date().toISOString();
+    let report = {
+      name: src.name,
+      url: src.url,
+      category: src.category,
+      ok: false,
+      parsed: 0,
+      kept: 0,
+      lastAttempt: startedAt,
+      lastSuccess: prevMeta[src.name]?.lastSuccess || null,
+      error: null,
+    };
     try {
       console.log(`[${src.name}] fetching…`);
       const xml = await fetchText(src.url);
       const items = parseFeed(xml);
+      report.parsed = items.length;
       console.log(`[${src.name}] parsed ${items.length} items`);
       let kept = 0;
       for (const it of items) {
@@ -321,10 +344,15 @@ async function main() {
         all.push(article);
         kept++;
       }
+      report.kept = kept;
+      report.ok = true;
+      report.lastSuccess = startedAt;
       console.log(`[${src.name}] kept ${kept}`);
     } catch (e) {
-      console.warn(`[${src.name}] ERROR: ${e.message}`);
+      report.error = e.message || String(e);
+      console.warn(`[${src.name}] ERROR: ${report.error}`);
     }
+    sourceReports.push(report);
   }
 
   // Dedupe by link (and fallback by title)
@@ -364,6 +392,13 @@ async function main() {
   };
   fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
   console.log(`wrote ${outPath} with ${articles.length} articles`);
+
+  const meta = {
+    generatedAt: new Date().toISOString(),
+    sources: sourceReports,
+  };
+  fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
+  console.log(`wrote feed-meta.json with ${sourceReports.length} source reports`);
 }
 
 main().catch((e) => {

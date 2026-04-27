@@ -8,6 +8,7 @@ const STORAGE = {
   notifOptIn: "dodai:notif:v1",
   priorityTerms: "dodai:priorityTerms:v1",
   customSources: "dodai:customSources:v1",
+  customHealth: "dodai:customHealth:v1",
 };
 
 // Public CORS proxy used for browser-side RSS fetches. Swap at your own risk.
@@ -70,12 +71,28 @@ const state = {
   serverArticles: [],
   customArticles: [],
   filter: "all",
+  tag: null,
   query: "",
+  meta: null,
   bookmarks: loadSet(STORAGE.bookmarks),
   disabledSources: loadSet(STORAGE.disabledSources),
   priorityTerms: loadPriorityTerms(),
   customSources: loadCustomSources(),
+  customHealth: loadCustomHealth(),
 };
+
+function loadCustomHealth() {
+  try { return JSON.parse(localStorage.getItem(STORAGE.customHealth) || "{}") || {}; }
+  catch { return {}; }
+}
+function saveCustomHealth() {
+  localStorage.setItem(STORAGE.customHealth, JSON.stringify(state.customHealth));
+}
+function recordCustomHealth(name, patch) {
+  const prev = state.customHealth[name] || {};
+  state.customHealth[name] = { ...prev, ...patch, lastAttempt: new Date().toISOString() };
+  saveCustomHealth();
+}
 
 function loadSet(key) {
   try { return new Set(JSON.parse(localStorage.getItem(key) || "[]")); }
@@ -123,6 +140,8 @@ const el = {
   csAdd: document.getElementById("cs-add"),
   csStatus: document.getElementById("cs-status"),
   customSourcesList: document.getElementById("custom-sources-list"),
+  topics: document.getElementById("topics"),
+  healthList: document.getElementById("health-list"),
 };
 
 function fmtTime(iso) {
@@ -162,6 +181,9 @@ function matchesFilter(article) {
   } else if (state.filter !== "all") {
     if (article.category !== state.filter) return false;
   }
+  if (state.tag) {
+    if (!Array.isArray(article.tags) || !article.tags.includes(state.tag)) return false;
+  }
   if (state.query) {
     const q = state.query.toLowerCase();
     const hay = (article.title + " " + (article.summary || "")).toLowerCase();
@@ -181,7 +203,7 @@ function cardHTML(a) {
   const saved = state.bookmarks.has(a.link);
   const tags = (a.tags || [])
     .slice(0, 4)
-    .map((t) => `<span class="tag">${escapeHtml(t)}</span>`)
+    .map((t) => `<button type="button" class="tag ${state.tag === t ? "active" : ""}" data-tag="${escapeAttr(t)}">${escapeHtml(t)}</button>`)
     .join("");
   return `
     <article class="card ${priority ? "priority" : ""}">
@@ -229,6 +251,44 @@ function render() {
       else state.bookmarks.add(link);
       saveSet(STORAGE.bookmarks, state.bookmarks);
       updateSheetCounts();
+      render();
+    });
+  });
+  el.feed.querySelectorAll(".tag[data-tag]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const tag = btn.dataset.tag;
+      state.tag = state.tag === tag ? null : tag;
+      renderTopics();
+      render();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+}
+
+function renderTopics() {
+  const counts = new Map();
+  for (const a of state.articles) {
+    if (state.disabledSources.has(a.source)) continue;
+    for (const t of a.tags || []) counts.set(t, (counts.get(t) || 0) + 1);
+  }
+  if (state.tag && !counts.has(state.tag)) counts.set(state.tag, 0);
+  const top = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
+  if (!top.length) { el.topics.hidden = true; el.topics.innerHTML = ""; return; }
+  el.topics.hidden = false;
+  const chips = top.map(([t, n]) => {
+    const active = state.tag === t;
+    return `<button class="topic-chip ${active ? "active" : ""}" data-topic="${escapeAttr(t)}">
+      ${escapeHtml(t)} <span style="opacity:.6">${n}</span>${active ? '<span class="x">✕</span>' : ""}
+    </button>`;
+  });
+  el.topics.innerHTML = chips.join("");
+  el.topics.querySelectorAll(".topic-chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const t = chip.dataset.topic;
+      state.tag = state.tag === t ? null : t;
+      renderTopics();
       render();
     });
   });
@@ -330,8 +390,17 @@ function deriveTagsClient(text) {
 
 async function fetchCustomSource(src) {
   const proxied = CORS_PROXY + encodeURIComponent(src.url);
-  const res = await fetch(proxied, { cache: "no-cache" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  let res;
+  try {
+    res = await fetch(proxied, { cache: "no-cache" });
+  } catch (e) {
+    recordCustomHealth(src.name, { ok: false, error: e.message || "network error", parsed: 0, kept: 0 });
+    throw e;
+  }
+  if (!res.ok) {
+    recordCustomHealth(src.name, { ok: false, error: `HTTP ${res.status}`, parsed: 0, kept: 0 });
+    throw new Error(`HTTP ${res.status}`);
+  }
   const xml = await res.text();
   const items = parseFeedXML(xml);
   const out = [];
@@ -352,6 +421,13 @@ async function fetchCustomSource(src) {
       _custom: true,
     });
   }
+  recordCustomHealth(src.name, {
+    ok: true,
+    error: null,
+    parsed: items.length,
+    kept: out.length,
+    lastSuccess: new Date().toISOString(),
+  });
   return out;
 }
 
@@ -382,6 +458,94 @@ function mergeAndSortArticles() {
   state.articles = all;
 }
 
+async function fetchFeedMeta(force = false) {
+  const url = force ? `feed-meta.json?t=${Date.now()}` : "feed-meta.json";
+  const res = await fetch(url, { cache: force ? "no-cache" : "default" });
+  if (!res.ok) return;
+  state.meta = await res.json();
+}
+
+function renderHealthList() {
+  if (!el.healthList) return;
+  const rows = [];
+  const fmt = (iso) => (iso ? fmtTime(iso) : "never");
+
+  if (state.meta && Array.isArray(state.meta.sources)) {
+    for (const s of state.meta.sources) {
+      const status = s.ok ? "ok" : (s.lastSuccess ? "stale" : "fail");
+      rows.push({
+        kind: "server",
+        name: s.name,
+        url: s.url,
+        ok: s.ok,
+        status,
+        kept: s.kept || 0,
+        parsed: s.parsed || 0,
+        error: s.error,
+        lastSuccess: s.lastSuccess,
+        lastAttempt: s.lastAttempt,
+      });
+    }
+  }
+  for (const cs of state.customSources) {
+    const h = state.customHealth[cs.name] || {};
+    const status = h.ok ? "ok" : (h.lastSuccess ? "stale" : (h.lastAttempt ? "fail" : "stale"));
+    rows.push({
+      kind: "custom",
+      name: cs.name + " (custom)",
+      url: cs.url,
+      ok: !!h.ok,
+      status,
+      kept: h.kept || 0,
+      parsed: h.parsed || 0,
+      error: h.error,
+      lastSuccess: h.lastSuccess,
+      lastAttempt: h.lastAttempt,
+    });
+  }
+
+  if (!rows.length) {
+    el.healthList.innerHTML = '<div class="sheet-note">Source health appears here after the next refresh.</div>';
+    return;
+  }
+
+  rows.sort((a, b) => {
+    const order = (s) => (s === "fail" ? 0 : s === "stale" ? 1 : 2);
+    return order(a.status) - order(b.status) || a.name.localeCompare(b.name);
+  });
+
+  el.healthList.innerHTML = rows
+    .map((r) => {
+      const sub = r.ok
+        ? `${r.kept} kept of ${r.parsed} · ok ${fmt(r.lastSuccess)}`
+        : r.error
+          ? `${r.error} · last ok ${fmt(r.lastSuccess)}`
+          : `last ok ${fmt(r.lastSuccess)}`;
+      return `
+        <button type="button" class="health-row" data-url="${escapeAttr(r.url || "")}">
+          <span class="health-dot ${r.status}" aria-hidden="true"></span>
+          <span>
+            <div class="health-name">${escapeHtml(r.name)}</div>
+            <div class="health-meta">${escapeHtml(sub)}</div>
+          </span>
+          <span class="health-count">${r.kept || 0}</span>
+        </button>
+      `;
+    })
+    .join("");
+
+  el.healthList.querySelectorAll(".health-row").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const url = btn.dataset.url;
+      if (!url) return;
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast("URL copied");
+      } catch { showToast(url); }
+    });
+  });
+}
+
 async function loadFeed({ force = false, notify = true } = {}) {
   el.refresh.classList.add("spin");
   el.status.textContent = "Loading…";
@@ -397,11 +561,13 @@ async function loadFeed({ force = false, notify = true } = {}) {
     el.metaUpdated.textContent = data.generatedAt
       ? new Date(data.generatedAt).toLocaleString()
       : "—";
+    fetchFeedMeta(force).catch(() => {});
     await loadCustomArticles();
     mergeAndSortArticles();
     el.metaCount.textContent = String(state.articles.length);
     el.status.textContent = `${state.articles.length} stories`;
     rebuildSourcesList();
+    renderTopics();
     if (notify) checkNewArticlesAndNotify();
   } catch {
     const cached = localStorage.getItem(STORAGE.feed);
@@ -412,6 +578,7 @@ async function loadFeed({ force = false, notify = true } = {}) {
         mergeAndSortArticles();
         el.status.textContent = "Offline — showing cached";
         rebuildSourcesList();
+        renderTopics();
       } catch { el.status.textContent = "Failed to load feed"; }
     } else {
       el.status.textContent = "Failed to load feed";
@@ -431,6 +598,7 @@ function openSheet() {
   el.priorityInput.value = state.priorityTerms.join(", ");
   rebuildSourcesList();
   rebuildCustomSourcesList();
+  renderHealthList();
   updateSheetCounts();
   document.body.style.overflow = "hidden";
 }

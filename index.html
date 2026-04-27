@@ -40,6 +40,7 @@
       <button class="chip" data-filter="research" role="tab">Research</button>
       <button class="chip" data-filter="industry" role="tab">Industry</button>
     </div>
+    <div id="topics" class="topics" role="tablist" aria-label="Filter by topic" hidden></div>
     <div class="search-wrap">
       <input id="search" type="search" placeholder="Search titles & summaries…" aria-label="Search articles" />
     </div>
@@ -121,6 +122,12 @@
           <div class="sheet-row">
             <button class="btn btn-danger" id="bookmarks-clear">Clear all saved</button>
           </div>
+        </section>
+
+        <section class="sheet-section">
+          <h3>Source health</h3>
+          <p class="sheet-desc">Status of each source in the most recent fetch. Tap a row to copy its URL.</p>
+          <div id="health-list" class="health-list"></div>
         </section>
 
         <section class="sheet-section sheet-meta">
