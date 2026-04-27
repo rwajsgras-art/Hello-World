@@ -10,6 +10,43 @@ No app store, no backend. A scheduled GitHub Action fetches RSS/Atom feeds every
 2. Tap the **Share** icon → **Add to Home Screen** → **Add**.
 3. Launch from the home-screen icon — it runs full-screen, caches for offline, and pulls fresh headlines on open.
 
+## Run on macOS
+
+Two options — pick whichever fits.
+
+### A. Run locally from source (full control, hourly refresh on your machine)
+
+Requires Node 18+ (check with `node -v`; install via `brew install node` if missing).
+
+```bash
+git clone https://github.com/<user>/<repo>.git
+cd <repo>
+npm start            # serves on http://localhost:3000 and opens it
+```
+
+`npm start` does three things:
+
+1. Spins up a zero-dependency static server on port 3000 (override with `PORT=4000 npm start`).
+2. Runs `scripts/fetch-feeds.js` once so `feed.json` is fresh.
+3. Re-runs the fetcher every 60 minutes (`REFRESH_MIN=15 npm start` to change).
+
+Other scripts:
+
+```bash
+npm run serve        # serve without opening the browser
+npm run fetch        # fetch feeds once and write feed.json
+npm run icons        # regenerate PNG icons from icons/icon.svg
+```
+
+### B. Install the live site as a Mac app
+
+The deployed PWA can be added to the Dock so it runs in its own window like a native app, syncing with the same hourly GitHub Actions feed as your iPhone install.
+
+- **Safari 17+** (macOS Sonoma or later): open the URL in Safari → menu **File → Add to Dock…** → confirm. The app gets its own Dock icon and window.
+- **Chrome / Edge / Arc**: open the URL → click the **Install** icon in the address bar (or **⋮ → Cast, save, and share → Install DoD AI News…**). Same standalone window.
+
+Bookmarks and settings are per-browser — installing in Safari is independent of Chrome.
+
 ## Sources (current set)
 
 | Category  | Source |
@@ -31,23 +68,7 @@ This repo is wired up for **GitHub Pages via GitHub Actions**.
 
 ### Local preview
 
-```bash
-# any static server works; a zero-dep option:
-python3 -m http.server 8000
-# then open http://localhost:8000
-```
-
-To refresh the feed locally:
-
-```bash
-node scripts/fetch-feeds.js
-```
-
-To regenerate the icons:
-
-```bash
-node scripts/generate-icons.js
-```
+See [Run on macOS](#run-on-macos) above (`npm start`). Any static server also works (e.g. `python3 -m http.server 8000`).
 
 ## File layout
 
@@ -60,9 +81,11 @@ node scripts/generate-icons.js
 ├── sw.js                 # service worker (offline cache + stale-while-revalidate for feed)
 ├── feed.json             # generated aggregated feed
 ├── icons/                # SVG source + generated PNGs
+├── package.json          # npm scripts (start / serve / fetch / icons)
 ├── scripts/
 │   ├── fetch-feeds.js    # RSS/Atom fetch + filter + write feed.json
-│   └── generate-icons.js # pure-Node PNG icon generator
+│   ├── generate-icons.js # pure-Node PNG icon generator
+│   └── dev-server.js     # zero-dep local static server with periodic feed refresh
 └── .github/workflows/
     └── deploy.yml        # hourly feed refresh + Pages deploy
 ```
