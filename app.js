@@ -207,16 +207,27 @@ function cardHTML(a) {
     .join("");
   return `
     <article class="card ${priority ? "priority" : ""}">
-      <button class="bookmark-btn ${saved ? "on" : ""}"
-              data-link="${escapeAttr(a.link)}"
-              aria-label="${saved ? "Remove bookmark" : "Bookmark"}"
-              title="${saved ? "Saved" : "Save"}">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-          <path fill="currentColor" d="${saved
-            ? "M12 2l2.9 6.9 7.1.6-5.4 4.7 1.6 7-6.2-3.8-6.2 3.8 1.6-7L2 9.5l7.1-.6z"
-            : "M12 4.2l2.2 5.2.4 1 1.1.1 5.5.4-4.2 3.6-.8.7.2 1 1.2 5.4-4.8-2.9-.9-.5-.9.5-4.8 2.9 1.2-5.4.2-1-.8-.7-4.2-3.6 5.5-.4 1.1-.1.4-1L12 4.2M12 2L9.1 8.9 2 9.5l5.4 4.7-1.6 7L12 17.4l6.2 3.8-1.6-7L22 9.5l-7.1-.6L12 2z"}"/>
-        </svg>
-      </button>
+      <div class="card-actions">
+        <button class="card-action-btn share-btn"
+                data-link="${escapeAttr(a.link)}"
+                data-title="${escapeAttr(a.title)}"
+                data-source="${escapeAttr(a.source)}"
+                aria-label="Share" title="Share">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path fill="currentColor" d="M12 2 7.5 6.5l1.4 1.4L11 5.8V15h2V5.8l2.1 2.1 1.4-1.4L12 2zM5 12H3v9a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-9h-2v8H5v-8z"/>
+          </svg>
+        </button>
+        <button class="card-action-btn bookmark-btn ${saved ? "on" : ""}"
+                data-link="${escapeAttr(a.link)}"
+                aria-label="${saved ? "Remove bookmark" : "Bookmark"}"
+                title="${saved ? "Saved" : "Save"}">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path fill="currentColor" d="${saved
+              ? "M12 2l2.9 6.9 7.1.6-5.4 4.7 1.6 7-6.2-3.8-6.2 3.8 1.6-7L2 9.5l7.1-.6z"
+              : "M12 4.2l2.2 5.2.4 1 1.1.1 5.5.4-4.2 3.6-.8.7.2 1 1.2 5.4-4.8-2.9-.9-.5-.9.5-4.8 2.9 1.2-5.4.2-1-.8-.7-4.2-3.6 5.5-.4 1.1-.1.4-1L12 4.2M12 2L9.1 8.9 2 9.5l5.4 4.7-1.6 7L12 17.4l6.2 3.8-1.6-7L22 9.5l-7.1-.6L12 2z"}"/>
+          </svg>
+        </button>
+      </div>
       <div class="meta">
         <span class="source">${escapeHtml(a.source)}</span>
         <span>${fmtTime(a.published)}</span>
@@ -229,6 +240,24 @@ function cardHTML(a) {
       ${tags ? `<div class="tags">${tags}</div>` : ""}
     </article>
   `;
+}
+
+async function shareArticle({ title, link, source }) {
+  const text = `${source}: ${title}`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title, text, url: link });
+      return;
+    } catch (e) {
+      if (e && e.name === "AbortError") return;
+    }
+  }
+  try {
+    await navigator.clipboard.writeText(link);
+    showToast("Link copied");
+  } catch {
+    showToast(link);
+  }
 }
 
 function render() {
@@ -252,6 +281,17 @@ function render() {
       saveSet(STORAGE.bookmarks, state.bookmarks);
       updateSheetCounts();
       render();
+    });
+  });
+  el.feed.querySelectorAll(".share-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      shareArticle({
+        title: btn.dataset.title,
+        link: btn.dataset.link,
+        source: btn.dataset.source,
+      });
     });
   });
   el.feed.querySelectorAll(".tag[data-tag]").forEach((btn) => {

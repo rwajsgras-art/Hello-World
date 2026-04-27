@@ -100,6 +100,93 @@ const SOURCES = [
     category: "industry",
     alreadyDefense: true,
   },
+  {
+    name: "Defense One",
+    url: "https://www.defenseone.com/rss/all/",
+    category: "industry",
+    alreadyDefense: true,
+  },
+  {
+    name: "Air & Space Forces Magazine",
+    url: "https://www.airandspaceforces.com/feed/",
+    category: "industry",
+    alreadyDefense: true,
+  },
+  {
+    name: "SpaceNews",
+    url: "https://spacenews.com/feed/",
+    category: "industry",
+    alreadyDefense: false,
+  },
+  {
+    name: "Aviation Week",
+    url: "https://aviationweek.com/rss.xml",
+    category: "industry",
+    alreadyDefense: false,
+  },
+  // Government oversight + reporting
+  {
+    name: "GAO Reports",
+    url: "https://www.gao.gov/rss/reports.xml",
+    category: "pentagon",
+    alreadyDefense: false,
+  },
+  // National labs / research
+  {
+    name: "MIT Lincoln Lab",
+    url: "https://www.ll.mit.edu/news.xml",
+    category: "research",
+    alreadyDefense: true,
+  },
+  {
+    name: "JHU APL",
+    url: "https://www.jhuapl.edu/rss/news.xml",
+    category: "research",
+    alreadyDefense: true,
+  },
+  {
+    name: "NRL",
+    url: "https://www.nrl.navy.mil/Media/News/rss/",
+    category: "research",
+    alreadyDefense: true,
+  },
+  {
+    name: "Sandia News",
+    url: "https://newsreleases.sandia.gov/feed/",
+    category: "research",
+    alreadyDefense: true,
+  },
+  // Think tanks
+  {
+    name: "CSIS",
+    url: "https://www.csis.org/analysis/rss.xml",
+    category: "industry",
+    alreadyDefense: false,
+  },
+  {
+    name: "RAND",
+    url: "https://www.rand.org/topics/national-defense.feed",
+    category: "industry",
+    alreadyDefense: false,
+  },
+  {
+    name: "CNAS",
+    url: "https://www.cnas.org/publications/rss",
+    category: "industry",
+    alreadyDefense: true,
+  },
+  {
+    name: "Atlantic Council",
+    url: "https://www.atlanticcouncil.org/feed/",
+    category: "industry",
+    alreadyDefense: false,
+  },
+  {
+    name: "Hudson Institute",
+    url: "https://www.hudson.org/feed",
+    category: "industry",
+    alreadyDefense: false,
+  },
 ];
 
 // Keywords — case-insensitive. Word boundaries matter for short acronyms.
