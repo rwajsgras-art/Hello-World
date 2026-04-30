@@ -9,6 +9,9 @@ const STORAGE = {
   priorityTerms: "dodai:priorityTerms:v1",
   customSources: "dodai:customSources:v1",
   customHealth: "dodai:customHealth:v1",
+  activeTab: "dodai:activeTab:v1",
+  youtube: "dodai:youtube:v1",
+  xaccounts: "dodai:xaccounts:v1",
 };
 
 // Public CORS proxy used for browser-side RSS fetches. Swap at your own risk.
@@ -70,6 +73,10 @@ const state = {
   articles: [],
   serverArticles: [],
   customArticles: [],
+  videos: [],
+  xAccounts: [],
+  xNote: "",
+  activeTab: localStorage.getItem(STORAGE.activeTab) || "news",
   filter: "all",
   tag: null,
   query: "",
@@ -142,6 +149,11 @@ const el = {
   customSourcesList: document.getElementById("custom-sources-list"),
   topics: document.getElementById("topics"),
   healthList: document.getElementById("health-list"),
+  tabs: document.querySelectorAll(".tab"),
+  youtubeMain: document.getElementById("youtube"),
+  xMain: document.getElementById("xfeed"),
+  filtersRow: document.querySelector(".filters"),
+  searchWrap: document.querySelector(".search-wrap"),
 };
 
 function fmtTime(iso) {
@@ -629,6 +641,127 @@ async function loadFeed({ force = false, notify = true } = {}) {
   }
 }
 
+// ---------------- Tabs (News / YouTube / X) ----------------
+
+function setActiveTab(tab) {
+  state.activeTab = tab;
+  localStorage.setItem(STORAGE.activeTab, tab);
+  el.tabs.forEach((t) => {
+    const on = t.dataset.tab === tab;
+    t.classList.toggle("active", on);
+    t.setAttribute("aria-selected", on ? "true" : "false");
+  });
+  // News-only chrome
+  const newsActive = tab === "news";
+  if (el.filtersRow) el.filtersRow.hidden = !newsActive;
+  if (el.topics) el.topics.hidden = !newsActive || !el.topics.children.length;
+  if (el.searchWrap) el.searchWrap.hidden = !newsActive;
+  el.feed.hidden = !newsActive;
+  el.youtubeMain.hidden = tab !== "youtube";
+  el.xMain.hidden = tab !== "x";
+  if (tab === "youtube") renderYouTube();
+  else if (tab === "x") renderX();
+}
+
+async function loadYouTube({ force = false } = {}) {
+  try {
+    const url = force ? `youtube.json?t=${Date.now()}` : "youtube.json";
+    const res = await fetch(url, { cache: force ? "no-cache" : "default" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    state.videos = Array.isArray(data.videos) ? data.videos : [];
+    try { localStorage.setItem(STORAGE.youtube, JSON.stringify(data)); } catch {}
+  } catch {
+    try {
+      const cached = JSON.parse(localStorage.getItem(STORAGE.youtube) || "null");
+      state.videos = cached?.videos || [];
+    } catch { state.videos = []; }
+  }
+}
+
+async function loadX({ force = false } = {}) {
+  try {
+    const url = force ? `x.json?t=${Date.now()}` : "x.json";
+    const res = await fetch(url, { cache: force ? "no-cache" : "default" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    state.xAccounts = Array.isArray(data.accounts) ? data.accounts : [];
+    state.xNote = data.note || "";
+    try { localStorage.setItem(STORAGE.xaccounts, JSON.stringify(data)); } catch {}
+  } catch {
+    try {
+      const cached = JSON.parse(localStorage.getItem(STORAGE.xaccounts) || "null");
+      state.xAccounts = cached?.accounts || [];
+      state.xNote = cached?.note || "";
+    } catch { state.xAccounts = []; }
+  }
+}
+
+function renderYouTube() {
+  if (!state.videos.length) {
+    el.youtubeMain.innerHTML =
+      '<div class="empty">No videos yet.<br/><small>The next workflow run will populate this. ' +
+      'Edit YOUTUBE_SOURCES in scripts/fetch-feeds.js to add channels.</small></div>';
+    return;
+  }
+  el.youtubeMain.innerHTML = state.videos
+    .map((v) => {
+      const tags = (v.tags || [])
+        .slice(0, 3)
+        .map((t) => `<span class="tag">${escapeHtml(t)}</span>`)
+        .join("");
+      return `
+        <a class="video-card" href="${escapeAttr(v.link)}" target="_blank" rel="noopener noreferrer">
+          <div class="thumb-wrap">
+            ${v.thumbnail ? `<img loading="lazy" src="${escapeAttr(v.thumbnail)}" alt="">` : ""}
+            <div class="play-overlay">
+              <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true">
+                <circle cx="32" cy="32" r="30" fill="rgba(0,0,0,0.55)"/>
+                <path d="M26 20l20 12-20 12V20z" fill="#fff"/>
+              </svg>
+            </div>
+          </div>
+          <div class="video-body">
+            <div class="meta">
+              <span class="source">${escapeHtml(v.channel || v.source || "YouTube")}</span>
+              <span>${fmtTime(v.published)}</span>
+            </div>
+            <h2>${escapeHtml(v.title)}</h2>
+            ${tags ? `<div class="tags">${tags}</div>` : ""}
+          </div>
+        </a>
+      `;
+    })
+    .join("");
+}
+
+function initials(name) {
+  const parts = (name || "").trim().split(/\s+/);
+  return ((parts[0] || "")[0] || "?").toUpperCase() +
+         ((parts[1] || "")[0] || "").toUpperCase();
+}
+
+function renderX() {
+  const banner = state.xNote
+    ? `<div class="x-banner">${escapeHtml(state.xNote)}</div>`
+    : "";
+  if (!state.xAccounts.length) {
+    el.xMain.innerHTML = banner + '<div class="empty">No accounts curated.</div>';
+    return;
+  }
+  el.xMain.innerHTML = banner + state.xAccounts.map((a) => `
+    <a class="x-card" href="${escapeAttr(a.url || `https://x.com/${a.handle}`)}" target="_blank" rel="noopener noreferrer">
+      <div class="x-avatar" aria-hidden="true">${escapeHtml(initials(a.name || a.handle))}</div>
+      <div class="x-meta">
+        <div class="x-name">${escapeHtml(a.name || a.handle)}</div>
+        <div class="x-handle">@${escapeHtml(a.handle)}</div>
+        ${a.focus ? `<div class="x-focus">${escapeHtml(a.focus)}</div>` : ""}
+      </div>
+      <span class="x-go">Open</span>
+    </a>
+  `).join("");
+}
+
 // ---------------- Settings sheet ----------------
 
 function openSheet() {
@@ -825,7 +958,20 @@ function onPriorityChange() {
 
 // ---------------- Events ----------------
 
-el.refresh.addEventListener("click", () => loadFeed({ force: true }));
+el.tabs.forEach((t) => {
+  t.addEventListener("click", () => setActiveTab(t.dataset.tab));
+});
+el.refresh.addEventListener("click", async () => {
+  if (state.activeTab === "youtube") {
+    await loadYouTube({ force: true });
+    renderYouTube();
+  } else if (state.activeTab === "x") {
+    await loadX({ force: true });
+    renderX();
+  } else {
+    loadFeed({ force: true });
+  }
+});
 el.search.addEventListener("input", (e) => {
   state.query = e.target.value.trim();
   render();
@@ -902,7 +1048,12 @@ document.addEventListener("visibilitychange", () => {
 });
 
 renderSkeletons();
+setActiveTab(state.activeTab);
 loadFeed();
+Promise.all([loadYouTube(), loadX()]).then(() => {
+  if (state.activeTab === "youtube") renderYouTube();
+  else if (state.activeTab === "x") renderX();
+});
 
 if ("serviceWorker" in navigator) {
   let reloaded = false;

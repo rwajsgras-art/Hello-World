@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-27T10:58:50.534Z",
+  "generatedAt": "2026-04-30T09:11:47.741Z",
   "sources": [
     {
       "name": "DoD News",
@@ -8,7 +8,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:45.999Z",
+      "lastAttempt": "2026-04-30T09:11:39.588Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -19,7 +19,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:46.582Z",
+      "lastAttempt": "2026-04-30T09:11:39.886Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -30,7 +30,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:46.635Z",
+      "lastAttempt": "2026-04-30T09:11:39.931Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -41,7 +41,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:47.085Z",
+      "lastAttempt": "2026-04-30T09:11:40.168Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -52,7 +52,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:47.599Z",
+      "lastAttempt": "2026-04-30T09:11:40.342Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -63,7 +63,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:47.880Z",
+      "lastAttempt": "2026-04-30T09:11:40.646Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -74,7 +74,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:48.131Z",
+      "lastAttempt": "2026-04-30T09:11:40.995Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -85,7 +85,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:48.381Z",
+      "lastAttempt": "2026-04-30T09:11:41.167Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -96,7 +96,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:48.559Z",
+      "lastAttempt": "2026-04-30T09:11:41.579Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -107,7 +107,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:48.711Z",
+      "lastAttempt": "2026-04-30T09:11:41.849Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -118,7 +118,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:49.070Z",
+      "lastAttempt": "2026-04-30T09:11:42.066Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -129,7 +129,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:49.432Z",
+      "lastAttempt": "2026-04-30T09:11:42.442Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -140,7 +140,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:49.678Z",
+      "lastAttempt": "2026-04-30T09:11:42.731Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -151,7 +151,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:50.064Z",
+      "lastAttempt": "2026-04-30T09:11:43.132Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -162,7 +162,249 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-27T10:58:50.321Z",
+      "lastAttempt": "2026-04-30T09:11:43.345Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Defense One",
+      "url": "https://www.defenseone.com/rss/all/",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:43.520Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Air & Space Forces Magazine",
+      "url": "https://www.airandspaceforces.com/feed/",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:43.816Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "SpaceNews",
+      "url": "https://spacenews.com/feed/",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:44.212Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Aviation Week",
+      "url": "https://aviationweek.com/rss.xml",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:44.536Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "GAO Reports",
+      "url": "https://www.gao.gov/rss/reports.xml",
+      "category": "pentagon",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:44.923Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "MIT Lincoln Lab",
+      "url": "https://www.ll.mit.edu/news.xml",
+      "category": "research",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:45.390Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "JHU APL",
+      "url": "https://www.jhuapl.edu/rss/news.xml",
+      "category": "research",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:45.604Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "NRL",
+      "url": "https://www.nrl.navy.mil/Media/News/rss/",
+      "category": "research",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:45.882Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Sandia News",
+      "url": "https://newsreleases.sandia.gov/feed/",
+      "category": "research",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:46.060Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "CSIS",
+      "url": "https://www.csis.org/analysis/rss.xml",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:46.362Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "RAND",
+      "url": "https://www.rand.org/topics/national-defense.feed",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:46.571Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "CNAS",
+      "url": "https://www.cnas.org/publications/rss",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:46.848Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Atlantic Council",
+      "url": "https://www.atlanticcouncil.org/feed/",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.143Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "Hudson Institute",
+      "url": "https://www.hudson.org/feed",
+      "category": "industry",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.451Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "DARPAtv",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCs6OBspz3-uTjTXmCnGQt5g",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.686Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "U.S. Department of Defense",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCmNPsoTMGdSVaPGiSqKtttg",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.702Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "U.S. Air Force",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCB1iC3Mo3lClmXoxIvxF8gQ",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.715Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "U.S. Army",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCH4Bc-NmcOgPwpa-LR-IIFA",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.719Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "U.S. Navy",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCT8d6VwQEHX_mp7ts2cRz6w",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.723Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "U.S. Space Force",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC59z40Wc_t8HmiU8b6OhvyA",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.728Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "CSIS",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCwHRdxFxpmIfWvJaBxXLi6w",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.732Z",
+      "lastSuccess": null,
+      "error": "HTTP 403"
+    },
+    {
+      "name": "RAND Corporation",
+      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCK7tptUDHh-RYDsdxO1-5QQ",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-04-30T09:11:47.735Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     }

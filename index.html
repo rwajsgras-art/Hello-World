@@ -31,6 +31,11 @@
         </button>
       </div>
     </div>
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab active" data-tab="news"    role="tab" aria-selected="true">News</button>
+      <button class="tab"        data-tab="youtube" role="tab" aria-selected="false">YouTube</button>
+      <button class="tab"        data-tab="x"       role="tab" aria-selected="false">X</button>
+    </nav>
     <div class="filters" role="tablist" aria-label="Filter articles">
       <button class="chip active" data-filter="all" role="tab" aria-selected="true">All</button>
       <button class="chip" data-filter="priority" role="tab">⚡ Priority</button>
@@ -49,6 +54,8 @@
   <div id="toast" class="toast" hidden></div>
 
   <main id="feed" class="feed" aria-live="polite"></main>
+  <main id="youtube" class="feed" hidden aria-live="polite"></main>
+  <main id="xfeed" class="feed" hidden aria-live="polite"></main>
 
   <footer class="footer">
     <span id="status">Loading…</span>

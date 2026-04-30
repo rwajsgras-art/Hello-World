@@ -189,6 +189,44 @@ const SOURCES = [
   },
 ];
 
+// YouTube channels — these use the Atom feed at
+// https://www.youtube.com/feeds/videos.xml?channel_id=<UC...>
+// Only include channels whose UC ids you've verified; the source-health
+// panel will surface any that 404.
+const YOUTUBE_SOURCES = [
+  { name: "DARPAtv",          channelId: "UCs6OBspz3-uTjTXmCnGQt5g", alreadyDefense: true },
+  { name: "U.S. Department of Defense", channelId: "UCmNPsoTMGdSVaPGiSqKtttg", alreadyDefense: true },
+  { name: "U.S. Air Force",   channelId: "UCB1iC3Mo3lClmXoxIvxF8gQ", alreadyDefense: true },
+  { name: "U.S. Army",        channelId: "UCH4Bc-NmcOgPwpa-LR-IIFA", alreadyDefense: true },
+  { name: "U.S. Navy",        channelId: "UCT8d6VwQEHX_mp7ts2cRz6w", alreadyDefense: true },
+  { name: "U.S. Space Force", channelId: "UC59z40Wc_t8HmiU8b6OhvyA", alreadyDefense: true },
+  { name: "CSIS",             channelId: "UCwHRdxFxpmIfWvJaBxXLi6w", alreadyDefense: false },
+  { name: "RAND Corporation", channelId: "UCK7tptUDHh-RYDsdxO1-5QQ", alreadyDefense: false },
+];
+
+// Curated list of X / Twitter accounts relevant to DoD AI. X removed public
+// RSS years ago and the API is paid, so the X tab links to profiles rather
+// than fetching posts. Add or remove handles freely.
+const X_ACCOUNTS = [
+  { handle: "DeptofDefense",   name: "U.S. Dept of Defense", focus: "Pentagon top-line news" },
+  { handle: "DARPA",           name: "DARPA",                focus: "Advanced research, AI, autonomy" },
+  { handle: "DoD_CDAO",        name: "DoD CDAO",             focus: "Chief Digital & AI Office" },
+  { handle: "USAirForce",      name: "U.S. Air Force",       focus: "Air operations, ABMS, autonomy" },
+  { handle: "USArmy",          name: "U.S. Army",            focus: "Land power, Project Convergence" },
+  { handle: "USNavy",          name: "U.S. Navy",            focus: "Maritime ops, autonomous vessels" },
+  { handle: "SpaceForceDoD",   name: "U.S. Space Force",     focus: "Space domain, satellites, AI" },
+  { handle: "BreakingDefense", name: "Breaking Defense",     focus: "Defense-tech reporting" },
+  { handle: "DefenseScoop",    name: "DefenseScoop",         focus: "Pentagon tech reporting" },
+  { handle: "DefenseOne",      name: "Defense One",          focus: "Defense policy & tech" },
+  { handle: "DefenseNews",     name: "Defense News",         focus: "Programs, contracts, policy" },
+  { handle: "valeriei",        name: "Valerie Insinna",      focus: "Air-Force / acquisition reporter" },
+  { handle: "MikkiBrunett",    name: "Mikayla Easley",       focus: "AI, autonomy reporter (DefScoop)" },
+  { handle: "PaulMcLeary",     name: "Paul McLeary",         focus: "National-security correspondent" },
+  { handle: "CSIS",            name: "CSIS",                 focus: "Think tank — defense & AI" },
+  { handle: "RANDCorporation", name: "RAND",                 focus: "Defense research" },
+  { handle: "CNASdc",          name: "CNAS",                 focus: "National-security think tank" },
+];
+
 // Keywords — case-insensitive. Word boundaries matter for short acronyms.
 const AI_TERMS = [
   { t: "\\bAI\\b", tag: "AI", wb: true },
@@ -323,6 +361,46 @@ function firstTagAttrs(block, tag) {
     return "";
   });
   return attrs;
+}
+
+// Pull all attribute pairs out of an opening tag (handles single & double quotes).
+function tagAttrs(tag) {
+  const attrs = {};
+  tag.replace(/([a-zA-Z:]+)\s*=\s*("([^"]*)"|'([^']*)')/g, (_, k, _q, v1, v2) => {
+    attrs[k] = v1 != null ? v1 : v2;
+    return "";
+  });
+  return attrs;
+}
+
+function parseYouTubeAtom(xml) {
+  const items = [];
+  const entryRe = /<entry(\s[^>]*)?>([\s\S]*?)<\/entry>/gi;
+  let m;
+  while ((m = entryRe.exec(xml))) {
+    const block = m[2];
+    const videoId = stripHtml(getCData(firstTag(block, "yt:videoId")));
+    let link = "";
+    const linkAttrsMatch = block.match(/<link[^>]*\srel=["']alternate["'][^>]*>/i);
+    if (linkAttrsMatch) link = (tagAttrs(linkAttrsMatch[0]).href) || "";
+    if (!link && videoId) link = `https://www.youtube.com/watch?v=${videoId}`;
+    let thumbnail = "";
+    const thumbMatch = block.match(/<media:thumbnail[^>]*>/i);
+    if (thumbMatch) thumbnail = tagAttrs(thumbMatch[0]).url || "";
+    if (!thumbnail && videoId) {
+      thumbnail = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    }
+    items.push({
+      videoId,
+      title: stripHtml(getCData(firstTag(block, "title"))),
+      link,
+      thumbnail,
+      description: stripHtml(getCData(firstTag(block, "media:description") || firstTag(block, "summary"))),
+      author: stripHtml(getCData(firstTag(firstTag(block, "author"), "name"))),
+      pubDate: stripHtml(getCData(firstTag(block, "published") || firstTag(block, "updated"))),
+    });
+  }
+  return items;
 }
 
 function parseFeed(xml) {
@@ -479,6 +557,102 @@ async function main() {
   };
   fs.writeFileSync(outPath, JSON.stringify(out, null, 2));
   console.log(`wrote ${outPath} with ${articles.length} articles`);
+
+  // ---- YouTube ----
+  const ytPath = path.join(__dirname, "..", "youtube.json");
+  const ytVideos = [];
+  for (const ch of YOUTUBE_SOURCES) {
+    const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.channelId}`;
+    const startedAt = new Date().toISOString();
+    const report = {
+      name: ch.name,
+      url,
+      category: "youtube",
+      ok: false,
+      parsed: 0,
+      kept: 0,
+      lastAttempt: startedAt,
+      lastSuccess: prevMeta[ch.name]?.lastSuccess || null,
+      error: null,
+    };
+    try {
+      console.log(`[YT ${ch.name}] fetching…`);
+      const xml = await fetchText(url);
+      const items = parseYouTubeAtom(xml);
+      report.parsed = items.length;
+      let kept = 0;
+      for (const it of items) {
+        if (!it.title || !it.link) continue;
+        const text = `${it.title} ${it.description || ""}`;
+        if (!matchesAI(text)) continue;
+        if (!ch.alreadyDefense && !DEFENSE_RE.test(text)) continue;
+        ytVideos.push({
+          videoId: it.videoId,
+          title: it.title,
+          channel: it.author || ch.name,
+          source: ch.name,
+          link: it.link,
+          thumbnail: it.thumbnail,
+          summary: truncate(it.description, 280),
+          published: normalizeDate(it.pubDate) || new Date().toISOString(),
+          tags: deriveTags(text),
+        });
+        kept++;
+      }
+      report.kept = kept;
+      report.ok = true;
+      report.lastSuccess = startedAt;
+      console.log(`[YT ${ch.name}] kept ${kept} of ${items.length}`);
+    } catch (e) {
+      report.error = e.message || String(e);
+      console.warn(`[YT ${ch.name}] ERROR: ${report.error}`);
+    }
+    sourceReports.push(report);
+  }
+
+  // Dedupe + sort + cap
+  const seenYt = new Set();
+  const uniqYt = [];
+  for (const v of ytVideos) {
+    const key = (v.link || "").toLowerCase();
+    if (!key || seenYt.has(key)) continue;
+    seenYt.add(key);
+    uniqYt.push(v);
+  }
+  uniqYt.sort((a, b) => new Date(b.published) - new Date(a.published));
+  const yt = {
+    generatedAt: new Date().toISOString(),
+    count: uniqYt.length,
+    videos: uniqYt.slice(0, 200),
+  };
+  if (uniqYt.length === 0 && fs.existsSync(ytPath)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(ytPath, "utf8"));
+      if (prev && Array.isArray(prev.videos) && prev.videos.length > 0) {
+        console.warn("No YouTube videos fetched; preserving previous youtube.json.");
+      } else {
+        fs.writeFileSync(ytPath, JSON.stringify(yt, null, 2));
+      }
+    } catch { fs.writeFileSync(ytPath, JSON.stringify(yt, null, 2)); }
+  } else {
+    fs.writeFileSync(ytPath, JSON.stringify(yt, null, 2));
+  }
+  console.log(`wrote ${ytPath} with ${yt.videos.length} videos`);
+
+  // ---- X / Twitter (curated accounts only — no posts) ----
+  const xPath = path.join(__dirname, "..", "x.json");
+  const xOut = {
+    generatedAt: new Date().toISOString(),
+    note:
+      "X removed public RSS and the API is paid; this list links to profiles. " +
+      "Edit X_ACCOUNTS in scripts/fetch-feeds.js to curate.",
+    accounts: X_ACCOUNTS.map((a) => ({
+      ...a,
+      url: `https://x.com/${a.handle}`,
+    })),
+  };
+  fs.writeFileSync(xPath, JSON.stringify(xOut, null, 2));
+  console.log(`wrote ${xPath} with ${xOut.accounts.length} accounts`);
 
   const meta = {
     generatedAt: new Date().toISOString(),

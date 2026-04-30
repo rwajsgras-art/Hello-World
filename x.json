@@ -1,0 +1,108 @@
+{
+  "generatedAt": "2026-04-30T09:11:47.740Z",
+  "note": "X removed public RSS and the API is paid; this list links to profiles. Edit X_ACCOUNTS in scripts/fetch-feeds.js to curate.",
+  "accounts": [
+    {
+      "handle": "DeptofDefense",
+      "name": "U.S. Dept of Defense",
+      "focus": "Pentagon top-line news",
+      "url": "https://x.com/DeptofDefense"
+    },
+    {
+      "handle": "DARPA",
+      "name": "DARPA",
+      "focus": "Advanced research, AI, autonomy",
+      "url": "https://x.com/DARPA"
+    },
+    {
+      "handle": "DoD_CDAO",
+      "name": "DoD CDAO",
+      "focus": "Chief Digital & AI Office",
+      "url": "https://x.com/DoD_CDAO"
+    },
+    {
+      "handle": "USAirForce",
+      "name": "U.S. Air Force",
+      "focus": "Air operations, ABMS, autonomy",
+      "url": "https://x.com/USAirForce"
+    },
+    {
+      "handle": "USArmy",
+      "name": "U.S. Army",
+      "focus": "Land power, Project Convergence",
+      "url": "https://x.com/USArmy"
+    },
+    {
+      "handle": "USNavy",
+      "name": "U.S. Navy",
+      "focus": "Maritime ops, autonomous vessels",
+      "url": "https://x.com/USNavy"
+    },
+    {
+      "handle": "SpaceForceDoD",
+      "name": "U.S. Space Force",
+      "focus": "Space domain, satellites, AI",
+      "url": "https://x.com/SpaceForceDoD"
+    },
+    {
+      "handle": "BreakingDefense",
+      "name": "Breaking Defense",
+      "focus": "Defense-tech reporting",
+      "url": "https://x.com/BreakingDefense"
+    },
+    {
+      "handle": "DefenseScoop",
+      "name": "DefenseScoop",
+      "focus": "Pentagon tech reporting",
+      "url": "https://x.com/DefenseScoop"
+    },
+    {
+      "handle": "DefenseOne",
+      "name": "Defense One",
+      "focus": "Defense policy & tech",
+      "url": "https://x.com/DefenseOne"
+    },
+    {
+      "handle": "DefenseNews",
+      "name": "Defense News",
+      "focus": "Programs, contracts, policy",
+      "url": "https://x.com/DefenseNews"
+    },
+    {
+      "handle": "valeriei",
+      "name": "Valerie Insinna",
+      "focus": "Air-Force / acquisition reporter",
+      "url": "https://x.com/valeriei"
+    },
+    {
+      "handle": "MikkiBrunett",
+      "name": "Mikayla Easley",
+      "focus": "AI, autonomy reporter (DefScoop)",
+      "url": "https://x.com/MikkiBrunett"
+    },
+    {
+      "handle": "PaulMcLeary",
+      "name": "Paul McLeary",
+      "focus": "National-security correspondent",
+      "url": "https://x.com/PaulMcLeary"
+    },
+    {
+      "handle": "CSIS",
+      "name": "CSIS",
+      "focus": "Think tank — defense & AI",
+      "url": "https://x.com/CSIS"
+    },
+    {
+      "handle": "RANDCorporation",
+      "name": "RAND",
+      "focus": "Defense research",
+      "url": "https://x.com/RANDCorporation"
+    },
+    {
+      "handle": "CNASdc",
+      "name": "CNAS",
+      "focus": "National-security think tank",
+      "url": "https://x.com/CNASdc"
+    }
+  ]
+}
