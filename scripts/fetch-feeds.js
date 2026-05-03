@@ -191,17 +191,24 @@ const SOURCES = [
 
 // YouTube channels — these use the Atom feed at
 // https://www.youtube.com/feeds/videos.xml?channel_id=<UC...>
-// Only include channels whose UC ids you've verified; the source-health
-// panel will surface any that 404.
+// You can specify either a verified `channelId` OR a `handle` (the
+// part after the @ in the channel URL); a handle is resolved at
+// fetch time by scraping the channel page for its real channel id.
+// Resolution failures show up in the source-health panel.
 const YOUTUBE_SOURCES = [
-  { name: "DARPAtv",          channelId: "UCs6OBspz3-uTjTXmCnGQt5g", alreadyDefense: true },
-  { name: "U.S. Department of Defense", channelId: "UCmNPsoTMGdSVaPGiSqKtttg", alreadyDefense: true },
-  { name: "U.S. Air Force",   channelId: "UCB1iC3Mo3lClmXoxIvxF8gQ", alreadyDefense: true },
-  { name: "U.S. Army",        channelId: "UCH4Bc-NmcOgPwpa-LR-IIFA", alreadyDefense: true },
-  { name: "U.S. Navy",        channelId: "UCT8d6VwQEHX_mp7ts2cRz6w", alreadyDefense: true },
-  { name: "U.S. Space Force", channelId: "UC59z40Wc_t8HmiU8b6OhvyA", alreadyDefense: true },
-  { name: "CSIS",             channelId: "UCwHRdxFxpmIfWvJaBxXLi6w", alreadyDefense: false },
-  { name: "RAND Corporation", channelId: "UCK7tptUDHh-RYDsdxO1-5QQ", alreadyDefense: false },
+  { name: "DARPAtv",                   channelId: "UCs6OBspz3-uTjTXmCnGQt5g", alreadyDefense: true  },
+  { name: "U.S. Department of Defense", handle: "DoDvClips",                  alreadyDefense: true  },
+  { name: "U.S. Air Force",            handle: "usairforce",                  alreadyDefense: true  },
+  { name: "U.S. Army",                 handle: "usarmy",                      alreadyDefense: true  },
+  { name: "U.S. Navy",                 handle: "USNavy",                      alreadyDefense: true  },
+  { name: "U.S. Space Force",          handle: "spaceforce",                  alreadyDefense: true  },
+  { name: "U.S. Marine Corps",         handle: "marines",                     alreadyDefense: true  },
+  { name: "AFRL",                      handle: "AFResearchLab",               alreadyDefense: true  },
+  { name: "CSIS",                      handle: "csis",                        alreadyDefense: false },
+  { name: "RAND Corporation",          handle: "RANDCorporation",             alreadyDefense: false },
+  { name: "CNAS",                      handle: "CNASdc",                      alreadyDefense: true  },
+  { name: "Hudson Institute",          handle: "HudsonInstitute",             alreadyDefense: false },
+  { name: "Atlantic Council",          handle: "atlanticcouncil",             alreadyDefense: false },
 ];
 
 // Curated list of X / Twitter accounts relevant to DoD AI. X removed public
@@ -361,6 +368,37 @@ function firstTagAttrs(block, tag) {
     return "";
   });
   return attrs;
+}
+
+async function resolveYouTubeChannelId(handle) {
+  const tryUrls = [
+    `https://www.youtube.com/@${handle}`,
+    `https://www.youtube.com/c/${handle}`,
+    `https://www.youtube.com/user/${handle}`,
+  ];
+  for (const u of tryUrls) {
+    try {
+      const html = await fetchText(u);
+      const patterns = [
+        /"channelId":"(UC[A-Za-z0-9_-]{20,})"/,
+        /"externalId":"(UC[A-Za-z0-9_-]{20,})"/,
+        /channel\/(UC[A-Za-z0-9_-]{20,})/,
+        /<meta itemprop="(?:channelId|identifier)" content="(UC[A-Za-z0-9_-]{20,})"/,
+      ];
+      for (const re of patterns) {
+        const m = html.match(re);
+        if (m) return m[1];
+      }
+    } catch {}
+  }
+  throw new Error("could not resolve channelId");
+}
+
+async function fetchYouTubeFeed(src) {
+  const channelId = src.channelId || (await resolveYouTubeChannelId(src.handle));
+  const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  const xml = await fetchText(url);
+  return { channelId, url, xml };
 }
 
 // Pull all attribute pairs out of an opening tag (handles single & double quotes).
@@ -562,11 +600,12 @@ async function main() {
   const ytPath = path.join(__dirname, "..", "youtube.json");
   const ytVideos = [];
   for (const ch of YOUTUBE_SOURCES) {
-    const url = `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.channelId}`;
     const startedAt = new Date().toISOString();
     const report = {
       name: ch.name,
-      url,
+      url: ch.channelId
+        ? `https://www.youtube.com/feeds/videos.xml?channel_id=${ch.channelId}`
+        : `https://www.youtube.com/@${ch.handle || ""}`,
       category: "youtube",
       ok: false,
       parsed: 0,
@@ -577,8 +616,9 @@ async function main() {
     };
     try {
       console.log(`[YT ${ch.name}] fetching…`);
-      const xml = await fetchText(url);
-      const items = parseYouTubeAtom(xml);
+      const resolved = await fetchYouTubeFeed(ch);
+      report.url = resolved.url;
+      const items = parseYouTubeAtom(resolved.xml);
       report.parsed = items.length;
       let kept = 0;
       for (const it of items) {
