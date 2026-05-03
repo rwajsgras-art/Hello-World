@@ -38,6 +38,7 @@ jobs:
         run: node scripts/fetch-feeds.js
         env:
           NODE_OPTIONS: --no-warnings
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

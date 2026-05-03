@@ -90,6 +90,32 @@ See [Run on macOS](#run-on-macos) above (`npm start`). Any static server also wo
     └── deploy.yml        # hourly feed refresh + Pages deploy
 ```
 
+## Optional: enable YouTube search
+
+By default the YouTube tab is populated from the channels listed in
+`YOUTUBE_SOURCES` (`scripts/fetch-feeds.js`). To **also** auto-discover
+fresh DoD-AI videos beyond those channels, give the aggregator a YouTube
+Data API v3 key:
+
+1. In [Google Cloud Console](https://console.cloud.google.com/), create
+   a project, enable **YouTube Data API v3**, and create an **API key**.
+2. In your GitHub repo: **Settings → Secrets and variables → Actions →
+   New repository secret**. Name: `YOUTUBE_API_KEY`. Paste the key.
+3. The next workflow run runs the queries listed in `YT_SEARCH_QUERIES`
+   (e.g. "DoD artificial intelligence", "Pentagon AI", "DARPA AI",
+   "CDAO", "Replicator initiative", "JADC2", "Project Maven", …),
+   filters by AI + DoD keywords and last-60-days, and merges results
+   into `youtube.json`.
+
+To run locally with search enabled:
+
+```bash
+YOUTUBE_API_KEY=AIza... npm start
+```
+
+The free tier is 10,000 quota units/day; each search costs ~100 units,
+so the default 9 queries cost 900/day — plenty of headroom.
+
 ## Customization
 
 - **Add a source:** append an object to `SOURCES` in `scripts/fetch-feeds.js` with `{ name, url, category, alreadyDefense }`. Set `alreadyDefense: false` for general-government or tech outlets so the DoD keyword filter is applied in addition to the AI filter.

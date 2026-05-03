@@ -208,8 +208,9 @@ const YOUTUBE_SOURCES = [
   { name: "U.S. Marine Corps",         handle: "marines",                     alreadyDefense: true  },
   { name: "AFRL",                      handle: "AFResearchLab",               alreadyDefense: true  },
   { name: "DefenseScoop",              handle: "DefenseScoop",                alreadyDefense: true  },
-  { name: "Breaking Defense",          handle: "BreakingDefenseTV",           alreadyDefense: true  },
-  { name: "Defense One",               handle: "defenseone",                  alreadyDefense: true  },
+  { name: "AIScoop",                   handle: "AIScoop_News",                alreadyDefense: false },
+  { name: "Breaking Defense",          handle: "breakingdefense6100",         alreadyDefense: true  },
+  { name: "Defense One",               handle: "defenseoneplus",              alreadyDefense: true  },
   { name: "GovCIO",                    handle: "GovCIOMedia",                 alreadyDefense: false },
   { name: "FedScoop",                  handle: "FedScoop",                    alreadyDefense: false },
   { name: "Federal News Network",      handle: "FederalNewsNetwork",          alreadyDefense: false },
@@ -378,6 +379,61 @@ function firstTagAttrs(block, tag) {
     return "";
   });
   return attrs;
+}
+
+// Search queries used when YOUTUBE_API_KEY is set. Each call costs ~100 quota
+// units (free tier = 10,000/day), so keep this list modest.
+const YT_SEARCH_QUERIES = [
+  "DoD artificial intelligence",
+  "Pentagon AI",
+  "DARPA AI program",
+  "CDAO chief digital AI",
+  "Replicator initiative DoD",
+  "Project Maven Pentagon",
+  "JADC2",
+  "military autonomy",
+  "Defense Innovation Unit AI",
+];
+
+async function searchYouTube(apiKey) {
+  const all = [];
+  const errors = [];
+  for (const q of YT_SEARCH_QUERIES) {
+    const url = new URL("https://www.googleapis.com/youtube/v3/search");
+    url.searchParams.set("part", "snippet");
+    url.searchParams.set("type", "video");
+    url.searchParams.set("order", "date");
+    url.searchParams.set("maxResults", "25");
+    url.searchParams.set("relevanceLanguage", "en");
+    url.searchParams.set("q", q);
+    url.searchParams.set("key", apiKey);
+    try {
+      const res = await fetch(url.toString());
+      if (!res.ok) { errors.push(`"${q}": HTTP ${res.status}`); continue; }
+      const data = await res.json();
+      for (const it of data.items || []) {
+        const vid = it.id?.videoId;
+        const sn = it.snippet || {};
+        if (!vid) continue;
+        all.push({
+          videoId: vid,
+          title: stripHtml(sn.title || ""),
+          description: stripHtml(sn.description || ""),
+          channel: sn.channelTitle || "",
+          publishedAt: sn.publishedAt,
+          thumbnail:
+            sn.thumbnails?.high?.url ||
+            sn.thumbnails?.medium?.url ||
+            sn.thumbnails?.default?.url ||
+            `https://i.ytimg.com/vi/${vid}/hqdefault.jpg`,
+          query: q,
+        });
+      }
+    } catch (e) {
+      errors.push(`"${q}": ${e.message || e}`);
+    }
+  }
+  return { items: all, errors };
 }
 
 async function resolveYouTubeChannelId(handle) {
@@ -659,6 +715,61 @@ async function main() {
     }
     sourceReports.push(report);
   }
+
+  // ---- YouTube search (Data API v3) ----
+  const ytApiKey = process.env.YOUTUBE_API_KEY;
+  const searchReport = {
+    name: "YouTube Search",
+    url: "https://www.googleapis.com/youtube/v3/search",
+    category: "youtube",
+    ok: false,
+    parsed: 0,
+    kept: 0,
+    lastAttempt: new Date().toISOString(),
+    lastSuccess: prevMeta["YouTube Search"]?.lastSuccess || null,
+    error: null,
+  };
+  if (ytApiKey) {
+    try {
+      console.log(`[YT Search] running ${YT_SEARCH_QUERIES.length} queries…`);
+      const { items, errors } = await searchYouTube(ytApiKey);
+      searchReport.parsed = items.length;
+      const cutoff = Date.now() - 60 * 24 * 3600 * 1000; // last 60 days
+      let kept = 0;
+      for (const it of items) {
+        const text = `${it.title} ${it.description}`;
+        if (!matchesAI(text)) continue;
+        if (!DEFENSE_RE.test(text) && !DEFENSE_RE.test(it.channel || "")) continue;
+        const ts = it.publishedAt ? new Date(it.publishedAt).getTime() : 0;
+        if (ts && ts < cutoff) continue;
+        ytVideos.push({
+          videoId: it.videoId,
+          title: it.title,
+          channel: it.channel,
+          source: it.channel || "YouTube Search",
+          link: `https://www.youtube.com/watch?v=${it.videoId}`,
+          thumbnail: it.thumbnail,
+          summary: truncate(it.description, 280),
+          published: it.publishedAt || new Date().toISOString(),
+          tags: deriveTags(text),
+          _viaSearch: true,
+        });
+        kept++;
+      }
+      searchReport.kept = kept;
+      searchReport.ok = true;
+      searchReport.lastSuccess = new Date().toISOString();
+      if (errors.length) searchReport.error = errors.slice(0, 3).join("; ");
+      console.log(`[YT Search] kept ${kept} of ${items.length} (errors: ${errors.length})`);
+    } catch (e) {
+      searchReport.error = e.message || String(e);
+      console.warn(`[YT Search] ERROR: ${searchReport.error}`);
+    }
+  } else {
+    searchReport.error = "YOUTUBE_API_KEY not set; search disabled";
+    console.log(`[YT Search] skipped — set YOUTUBE_API_KEY env var to enable`);
+  }
+  sourceReports.push(searchReport);
 
   // Dedupe + sort + cap
   const seenYt = new Set();
