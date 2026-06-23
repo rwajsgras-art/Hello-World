@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newton's Cradle</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: radial-gradient(circle at 50% 30%, #2a2f3a 0%, #11131a 70%, #060709 100%);
+    color: #e8eaf0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    overflow: hidden;
+  }
+  #wrap {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+  }
+  h1 {
+    font-weight: 300;
+    letter-spacing: 3px;
+    font-size: 22px;
+    margin: 0;
+    opacity: 0.85;
+  }
+  canvas {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  }
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    opacity: 0.8;
+  }
+  button {
+    background: #3a4356;
+    color: #e8eaf0;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+  button:hover { background: #4a5670; }
+  input[type=range] { cursor: pointer; accent-color: #8fa6d8; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <h1>NEWTON'S CRADLE</h1>
+  <canvas id="cradle" width="640" height="420"></canvas>
+  <div class="controls">
+    <button id="reset">Reset Swing</button>
+    <label>Balls lifted:
+      <input id="count" type="range" min="1" max="3" value="1" step="1">
+    </label>
+    <span id="hint">Drag a ball to swing it</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  const canvas = document.getElementById('cradle');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+
+  // --- Configuration ---
+  const NUM_BALLS = 5;
+  const R = 26;                 // ball radius
+  const STRING_LEN = 230;       // pendulum length
+  const GRAVITY = 0.45;         // affects swing speed
+  const DAMPING = 0.9995;       // tiny energy loss so it feels real but lasts long
+  const PIVOT_Y = 70;           // y of the support bar
+  const spacing = R * 2 + 0.5;  // distance between pivots (just touching)
+  const centerX = W / 2;
+  const startX = centerX - spacing * (NUM_BALLS - 1) / 2;
+
+  // Each ball is a pendulum described by its angle from vertical.
+  const balls = [];
+  for (let i = 0; i < NUM_BALLS; i++) {
+    balls.push({
+      pivotX: startX + i * spacing,
+      angle: 0,
+      vel: 0,
+      hue: 210 + i * 6
+    });
+  }
+
+  function bobPos(b) {
+    return {
+      x: b.pivotX + Math.sin(b.angle) * STRING_LEN,
+      y: PIVOT_Y + Math.cos(b.angle) * STRING_LEN
+    };
+  }
+
+  // --- Physics ---
+  // Treat each ball as an independent pendulum, then resolve collisions by
+  // swapping velocities between adjacent balls that are in contact and closing.
+  function update(dt) {
+    for (const b of balls) {
+      if (b.dragging) continue;
+      // pendulum acceleration: -(g/L) * sin(angle)
+      const acc = -(GRAVITY / STRING_LEN) * Math.sin(b.angle) * 60;
+      b.vel += acc * dt;
+      b.vel *= DAMPING;
+      b.angle += b.vel * dt;
+    }
+
+    // Collision resolution between neighbours.
+    for (let i = 0; i < NUM_BALLS - 1; i++) {
+      const a = balls[i], c = balls[i + 1];
+      const pa = bobPos(a), pc = bobPos(c);
+      const dx = pc.x - pa.x;
+      const dy = pc.y - pa.y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < R * 2 - 0.5) {
+        // velocities along the swing direction
+        // For Newton's cradle, equal masses swap velocities.
+        if (!a.dragging && !c.dragging) {
+          const va = a.vel, vc = c.vel;
+          // only swap if they are approaching
+          if (va - vc > 0) {
+            a.vel = vc;
+            c.vel = va;
+          }
+        }
+        // separate overlap so they don't stick
+        const overlap = (R * 2 - dist);
+        const adjust = overlap / STRING_LEN / 2;
+        if (!a.dragging) a.angle -= adjust;
+        if (!c.dragging) c.angle += adjust;
+      }
+    }
+  }
+
+  // --- Rendering ---
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // support frame
+    ctx.strokeStyle = '#5b6378';
+    ctx.lineWidth = 8;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(startX - 40, PIVOT_Y);
+    ctx.lineTo(startX + spacing * (NUM_BALLS - 1) + 40, PIVOT_Y);
+    ctx.stroke();
+
+    // strings + balls
+    for (const b of balls) {
+      const p = bobPos(b);
+
+      // string
+      ctx.strokeStyle = 'rgba(200,205,220,0.55)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(b.pivotX, PIVOT_Y);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+
+      // pivot point
+      ctx.fillStyle = '#8089a0';
+      ctx.beginPath();
+      ctx.arc(b.pivotX, PIVOT_Y, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // ball with a metallic radial gradient
+      const grad = ctx.createRadialGradient(
+        p.x - R * 0.35, p.y - R * 0.4, R * 0.15,
+        p.x, p.y, R
+      );
+      grad.addColorStop(0, `hsl(${b.hue}, 25%, 88%)`);
+      grad.addColorStop(0.45, `hsl(${b.hue}, 22%, 62%)`);
+      grad.addColorStop(1, `hsl(${b.hue}, 30%, 28%)`);
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, R, 0, Math.PI * 2);
+      ctx.fill();
+
+      // rim highlight
+      ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, R - 0.5, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  // --- Animation loop (fixed timestep for stable physics) ---
+  let last = performance.now();
+  let acc = 0;
+  const STEP = 1 / 120;
+  function loop(now) {
+    let frame = (now - last) / 1000;
+    if (frame > 0.1) frame = 0.1; // clamp after tab switches
+    last = now;
+    acc += frame;
+    while (acc >= STEP) {
+      update(STEP);
+      acc -= STEP;
+    }
+    draw();
+    requestAnimationFrame(loop);
+  }
+
+  // --- Interaction ---
+  function setStart(liftCount) {
+    for (const b of balls) { b.angle = 0; b.vel = 0; }
+    // lift the leftmost `liftCount` balls together
+    for (let i = 0; i < liftCount; i++) {
+      balls[i].angle = -0.9;
+    }
+  }
+
+  const countEl = document.getElementById('count');
+  document.getElementById('reset').addEventListener('click', () => {
+    setStart(parseInt(countEl.value, 10));
+  });
+  countEl.addEventListener('input', () => {
+    setStart(parseInt(countEl.value, 10));
+  });
+
+  // Drag-to-swing
+  let dragBall = null;
+  function pointer(e) {
+    const rect = canvas.getBoundingClientRect();
+    const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return { x: cx * (W / rect.width), y: cy * (H / rect.height) };
+  }
+  function onDown(e) {
+    const m = pointer(e);
+    for (const b of balls) {
+      const p = bobPos(b);
+      if (Math.hypot(p.x - m.x, p.y - m.y) < R) {
+        b.dragging = true;
+        dragBall = b;
+        e.preventDefault();
+        break;
+      }
+    }
+  }
+  function onMove(e) {
+    if (!dragBall) return;
+    const m = pointer(e);
+    let a = Math.atan2(m.x - dragBall.pivotX, m.y - PIVOT_Y);
+    a = Math.max(-1.2, Math.min(1.2, a));
+    dragBall.angle = a;
+    dragBall.vel = 0;
+    e.preventDefault();
+  }
+  function onUp() {
+    if (dragBall) { dragBall.dragging = false; dragBall = null; }
+  }
+
+  canvas.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  canvas.addEventListener('touchstart', onDown, { passive: false });
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('touchend', onUp);
+
+  setStart(1);
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
