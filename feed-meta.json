@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-30T09:11:47.741Z",
+  "generatedAt": "2026-07-08T13:31:03.970Z",
   "sources": [
     {
       "name": "DoD News",
@@ -8,7 +8,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:39.588Z",
+      "lastAttempt": "2026-07-08T13:30:54.573Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -19,7 +19,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:39.886Z",
+      "lastAttempt": "2026-07-08T13:30:55.006Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -30,7 +30,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:39.931Z",
+      "lastAttempt": "2026-07-08T13:30:55.042Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -41,7 +41,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:40.168Z",
+      "lastAttempt": "2026-07-08T13:30:55.299Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -52,7 +52,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:40.342Z",
+      "lastAttempt": "2026-07-08T13:30:55.824Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -63,7 +63,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:40.646Z",
+      "lastAttempt": "2026-07-08T13:30:56.157Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -74,7 +74,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:40.995Z",
+      "lastAttempt": "2026-07-08T13:30:56.892Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -85,7 +85,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:41.167Z",
+      "lastAttempt": "2026-07-08T13:30:57.202Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -96,7 +96,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:41.579Z",
+      "lastAttempt": "2026-07-08T13:30:57.430Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -107,7 +107,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:41.849Z",
+      "lastAttempt": "2026-07-08T13:30:57.831Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -118,7 +118,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:42.066Z",
+      "lastAttempt": "2026-07-08T13:30:58.082Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -129,7 +129,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:42.442Z",
+      "lastAttempt": "2026-07-08T13:30:58.540Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -140,7 +140,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:42.731Z",
+      "lastAttempt": "2026-07-08T13:30:58.766Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -151,7 +151,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:43.132Z",
+      "lastAttempt": "2026-07-08T13:30:59.045Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -162,7 +162,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:43.345Z",
+      "lastAttempt": "2026-07-08T13:30:59.170Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -173,7 +173,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:43.520Z",
+      "lastAttempt": "2026-07-08T13:30:59.325Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -184,7 +184,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:43.816Z",
+      "lastAttempt": "2026-07-08T13:30:59.699Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -195,7 +195,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:44.212Z",
+      "lastAttempt": "2026-07-08T13:30:59.847Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -206,7 +206,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:44.536Z",
+      "lastAttempt": "2026-07-08T13:31:00.095Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -217,7 +217,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:44.923Z",
+      "lastAttempt": "2026-07-08T13:31:00.238Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -228,7 +228,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:45.390Z",
+      "lastAttempt": "2026-07-08T13:31:00.888Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -239,7 +239,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:45.604Z",
+      "lastAttempt": "2026-07-08T13:31:01.132Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -250,7 +250,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:45.882Z",
+      "lastAttempt": "2026-07-08T13:31:01.469Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -261,7 +261,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:46.060Z",
+      "lastAttempt": "2026-07-08T13:31:01.937Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -272,7 +272,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:46.362Z",
+      "lastAttempt": "2026-07-08T13:31:02.223Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -283,7 +283,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:46.571Z",
+      "lastAttempt": "2026-07-08T13:31:02.377Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -294,7 +294,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:46.848Z",
+      "lastAttempt": "2026-07-08T13:31:02.770Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -305,7 +305,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.143Z",
+      "lastAttempt": "2026-07-08T13:31:03.027Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -316,7 +316,7 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.451Z",
+      "lastAttempt": "2026-07-08T13:31:03.301Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
@@ -327,86 +327,295 @@
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.686Z",
+      "lastAttempt": "2026-07-08T13:31:03.514Z",
       "lastSuccess": null,
       "error": "HTTP 403"
     },
     {
       "name": "U.S. Department of Defense",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCmNPsoTMGdSVaPGiSqKtttg",
+      "url": "https://www.youtube.com/@DoDvClips",
       "category": "youtube",
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.702Z",
+      "lastAttempt": "2026-07-08T13:31:03.528Z",
       "lastSuccess": null,
-      "error": "HTTP 403"
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "DoD CDAO",
+      "url": "https://www.youtube.com/@DoDCDAO",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.551Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "Defense Innovation Unit",
+      "url": "https://www.youtube.com/@DefenseInnovationUnit",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.564Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "Army Futures Command",
+      "url": "https://www.youtube.com/@ArmyFuturesCommand",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.580Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
     },
     {
       "name": "U.S. Air Force",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCB1iC3Mo3lClmXoxIvxF8gQ",
+      "url": "https://www.youtube.com/@usairforce",
       "category": "youtube",
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.715Z",
+      "lastAttempt": "2026-07-08T13:31:03.602Z",
       "lastSuccess": null,
-      "error": "HTTP 403"
+      "error": "could not resolve channelId"
     },
     {
       "name": "U.S. Army",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCH4Bc-NmcOgPwpa-LR-IIFA",
+      "url": "https://www.youtube.com/@usarmy",
       "category": "youtube",
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.719Z",
+      "lastAttempt": "2026-07-08T13:31:03.614Z",
       "lastSuccess": null,
-      "error": "HTTP 403"
+      "error": "could not resolve channelId"
     },
     {
       "name": "U.S. Navy",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCT8d6VwQEHX_mp7ts2cRz6w",
+      "url": "https://www.youtube.com/@USNavy",
       "category": "youtube",
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.723Z",
+      "lastAttempt": "2026-07-08T13:31:03.630Z",
       "lastSuccess": null,
-      "error": "HTTP 403"
+      "error": "could not resolve channelId"
     },
     {
       "name": "U.S. Space Force",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC59z40Wc_t8HmiU8b6OhvyA",
+      "url": "https://www.youtube.com/@spaceforce",
       "category": "youtube",
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.728Z",
+      "lastAttempt": "2026-07-08T13:31:03.644Z",
       "lastSuccess": null,
-      "error": "HTTP 403"
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "U.S. Marine Corps",
+      "url": "https://www.youtube.com/@marines",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.657Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "AFRL",
+      "url": "https://www.youtube.com/@AFResearchLab",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.670Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "DefenseScoop",
+      "url": "https://www.youtube.com/@DefenseScoop",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.682Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "AIScoop",
+      "url": "https://www.youtube.com/@AIScoop_News",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.694Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "Breaking Defense",
+      "url": "https://www.youtube.com/@breakingdefense6100",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.709Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "Defense One",
+      "url": "https://www.youtube.com/@defenseoneplus",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.723Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "GovCIO",
+      "url": "https://www.youtube.com/@GovCIOMedia",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.741Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "FedScoop",
+      "url": "https://www.youtube.com/@FedScoop",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.754Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "Federal News Network",
+      "url": "https://www.youtube.com/@FederalNewsNetwork",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.766Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
     },
     {
       "name": "CSIS",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCwHRdxFxpmIfWvJaBxXLi6w",
+      "url": "https://www.youtube.com/@csis",
       "category": "youtube",
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.732Z",
+      "lastAttempt": "2026-07-08T13:31:03.781Z",
       "lastSuccess": null,
-      "error": "HTTP 403"
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "CSIS Wadhwani AI Center",
+      "url": "https://www.youtube.com/@WadhwaniAI",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.830Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
     },
     {
       "name": "RAND Corporation",
-      "url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCK7tptUDHh-RYDsdxO1-5QQ",
+      "url": "https://www.youtube.com/@RANDCorporation",
       "category": "youtube",
       "ok": false,
       "parsed": 0,
       "kept": 0,
-      "lastAttempt": "2026-04-30T09:11:47.735Z",
+      "lastAttempt": "2026-07-08T13:31:03.848Z",
       "lastSuccess": null,
-      "error": "HTTP 403"
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "CNAS",
+      "url": "https://www.youtube.com/@CNASdc",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.872Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "Hudson Institute",
+      "url": "https://www.youtube.com/@HudsonInstitute",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.930Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "Atlantic Council",
+      "url": "https://www.youtube.com/@atlanticcouncil",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.945Z",
+      "lastSuccess": null,
+      "error": "could not resolve channelId"
+    },
+    {
+      "name": "YouTube Search",
+      "url": "https://www.googleapis.com/youtube/v3/search",
+      "category": "youtube",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.968Z",
+      "lastSuccess": null,
+      "error": "YOUTUBE_API_KEY not set; search disabled"
+    },
+    {
+      "name": "SAM.gov (opps)",
+      "url": "https://api.sam.gov/opportunities/v2/search",
+      "category": "opps",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.969Z",
+      "lastSuccess": null,
+      "error": "SAM_API_KEY not set; SAM.gov search disabled"
+    },
+    {
+      "name": "AI TL;DR",
+      "url": "https://api.anthropic.com/v1/messages",
+      "category": "summaries",
+      "ok": false,
+      "parsed": 0,
+      "kept": 0,
+      "lastAttempt": "2026-07-08T13:31:03.970Z",
+      "lastSuccess": null,
+      "error": "ANTHROPIC_API_KEY not set; TL;DR disabled"
     }
   ]
 }

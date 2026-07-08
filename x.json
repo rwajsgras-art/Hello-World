@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-30T09:11:47.740Z",
+  "generatedAt": "2026-07-08T13:31:03.969Z",
   "note": "X removed public RSS and the API is paid; this list links to profiles. Edit X_ACCOUNTS in scripts/fetch-feeds.js to curate.",
   "accounts": [
     {

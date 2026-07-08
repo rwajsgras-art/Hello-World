@@ -1,7 +1,7 @@
 // Bump VERSION any time shell assets (index/app/styles/sw) change — the
 // activate handler purges any cache that doesn't match, guaranteeing users
 // pick up new code on next launch.
-const VERSION = "v11";
+const VERSION = "v12";
 const SHELL_CACHE = `dodai-shell-${VERSION}`;
 const DATA_CACHE = `dodai-data-${VERSION}`;
 
@@ -51,7 +51,8 @@ self.addEventListener("fetch", (event) => {
     url.pathname.endsWith("feed.json") ||
     url.pathname.endsWith("feed-meta.json") ||
     url.pathname.endsWith("youtube.json") ||
-    url.pathname.endsWith("x.json")
+    url.pathname.endsWith("x.json") ||
+    url.pathname.endsWith("opps.json")
   ) {
     event.respondWith(
       fetch(req)

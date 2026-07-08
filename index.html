@@ -35,6 +35,7 @@
       <button class="tab active" data-tab="news"    role="tab" aria-selected="true">News</button>
       <button class="tab"        data-tab="youtube" role="tab" aria-selected="false">YouTube</button>
       <button class="tab"        data-tab="x"       role="tab" aria-selected="false">X</button>
+      <button class="tab"        data-tab="opps"    role="tab" aria-selected="false">Opps</button>
     </nav>
     <div class="filters" role="tablist" aria-label="Filter articles">
       <button class="chip active" data-filter="all" role="tab" aria-selected="true">All</button>
@@ -45,6 +46,7 @@
       <button class="chip" data-filter="research" role="tab">Research</button>
       <button class="chip" data-filter="industry" role="tab">Industry</button>
     </div>
+    <div id="saved-searches-row" class="filters saved-searches-row" hidden aria-label="Saved searches"></div>
     <div id="topics" class="topics" role="tablist" aria-label="Filter by topic" hidden></div>
     <div class="search-wrap">
       <input id="search" type="search" placeholder="Search titles & summaries…" aria-label="Search articles" />
@@ -56,6 +58,7 @@
   <main id="feed" class="feed" aria-live="polite"></main>
   <main id="youtube" class="feed" hidden aria-live="polite"></main>
   <main id="xfeed" class="feed" hidden aria-live="polite"></main>
+  <main id="opps" class="feed" hidden aria-live="polite"></main>
 
   <footer class="footer">
     <span id="status">Loading…</span>
@@ -89,6 +92,26 @@
           <div class="sheet-row">
             <button class="btn" id="priority-reset">Reset to defaults</button>
           </div>
+        </section>
+
+        <section class="sheet-section">
+          <h3>Saved searches</h3>
+          <p class="sheet-desc">Save named queries — appear as filter chips above the feed. Toggle notify to get a push each time any of your terms hits a fresh story.</p>
+          <div class="custom-form">
+            <input id="ss-name"  type="text" placeholder="Name (e.g. Swarming munitions)" autocomplete="off" />
+            <input id="ss-terms" type="text" placeholder="Terms — comma-separated (e.g. swarm, drone swarm, loitering munition)" autocomplete="off" />
+            <div class="custom-row">
+              <label class="checkbox-inline">
+                <input type="checkbox" id="ss-notify" />
+                <span>Notify on hit</span>
+              </label>
+            </div>
+            <div class="sheet-row">
+              <button class="btn btn-primary" id="ss-add">Add saved search</button>
+            </div>
+            <div id="ss-status" class="sheet-note"></div>
+          </div>
+          <div id="saved-searches-list" class="sources-list"></div>
         </section>
 
         <section class="sheet-section">

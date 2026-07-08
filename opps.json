@@ -1,0 +1,57 @@
+{
+  "generatedAt": "2026-07-08T13:31:03.969Z",
+  "note": "Add SAM_API_KEY as a repo secret to auto-populate open opportunities from SAM.gov. Portals below always work.",
+  "live": [],
+  "portals": [
+    {
+      "name": "SAM.gov (AI keyword search)",
+      "url": "https://sam.gov/search/?index=opp&keywords=artificial%20intelligence",
+      "focus": "All federal contract opportunities matching \"artificial intelligence\""
+    },
+    {
+      "name": "SAM.gov (autonomy)",
+      "url": "https://sam.gov/search/?index=opp&keywords=autonomy",
+      "focus": "Autonomy / autonomous systems opportunities"
+    },
+    {
+      "name": "DARPA Opportunities",
+      "url": "https://www.darpa.mil/work-with-us/opportunities",
+      "focus": "DARPA BAAs, RFIs, solicitations"
+    },
+    {
+      "name": "Defense Innovation Unit — Open Projects",
+      "url": "https://www.diu.mil/work-with-us/open-projects",
+      "focus": "Commercial-solutions Areas of Interest (AoIs)"
+    },
+    {
+      "name": "AFWERX (Air Force SBIR/STTR)",
+      "url": "https://afwerx.com/opportunities/",
+      "focus": "Air Force / Space Force SBIR AI topics"
+    },
+    {
+      "name": "Army xTech",
+      "url": "https://www.armysbir.army.mil/",
+      "focus": "Army SBIR / prize competitions"
+    },
+    {
+      "name": "NavalX",
+      "url": "https://www.secnav.navy.mil/agility/Pages/default.aspx",
+      "focus": "Navy innovation opportunities"
+    },
+    {
+      "name": "Congress.gov — Committee reports",
+      "url": "https://www.congress.gov/committee/rss",
+      "focus": "HASC / SASC / Appropriations output"
+    },
+    {
+      "name": "GAO — recent AI reports",
+      "url": "https://www.gao.gov/browse/topic/Science-and-Technology/Artificial-Intelligence",
+      "focus": "Government Accountability Office AI oversight"
+    },
+    {
+      "name": "CRS Reports (EveryCRSReport)",
+      "url": "https://www.everycrsreport.com/search.html?terms=defense+artificial+intelligence",
+      "focus": "Congressional Research Service AI/defense analyses"
+    }
+  ]
+}

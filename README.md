@@ -116,6 +116,34 @@ YOUTUBE_API_KEY=AIza... npm start
 The free tier is 10,000 quota units/day; each search costs ~100 units,
 so the default 9 queries cost 900/day — plenty of headroom.
 
+## Optional: enable SAM.gov opportunity search
+
+The **Opps** tab always shows a portals list (SAM.gov searches, DARPA
+opportunities, DIU Open Projects, AFWERX, GAO AI reports, CRS reports).
+Add a free SAM.gov key to also list matching live opportunities.
+
+1. Register at [sam.gov](https://sam.gov/), go to **Account Details →
+   Request Public API Key**.
+2. Add it as `SAM_API_KEY` under repo Secrets (same place as the
+   YouTube key above).
+3. Next workflow run pulls opportunities matching "artificial
+   intelligence", "autonomy", and "machine learning" from the last 90
+   days and filters them through the same AI keyword pass.
+
+## Optional: enable AI TL;DR + "Why it matters"
+
+Adds a one-sentence TL;DR and two "Why it matters" bullets under every
+news card. Generated during the hourly build via the Anthropic API and
+persisted in `summaries.json` so summaries are only paid for once per
+article.
+
+1. Get an Anthropic API key at
+   [console.anthropic.com](https://console.anthropic.com/).
+2. Add it as `ANTHROPIC_API_KEY` under repo Secrets.
+3. The next build generates summaries for up to 40 new articles per
+   run using the Claude Haiku 4.5 model. At ~$0.001 per summary and
+   ~50 new articles/hour, expect single-digit dollars per month.
+
 ## Customization
 
 - **Add a source:** append an object to `SOURCES` in `scripts/fetch-feeds.js` with `{ name, url, category, alreadyDefense }`. Set `alreadyDefense: false` for general-government or tech outlets so the DoD keyword filter is applied in addition to the AI filter.

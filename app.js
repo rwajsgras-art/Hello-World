@@ -12,6 +12,8 @@ const STORAGE = {
   activeTab: "dodai:activeTab:v1",
   youtube: "dodai:youtube:v1",
   xaccounts: "dodai:xaccounts:v1",
+  savedSearches: "dodai:savedSearches:v1",
+  opps: "dodai:opps:v1",
 };
 
 // Public CORS proxy used for browser-side RSS fetches. Swap at your own risk.
@@ -45,6 +47,50 @@ const AI_TAG_MAP = [
   [/JADC2|CJADC2/i, "JADC2"],
 ];
 
+function loadSavedSearches() {
+  try {
+    const arr = JSON.parse(localStorage.getItem(STORAGE.savedSearches) || "[]");
+    return Array.isArray(arr) ? arr : [];
+  } catch { return []; }
+}
+function saveSavedSearches(list) {
+  localStorage.setItem(STORAGE.savedSearches, JSON.stringify(list));
+}
+function matchesSavedSearch(article, terms) {
+  if (!terms || !terms.length) return false;
+  const hay = (article.title + " " + (article.summary || "")).toLowerCase();
+  return terms.some((t) => t && hay.includes(t.toLowerCase()));
+}
+
+async function fireSavedSearchNotifications(newItems) {
+  if (localStorage.getItem(STORAGE.notifOptIn) !== "1") return;
+  if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
+  if (!("serviceWorker" in navigator)) return;
+  const list = (state.savedSearches || []).filter((s) => s.notify);
+  if (!list.length) return;
+  const reg = await navigator.serviceWorker.getRegistration();
+  if (!reg) return;
+  for (const s of list) {
+    const hits = newItems.filter((a) => matchesSavedSearch(a, s.terms));
+    if (!hits.length) continue;
+    const body = hits
+      .slice(0, 3)
+      .map((a) => `• ${a.source}: ${a.title}`)
+      .join("\n")
+      .slice(0, 240);
+    try {
+      await reg.showNotification(`DoD AI News — ${s.name}`, {
+        body,
+        icon: "icons/icon-192.png",
+        badge: "icons/icon-192.png",
+        tag: `dodai-search-${s.id}`,
+        renotify: true,
+        data: { url: location.href, savedSearchId: s.id },
+      });
+    } catch {}
+  }
+}
+
 function loadCustomSources() {
   try {
     const arr = JSON.parse(localStorage.getItem(STORAGE.customSources) || "[]");
@@ -76,6 +122,9 @@ const state = {
   videos: [],
   xAccounts: [],
   xNote: "",
+  opps: [],
+  oppsPortals: [],
+  oppsNote: "",
   activeTab: localStorage.getItem(STORAGE.activeTab) || "news",
   filter: "all",
   tag: null,
@@ -86,6 +135,7 @@ const state = {
   priorityTerms: loadPriorityTerms(),
   customSources: loadCustomSources(),
   customHealth: loadCustomHealth(),
+  savedSearches: loadSavedSearches(),
 };
 
 function loadCustomHealth() {
@@ -152,8 +202,16 @@ const el = {
   tabs: document.querySelectorAll(".tab"),
   youtubeMain: document.getElementById("youtube"),
   xMain: document.getElementById("xfeed"),
+  oppsMain: document.getElementById("opps"),
   filtersRow: document.querySelector(".filters"),
   searchWrap: document.querySelector(".search-wrap"),
+  savedSearchesRow: document.getElementById("saved-searches-row"),
+  ssName: document.getElementById("ss-name"),
+  ssTerms: document.getElementById("ss-terms"),
+  ssNotify: document.getElementById("ss-notify"),
+  ssAdd: document.getElementById("ss-add"),
+  ssStatus: document.getElementById("ss-status"),
+  ssList: document.getElementById("saved-searches-list"),
 };
 
 function fmtTime(iso) {
@@ -190,6 +248,10 @@ function matchesFilter(article) {
     if (!state.bookmarks.has(article.link)) return false;
   } else if (state.filter === "priority") {
     if (!isPriority(article)) return false;
+  } else if (typeof state.filter === "string" && state.filter.startsWith("search:")) {
+    const id = state.filter.slice("search:".length);
+    const s = (state.savedSearches || []).find((x) => x.id === id);
+    if (!s || !matchesSavedSearch(article, s.terms)) return false;
   } else if (state.filter !== "all") {
     if (article.category !== state.filter) return false;
   }
@@ -249,6 +311,16 @@ function cardHTML(a) {
         <h2>${escapeHtml(a.title)}</h2>
         ${a.summary ? `<p>${escapeHtml(a.summary)}</p>` : ""}
       </a>
+      ${a.tldr || (a.whyItMatters && a.whyItMatters.length)
+        ? `
+        <div class="tldr-block">
+          ${a.tldr ? `<div class="tldr-label">TL;DR</div><div class="tldr">${escapeHtml(a.tldr)}</div>` : ""}
+          ${a.whyItMatters && a.whyItMatters.length
+            ? `<div class="tldr-label" style="margin-top:6px">Why it matters</div>
+               <ul class="why-list">${a.whyItMatters.slice(0, 2).map((w) => `<li>${escapeHtml(w)}</li>`).join("")}</ul>`
+            : ""}
+        </div>`
+        : ""}
       ${tags ? `<div class="tags">${tags}</div>` : ""}
     </article>
   `;
@@ -364,11 +436,22 @@ async function checkNewArticlesAndNotify() {
 
   showToast(`${newItems.length} new stor${newItems.length === 1 ? "y" : "ies"} since your last visit`);
 
+  const newPriority = newItems.filter(isPriority);
+
+  // App-icon badge: unread priority count. Works on installed PWAs on
+  // macOS Dock, Chrome, iOS 16.4+. No-op elsewhere.
+  if (newPriority.length && typeof navigator.setAppBadge === "function") {
+    navigator.setAppBadge(newPriority.length).catch(() => {});
+  }
+
+  // Saved-search notifications (independent of priority).
+  await fireSavedSearchNotifications(newItems);
+
   if (localStorage.getItem(STORAGE.notifOptIn) !== "1") return;
   if (typeof Notification === "undefined" || Notification.permission !== "granted") return;
   if (!("serviceWorker" in navigator)) return;
 
-  const priorityNew = newItems.filter(isPriority);
+  const priorityNew = newPriority;
   if (!priorityNew.length) return;
 
   try {
@@ -641,7 +724,7 @@ async function loadFeed({ force = false, notify = true } = {}) {
   }
 }
 
-// ---------------- Tabs (News / YouTube / X) ----------------
+// ---------------- Tabs (News / YouTube / X / Opps) ----------------
 
 function setActiveTab(tab) {
   state.activeTab = tab;
@@ -654,13 +737,104 @@ function setActiveTab(tab) {
   // News-only chrome
   const newsActive = tab === "news";
   if (el.filtersRow) el.filtersRow.hidden = !newsActive;
+  if (el.savedSearchesRow) {
+    el.savedSearchesRow.hidden = !newsActive || !(state.savedSearches || []).length;
+  }
   if (el.topics) el.topics.hidden = !newsActive || !el.topics.children.length;
   if (el.searchWrap) el.searchWrap.hidden = !newsActive;
   el.feed.hidden = !newsActive;
   el.youtubeMain.hidden = tab !== "youtube";
   el.xMain.hidden = tab !== "x";
+  if (el.oppsMain) el.oppsMain.hidden = tab !== "opps";
   if (tab === "youtube") renderYouTube();
   else if (tab === "x") renderX();
+  else if (tab === "opps") renderOpps();
+}
+
+async function loadOpps({ force = false } = {}) {
+  try {
+    const url = force ? `opps.json?t=${Date.now()}` : "opps.json";
+    const res = await fetch(url, { cache: force ? "no-cache" : "default" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    state.opps = Array.isArray(data.live) ? data.live : [];
+    state.oppsPortals = Array.isArray(data.portals) ? data.portals : [];
+    state.oppsNote = data.note || "";
+    try { localStorage.setItem(STORAGE.opps, JSON.stringify(data)); } catch {}
+  } catch {
+    try {
+      const cached = JSON.parse(localStorage.getItem(STORAGE.opps) || "null");
+      state.opps = cached?.live || [];
+      state.oppsPortals = cached?.portals || [];
+      state.oppsNote = cached?.note || "";
+    } catch {
+      state.opps = []; state.oppsPortals = []; state.oppsNote = "";
+    }
+  }
+}
+
+function fmtDaysLeft(iso) {
+  if (!iso) return "";
+  const ms = new Date(iso).getTime() - Date.now();
+  if (isNaN(ms)) return "";
+  const d = Math.round(ms / (24 * 3600 * 1000));
+  if (d < 0) return "Closed";
+  if (d === 0) return "Due today";
+  if (d === 1) return "Due tomorrow";
+  return `Due in ${d}d`;
+}
+
+function renderOpps() {
+  const parts = [];
+  if (state.oppsNote) {
+    parts.push(`<div class="x-banner">${escapeHtml(state.oppsNote)}</div>`);
+  }
+  if (state.opps.length) {
+    parts.push('<div class="opps-section-title">Open opportunities</div>');
+    parts.push(
+      state.opps
+        .map((o) => {
+          const deadline = fmtDaysLeft(o.deadline);
+          const tags = (o.tags || [])
+            .slice(0, 4)
+            .map((t) => `<span class="tag">${escapeHtml(t)}</span>`)
+            .join("");
+          return `
+            <a class="opp-card" href="${escapeAttr(o.url)}" target="_blank" rel="noopener noreferrer">
+              <div class="opp-meta">
+                <span class="opp-agency">${escapeHtml(o.agency || "Agency")}</span>
+                ${deadline ? `<span class="opp-deadline">${escapeHtml(deadline)}</span>` : ""}
+                <span>${fmtTime(o.postedAt || o.published)}</span>
+              </div>
+              <h2>${escapeHtml(o.title)}</h2>
+              ${o.summary ? `<p>${escapeHtml(o.summary)}</p>` : ""}
+              ${tags ? `<div class="tags">${tags}</div>` : ""}
+            </a>
+          `;
+        })
+        .join("")
+    );
+  }
+  parts.push('<div class="opps-section-title">Portals</div>');
+  parts.push(
+    state.oppsPortals
+      .map(
+        (p) => `
+          <a class="opp-portal" href="${escapeAttr(p.url)}" target="_blank" rel="noopener noreferrer">
+            <div>
+              <div class="name">${escapeHtml(p.name)}</div>
+              ${p.focus ? `<div class="focus">${escapeHtml(p.focus)}</div>` : ""}
+            </div>
+            <span class="go">Open</span>
+          </a>
+        `
+      )
+      .join("")
+  );
+  if (!state.opps.length && !state.oppsPortals.length) {
+    parts.push('<div class="empty">No opportunities yet.<br/><small>Set SAM_API_KEY to enable SAM.gov search.</small></div>');
+  }
+  el.oppsMain.innerHTML = parts.join("");
 }
 
 async function loadYouTube({ force = false } = {}) {
@@ -771,9 +945,114 @@ function openSheet() {
   el.priorityInput.value = state.priorityTerms.join(", ");
   rebuildSourcesList();
   rebuildCustomSourcesList();
+  rebuildSavedSearchesList();
   renderHealthList();
   updateSheetCounts();
   document.body.style.overflow = "hidden";
+}
+
+function renderSavedSearchChips() {
+  if (!el.savedSearchesRow) return;
+  const list = state.savedSearches || [];
+  if (!list.length) {
+    el.savedSearchesRow.hidden = true;
+    el.savedSearchesRow.innerHTML = "";
+    return;
+  }
+  el.savedSearchesRow.hidden = state.activeTab !== "news";
+  el.savedSearchesRow.innerHTML = list
+    .map((s) => {
+      const active = state.filter === `search:${s.id}`;
+      const bell = s.notify ? '<span class="ss-notify">🔔</span>' : "";
+      return `<button class="chip ${active ? "active" : ""}" data-search-id="${escapeAttr(s.id)}">${escapeHtml(s.name)}${bell}</button>`;
+    })
+    .join("");
+  el.savedSearchesRow.querySelectorAll("[data-search-id]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.searchId;
+      const filter = `search:${id}`;
+      if (state.filter === filter) {
+        state.filter = "all";
+      } else {
+        state.filter = filter;
+      }
+      // Clear category-chip active state; sync
+      el.chips.forEach((c) => {
+        const on = c.dataset.filter === state.filter;
+        c.classList.toggle("active", on);
+        c.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      renderSavedSearchChips();
+      render();
+    });
+  });
+}
+
+function rebuildSavedSearchesList() {
+  if (!el.ssList) return;
+  const list = state.savedSearches || [];
+  if (!list.length) {
+    el.ssList.innerHTML = '<div class="sheet-note">No saved searches yet.</div>';
+    return;
+  }
+  el.ssList.innerHTML = list
+    .map((s, i) => `
+      <label>
+        <span>${escapeHtml(s.name)}</span>
+        <span class="count">${escapeHtml((s.terms || []).slice(0, 3).join(", "))}${(s.terms || []).length > 3 ? "…" : ""}</span>
+        <input type="checkbox" data-ss-notify="${escapeAttr(s.id)}" ${s.notify ? "checked" : ""} title="Notify on hit" />
+        <button type="button" class="remove" data-ss-remove="${escapeAttr(s.id)}" aria-label="Remove ${escapeHtml(s.name)}">Remove</button>
+      </label>
+    `)
+    .join("");
+  el.ssList.querySelectorAll("[data-ss-notify]").forEach((cb) => {
+    cb.addEventListener("change", () => {
+      const id = cb.dataset.ssNotify;
+      const s = state.savedSearches.find((x) => x.id === id);
+      if (!s) return;
+      s.notify = cb.checked;
+      saveSavedSearches(state.savedSearches);
+      renderSavedSearchChips();
+    });
+  });
+  el.ssList.querySelectorAll("[data-ss-remove]").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      const id = btn.dataset.ssRemove;
+      state.savedSearches = state.savedSearches.filter((x) => x.id !== id);
+      saveSavedSearches(state.savedSearches);
+      rebuildSavedSearchesList();
+      renderSavedSearchChips();
+      if (state.filter === `search:${id}`) {
+        state.filter = "all";
+        render();
+      }
+    });
+  });
+}
+
+async function addSavedSearch() {
+  const name = (el.ssName.value || "").trim();
+  const termsRaw = (el.ssTerms.value || "").trim();
+  const notify = !!el.ssNotify.checked;
+  if (!name || !termsRaw) {
+    el.ssStatus.textContent = "Name and terms are both required.";
+    return;
+  }
+  const terms = termsRaw.split(/[\n,]/).map((s) => s.trim()).filter(Boolean);
+  if (!terms.length) {
+    el.ssStatus.textContent = "At least one term is required.";
+    return;
+  }
+  const id = "s" + Math.random().toString(36).slice(2, 8);
+  state.savedSearches.push({ id, name, terms, notify });
+  saveSavedSearches(state.savedSearches);
+  el.ssName.value = "";
+  el.ssTerms.value = "";
+  el.ssNotify.checked = false;
+  el.ssStatus.textContent = `Added "${name}".`;
+  rebuildSavedSearchesList();
+  renderSavedSearchChips();
 }
 
 function rebuildCustomSourcesList() {
@@ -968,6 +1247,9 @@ el.refresh.addEventListener("click", async () => {
   } else if (state.activeTab === "x") {
     await loadX({ force: true });
     renderX();
+  } else if (state.activeTab === "opps") {
+    await loadOpps({ force: true });
+    renderOpps();
   } else {
     loadFeed({ force: true });
   }
@@ -983,6 +1265,12 @@ el.chips.forEach((chip) => {
     chip.classList.add("active");
     chip.setAttribute("aria-selected", "true");
     state.filter = chip.dataset.filter;
+    // Clear the app-icon badge whenever the user opens Priority — they
+    // now know about the new items.
+    if (chip.dataset.filter === "priority" && typeof navigator.clearAppBadge === "function") {
+      navigator.clearAppBadge().catch(() => {});
+    }
+    renderSavedSearchChips();
     render();
   });
 });
@@ -1016,6 +1304,7 @@ el.saveExit.addEventListener("click", () => {
   showToast("Settings saved");
 });
 el.csAdd.addEventListener("click", (e) => { e.preventDefault(); addCustomSource(); });
+if (el.ssAdd) el.ssAdd.addEventListener("click", (e) => { e.preventDefault(); addSavedSearch(); });
 el.bookmarksClear.addEventListener("click", () => {
   if (!state.bookmarks.size) return;
   if (!confirm("Remove all saved stories?")) return;
@@ -1048,11 +1337,13 @@ document.addEventListener("visibilitychange", () => {
 });
 
 renderSkeletons();
+renderSavedSearchChips();
 setActiveTab(state.activeTab);
 loadFeed();
-Promise.all([loadYouTube(), loadX()]).then(() => {
+Promise.all([loadYouTube(), loadX(), loadOpps()]).then(() => {
   if (state.activeTab === "youtube") renderYouTube();
   else if (state.activeTab === "x") renderX();
+  else if (state.activeTab === "opps") renderOpps();
 });
 
 if ("serviceWorker" in navigator) {

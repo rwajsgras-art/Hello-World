@@ -245,6 +245,21 @@ const X_ACCOUNTS = [
   { handle: "CNASdc",          name: "CNAS",                 focus: "National-security think tank" },
 ];
 
+// Portals shown on the Opps tab regardless of API availability — they're
+// deep-links into the canonical opportunity systems.
+const OPPS_PORTALS = [
+  { name: "SAM.gov (AI keyword search)", url: "https://sam.gov/search/?index=opp&keywords=artificial%20intelligence", focus: "All federal contract opportunities matching \"artificial intelligence\"" },
+  { name: "SAM.gov (autonomy)", url: "https://sam.gov/search/?index=opp&keywords=autonomy", focus: "Autonomy / autonomous systems opportunities" },
+  { name: "DARPA Opportunities", url: "https://www.darpa.mil/work-with-us/opportunities", focus: "DARPA BAAs, RFIs, solicitations" },
+  { name: "Defense Innovation Unit — Open Projects", url: "https://www.diu.mil/work-with-us/open-projects", focus: "Commercial-solutions Areas of Interest (AoIs)" },
+  { name: "AFWERX (Air Force SBIR/STTR)", url: "https://afwerx.com/opportunities/", focus: "Air Force / Space Force SBIR AI topics" },
+  { name: "Army xTech", url: "https://www.armysbir.army.mil/", focus: "Army SBIR / prize competitions" },
+  { name: "NavalX", url: "https://www.secnav.navy.mil/agility/Pages/default.aspx", focus: "Navy innovation opportunities" },
+  { name: "Congress.gov — Committee reports", url: "https://www.congress.gov/committee/rss", focus: "HASC / SASC / Appropriations output" },
+  { name: "GAO — recent AI reports", url: "https://www.gao.gov/browse/topic/Science-and-Technology/Artificial-Intelligence", focus: "Government Accountability Office AI oversight" },
+  { name: "CRS Reports (EveryCRSReport)", url: "https://www.everycrsreport.com/search.html?terms=defense+artificial+intelligence", focus: "Congressional Research Service AI/defense analyses" },
+];
+
 // Keywords — case-insensitive. Word boundaries matter for short acronyms.
 const AI_TERMS = [
   { t: "\\bAI\\b", tag: "AI", wb: true },
@@ -815,12 +830,201 @@ async function main() {
   fs.writeFileSync(xPath, JSON.stringify(xOut, null, 2));
   console.log(`wrote ${xPath} with ${xOut.accounts.length} accounts`);
 
+  // ---- Opportunities (SAM.gov + curated portals) ----
+  const oppsPath = path.join(__dirname, "..", "opps.json");
+  const oppsLive = [];
+  const samKey = process.env.SAM_API_KEY;
+  const oppsReport = {
+    name: "SAM.gov (opps)",
+    url: "https://api.sam.gov/opportunities/v2/search",
+    category: "opps",
+    ok: false,
+    parsed: 0,
+    kept: 0,
+    lastAttempt: new Date().toISOString(),
+    lastSuccess: prevMeta["SAM.gov (opps)"]?.lastSuccess || null,
+    error: null,
+  };
+  if (samKey) {
+    try {
+      const today = new Date();
+      const from = new Date(today.getTime() - 90 * 24 * 3600 * 1000);
+      const fmtMDY = (d) =>
+        `${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}/${d.getFullYear()}`;
+      const queries = ["artificial intelligence", "autonomy", "machine learning"];
+      let parsed = 0, kept = 0;
+      for (const q of queries) {
+        const params = new URLSearchParams({
+          api_key: samKey,
+          q,
+          postedFrom: fmtMDY(from),
+          postedTo: fmtMDY(today),
+          limit: "25",
+        });
+        const url = `https://api.sam.gov/opportunities/v2/search?${params}`;
+        const res = await fetch(url);
+        if (!res.ok) { console.warn(`[SAM ${q}] HTTP ${res.status}`); continue; }
+        const data = await res.json();
+        for (const item of data.opportunitiesData || []) {
+          parsed++;
+          const title = item.title || item.solicitationNumber || "(untitled)";
+          const description = stripHtml(item.description || "");
+          const text = `${title} ${description}`;
+          if (!matchesAI(text)) continue;
+          oppsLive.push({
+            title,
+            agency: item.department || item.subTier || item.office || "Federal",
+            summary: truncate(description, 320),
+            url: item.uiLink || item.additionalInfoLink || `https://sam.gov/opp/${item.noticeId}`,
+            deadline: item.responseDeadLine || null,
+            postedAt: item.postedDate || null,
+            tags: deriveTags(text),
+          });
+          kept++;
+        }
+      }
+      oppsReport.parsed = parsed;
+      oppsReport.kept = kept;
+      oppsReport.ok = true;
+      oppsReport.lastSuccess = new Date().toISOString();
+      console.log(`[SAM.gov] kept ${kept} of ${parsed}`);
+    } catch (e) {
+      oppsReport.error = e.message || String(e);
+      console.warn(`[SAM.gov] ERROR: ${oppsReport.error}`);
+    }
+  } else {
+    oppsReport.error = "SAM_API_KEY not set; SAM.gov search disabled";
+    console.log(`[SAM.gov] skipped — set SAM_API_KEY env var to enable`);
+  }
+  sourceReports.push(oppsReport);
+
+  // Dedupe live opps
+  const seenOpps = new Set();
+  const uniqOpps = [];
+  for (const o of oppsLive) {
+    const key = (o.url || "").toLowerCase();
+    if (!key || seenOpps.has(key)) continue;
+    seenOpps.add(key);
+    uniqOpps.push(o);
+  }
+  uniqOpps.sort((a, b) => new Date(b.postedAt || 0) - new Date(a.postedAt || 0));
+
+  const oppsOut = {
+    generatedAt: new Date().toISOString(),
+    note: samKey ? "" : "Add SAM_API_KEY as a repo secret to auto-populate open opportunities from SAM.gov. Portals below always work.",
+    live: uniqOpps.slice(0, 100),
+    portals: OPPS_PORTALS,
+  };
+  fs.writeFileSync(oppsPath, JSON.stringify(oppsOut, null, 2));
+  console.log(`wrote ${oppsPath} with ${oppsOut.live.length} live opps and ${OPPS_PORTALS.length} portals`);
+
+  // ---- AI TL;DR + why-it-matters (Anthropic API) ----
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const summariesPath = path.join(__dirname, "..", "summaries.json");
+  let summaries = {};
+  try { summaries = JSON.parse(fs.readFileSync(summariesPath, "utf8")) || {}; } catch {}
+  const summaryReport = {
+    name: "AI TL;DR",
+    url: "https://api.anthropic.com/v1/messages",
+    category: "summaries",
+    ok: false,
+    parsed: articles.length,
+    kept: 0,
+    lastAttempt: new Date().toISOString(),
+    lastSuccess: prevMeta["AI TL;DR"]?.lastSuccess || null,
+    error: null,
+  };
+  if (anthropicKey) {
+    try {
+      let generated = 0;
+      const toSummarize = articles.filter((a) => a.link && !summaries[a.link]).slice(0, 40);
+      console.log(`[TL;DR] generating for ${toSummarize.length} new articles…`);
+      for (const a of toSummarize) {
+        const s = await generateSummary(anthropicKey, a).catch((e) => {
+          console.warn(`[TL;DR] "${a.title.slice(0, 40)}…": ${e.message}`);
+          return null;
+        });
+        if (s) {
+          summaries[a.link] = { ...s, at: new Date().toISOString() };
+          generated++;
+        }
+      }
+      summaryReport.kept = generated;
+      summaryReport.ok = true;
+      summaryReport.lastSuccess = new Date().toISOString();
+      // Merge summaries into articles in feed.json for the client.
+      for (const a of articles) {
+        const s = summaries[a.link];
+        if (s) { a.tldr = s.tldr; a.whyItMatters = s.whyItMatters; }
+      }
+      fs.writeFileSync(outPath, JSON.stringify({ ...out, articles }, null, 2));
+      fs.writeFileSync(summariesPath, JSON.stringify(summaries, null, 2));
+      console.log(`[TL;DR] generated ${generated}, cache size ${Object.keys(summaries).length}`);
+    } catch (e) {
+      summaryReport.error = e.message || String(e);
+      console.warn(`[TL;DR] ERROR: ${summaryReport.error}`);
+    }
+  } else {
+    summaryReport.error = "ANTHROPIC_API_KEY not set; TL;DR disabled";
+    console.log(`[TL;DR] skipped — set ANTHROPIC_API_KEY env var to enable`);
+    // Still merge existing cache into articles.
+    let merged = 0;
+    for (const a of articles) {
+      const s = summaries[a.link];
+      if (s) { a.tldr = s.tldr; a.whyItMatters = s.whyItMatters; merged++; }
+    }
+    if (merged) fs.writeFileSync(outPath, JSON.stringify({ ...out, articles }, null, 2));
+  }
+  sourceReports.push(summaryReport);
+
   const meta = {
     generatedAt: new Date().toISOString(),
     sources: sourceReports,
   };
   fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2));
   console.log(`wrote feed-meta.json with ${sourceReports.length} source reports`);
+}
+
+async function generateSummary(apiKey, article) {
+  const prompt = `You are summarizing a defense-tech news article for a U.S. DoD AI analyst.
+
+Article title: ${article.title}
+Source: ${article.source}
+Article summary/excerpt: ${article.summary || "(no excerpt)"}
+
+Generate:
+1. A TL;DR of the article in one sentence, max 40 words.
+2. Two "Why it matters" bullets, each max 20 words, focused on DoD, AI/autonomy, or defense-industrial implications.
+
+Return ONLY valid minified JSON matching:
+{"tldr":"...","whyItMatters":["...","..."]}
+No preamble, no code fences.`;
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 300,
+      messages: [{ role: "user", content: prompt }],
+    }),
+  });
+  if (!res.ok) {
+    const t = await res.text().catch(() => "");
+    throw new Error(`HTTP ${res.status} ${t.slice(0, 120)}`);
+  }
+  const data = await res.json();
+  const text = (data.content?.[0]?.text || "").trim();
+  const jsonStart = text.indexOf("{");
+  const jsonEnd = text.lastIndexOf("}");
+  if (jsonStart < 0 || jsonEnd < 0) throw new Error("no JSON in response");
+  const obj = JSON.parse(text.slice(jsonStart, jsonEnd + 1));
+  if (!obj.tldr || !Array.isArray(obj.whyItMatters)) throw new Error("bad shape");
+  return { tldr: obj.tldr, whyItMatters: obj.whyItMatters.slice(0, 2) };
 }
 
 main().catch((e) => {
