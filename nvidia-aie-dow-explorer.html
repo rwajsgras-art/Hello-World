@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NVIDIA AI Enterprise DoW Explorer</title>
+<meta name="description" content="Field enablement guide mapping NVIDIA AI Enterprise to publicly reported AI programs across six Department of War branches.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000'/%3E%3Cpath d='M6 22V10h4l6 8v-8h4v12h-4l-6-8v8z' fill='%2376b900'/%3E%3C/svg%3E">
+<style>
+:root{
+  color-scheme: dark;
+  /* surfaces */
+  --bg:#000000;
+  --surface-1:#101110;
+  --surface-2:#171916;
+  --surface-3:#1e211d;
+  --line:#2a2d28;
+  --line-soft:#1f221e;
+  /* ink */
+  --text-1:#f3f5f0;
+  --text-2:#bcc2b6;
+  --text-3:#8b9284;
+  /* brand */
+  --nv:#76b900;
+  --nv-deep:#5c8f00;
+  --nv-glow:rgba(118,185,0,.14);
+  /* validated categorical series (dark surface) */
+  --s-army:#6aa300;
+  --s-af:#3987e5;
+  --s-disa:#d55181;
+  --s-4e:#c98500;
+  --s-ssf:#9085e9;
+  --s-navy:#199e70;
+  /* validated 3-step ordinal ramp (dark) */
+  --fit-1:#3f6100;
+  --fit-2:#639600;
+  --fit-3:#8ad000;
+  /* status */
+  --warn:#c98500;
+  --radius:14px;
+  --maxw:1180px;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Noto Sans",sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:86px}
+body{
+  margin:0;background:var(--bg);color:var(--text-1);
+  font-family:var(--sans);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(900px 480px at 12% -8%, rgba(118,185,0,.10), transparent 60%),
+    radial-gradient(760px 420px at 92% 4%, rgba(57,135,229,.07), transparent 62%);
+}
+.wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 16px}
+h1,h2,h3,h4{line-height:1.25;margin:0;letter-spacing:-.01em}
+h2{font-size:clamp(1.35rem,1.05rem + 1.1vw,1.9rem)}
+h3{font-size:1.06rem}
+p{margin:0 0 .85em}
+a{color:var(--nv);text-underline-offset:3px}
+a:hover{color:#8fd400}
+code,kbd{font-family:var(--mono);font-size:.86em;background:var(--surface-3);border:1px solid var(--line);border-radius:5px;padding:1px 5px;color:var(--text-1)}
+pre{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px;overflow:auto}
+pre code{background:none;border:0;padding:0}
+:focus-visible{outline:2px solid var(--nv);outline-offset:2px;border-radius:6px}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ---------- header ---------- */
+header.hero{border-bottom:1px solid var(--line);padding:34px 0 26px;background:linear-gradient(180deg,rgba(118,185,0,.05),transparent)}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--nv);border:1px solid rgba(118,185,0,.38);background:var(--nv-glow);padding:5px 11px;border-radius:999px}
+.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--nv)}
+.hero h1{font-size:clamp(1.85rem,1.2rem + 2.6vw,3.1rem);margin:16px 0 10px;font-weight:700}
+.hero h1 .accent{color:var(--nv)}
+.hero .lede{color:var(--text-2);max-width:66ch;font-size:1.03rem}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.chip{font-family:var(--mono);font-size:.72rem;letter-spacing:.04em;color:var(--text-2);border:1px solid var(--line);background:var(--surface-1);padding:5px 10px;border-radius:999px}
+.chip b{color:var(--text-1);font-weight:600}
+
+/* ---------- notice ---------- */
+.notice{border:1px solid rgba(201,133,0,.42);background:rgba(201,133,0,.08);border-radius:var(--radius);padding:16px 18px;margin:22px 0}
+.notice h3{font-size:.82rem;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--warn);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.notice p{color:var(--text-2);font-size:.92rem;margin-bottom:.5em}
+.notice p:last-child{margin-bottom:0}
+
+/* ---------- nav ---------- */
+nav.sticky{position:sticky;top:0;z-index:40;background:rgba(0,0,0,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.sticky .inner{max-width:var(--maxw);margin:0 auto;padding:0 16px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin}
+nav.sticky a{white-space:nowrap;padding:13px 11px;font-size:.84rem;color:var(--text-2);text-decoration:none;border-bottom:2px solid transparent}
+nav.sticky a:hover{color:var(--text-1);background:var(--surface-1)}
+nav.sticky a.on{color:var(--nv);border-bottom-color:var(--nv)}
+
+/* ---------- sections ---------- */
+section{padding:44px 0;border-bottom:1px solid var(--line-soft)}
+.sec-head{margin-bottom:22px}
+.sec-num{font-family:var(--mono);font-size:.72rem;color:var(--nv);letter-spacing:.14em}
+.sec-head p{color:var(--text-2);max-width:74ch;margin-top:8px}
+
+/* ---------- cards / grid ---------- */
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(196px,1fr))}
+.card{background:var(--surface-1);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.card h3{margin-bottom:8px}
+.card p{color:var(--text-2);font-size:.93rem}
+.card p:last-child{margin-bottom:0}
+
+/* stat tiles */
+.stat{background:var(--surface-1);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;position:relative;overflow:hidden}
+.stat::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--nv)}
+.stat .v{font-size:1.95rem;font-weight:700;line-height:1.1;letter-spacing:-.02em}
+.stat .k{font-size:.78rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;font-family:var(--mono);margin-top:6px}
+.stat .n{font-size:.83rem;color:var(--text-2);margin-top:8px}
+
+/* ---------- branch cards ---------- */
+.branch-rail{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:10px;margin-bottom:20px}
+.bbtn{text-align:left;cursor:pointer;background:var(--surface-1);border:1px solid var(--line);border-left:4px solid var(--bc);border-radius:12px;padding:13px 14px;color:var(--text-1);font-family:inherit;font-size:.95rem;transition:background .14s,transform .14s}
+.bbtn:hover{background:var(--surface-2);transform:translateY(-1px)}
+.bbtn[aria-selected="true"]{background:var(--surface-3);border-color:var(--bc);box-shadow:0 0 0 1px var(--bc) inset}
+.bbtn .bn{font-weight:650;display:block}
+.bbtn .bs{display:block;font-size:.76rem;color:var(--text-3);font-family:var(--mono);margin-top:3px}
+.bbtn .bc-dot{display:inline-block;width:8px;height:8px;border-radius:2px;background:var(--bc);margin-right:7px;vertical-align:middle}
+
+.panel{background:var(--surface-1);border:1px solid var(--line);border-radius:var(--radius);padding:22px;border-top:3px solid var(--bc)}
+.panel-head{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.panel-head h3{font-size:1.4rem}
+.panel .org{font-family:var(--mono);font-size:.76rem;color:var(--text-3)}
+.panel .summary{color:var(--text-2);margin:10px 0 20px;max-width:78ch}
+
+.subhead{font-family:var(--mono);font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:var(--nv);margin:24px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+
+.prog{border:1px solid var(--line);border-radius:12px;padding:15px 16px;background:var(--surface-2);margin-bottom:10px}
+.prog-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.prog h4{font-size:1rem;margin:0}
+.prog .body{color:var(--text-2);font-size:.92rem;margin:9px 0}
+.prog .hook{font-size:.92rem;color:var(--text-1);background:rgba(118,185,0,.07);border-left:2px solid var(--nv);padding:9px 12px;border-radius:0 8px 8px 0;margin:10px 0}
+.prog .hook b{color:var(--nv);font-weight:600}
+.tagrow{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.tag{font-family:var(--mono);font-size:.7rem;padding:3px 8px;border-radius:999px;border:1px solid var(--line);background:var(--surface-3);color:var(--text-2)}
+.tag.nv{border-color:rgba(118,185,0,.4);color:var(--nv);background:var(--nv-glow)}
+.status{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--text-2);white-space:nowrap}
+.status[data-s="fielding"]{border-color:rgba(118,185,0,.45);color:var(--nv)}
+.status[data-s="scaling"]{border-color:rgba(57,135,229,.45);color:var(--s-af)}
+.status[data-s="prototype"]{border-color:rgba(201,133,0,.45);color:var(--warn)}
+.status[data-s="planned"]{border-color:var(--line);color:var(--text-3)}
+.src{font-size:.8rem;color:var(--text-3);margin-top:9px;display:block}
+.src a{color:var(--text-2)}
+.src a:hover{color:var(--nv)}
+
+ul.clean{list-style:none;padding:0;margin:0}
+ul.clean li{position:relative;padding-left:20px;margin-bottom:8px;color:var(--text-2);font-size:.93rem}
+ul.clean li::before{content:"";position:absolute;left:4px;top:.62em;width:6px;height:6px;border-radius:1px;background:var(--nv)}
+ol.q{margin:0;padding-left:22px;color:var(--text-2);font-size:.93rem}
+ol.q li{margin-bottom:9px}
+ol.q li b{color:var(--text-1);font-weight:600}
+
+/* ---------- charts ---------- */
+.figure{background:var(--surface-1);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.figure .cap{font-size:.95rem;font-weight:600;margin-bottom:2px}
+.figure .sub{font-size:.83rem;color:var(--text-3);margin-bottom:16px}
+.bar-row{display:grid;grid-template-columns:150px 1fr 54px;gap:12px;align-items:center;margin-bottom:9px}
+.bar-row .lab{font-size:.85rem;color:var(--text-2);text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-track{background:var(--surface-3);border-radius:4px;height:19px;position:relative;overflow:hidden}
+.bar-fill{display:block;height:100%;min-width:3px;border-radius:0 4px 4px 0;background:var(--bc);transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.bar-row .val{font-family:var(--mono);font-size:.85rem;color:var(--text-1)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft)}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-size:.79rem;color:var(--text-2)}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block;box-shadow:0 0 0 2px var(--surface-1)}
+
+/* ---------- matrix ---------- */
+.mx-scroll{overflow-x:auto;padding-bottom:6px}
+table.mx{border-collapse:separate;border-spacing:2px;width:100%;min-width:720px}
+table.mx th{font-size:.76rem;font-weight:600;color:var(--text-2);text-align:center;padding:8px 6px;vertical-align:bottom;line-height:1.25}
+table.mx th.row{text-align:left;color:var(--text-1);font-size:.85rem;width:190px;min-width:190px;padding-right:12px}
+table.mx td{text-align:center;border-radius:7px;padding:9px 6px;font-family:var(--mono);font-size:.7rem;letter-spacing:.04em;color:#0b1400;font-weight:700;cursor:default;position:relative}
+table.mx td[data-fit="3"]{background:var(--fit-3)}
+table.mx td[data-fit="2"]{background:var(--fit-2)}
+table.mx td[data-fit="1"]{background:var(--fit-1);color:#eef0ea}
+table.mx td:hover{box-shadow:0 0 0 2px var(--text-1) inset}
+.mx-note{font-size:.83rem;color:var(--text-3);margin-top:12px}
+
+/* ---------- map ---------- */
+.map-shell{background:var(--surface-1);border:1px solid var(--line);border-radius:var(--radius);padding:18px}
+.map-controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;align-items:center}
+.pill{cursor:pointer;font-family:var(--mono);font-size:.74rem;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--text-2)}
+.pill:hover{color:var(--text-1);border-color:var(--text-3)}
+.pill[aria-pressed="true"]{background:var(--pc,var(--nv-glow));border-color:var(--pc2,var(--nv));color:var(--pc2,var(--nv))}
+#map-wrap{position:relative;width:100%}
+#usmap svg{width:100%;height:auto;display:block}
+.state{fill:var(--surface-2);stroke:var(--line);stroke-width:.6}
+.nation{fill:none;stroke:#3a3f36;stroke-width:1}
+.site{stroke:var(--surface-1);stroke-width:2;cursor:pointer}
+.site:hover{stroke:var(--text-1)}
+.site.dim{opacity:.16}
+.tip{position:absolute;pointer-events:none;background:#050604;border:1px solid var(--nv);border-radius:9px;padding:10px 12px;font-size:.83rem;max-width:280px;box-shadow:0 10px 30px rgba(0,0,0,.65);opacity:0;transition:opacity .12s;z-index:20}
+.tip b{display:block;color:var(--nv);margin-bottom:3px}
+.tip .t-branch{font-family:var(--mono);font-size:.7rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em}
+.tip p{margin:5px 0 0;color:var(--text-2);font-size:.82rem;line-height:1.45}
+.map-fallback{border:1px dashed var(--line);border-radius:12px;padding:18px;color:var(--text-2);font-size:.9rem}
+
+/* ---------- tables ---------- */
+.t-scroll{overflow-x:auto}
+table.data{border-collapse:collapse;width:100%;font-size:.88rem;min-width:560px}
+table.data th{text-align:left;font-size:.72rem;font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--line);padding:9px 12px 9px 0}
+table.data td{padding:11px 12px 11px 0;border-bottom:1px solid var(--line-soft);color:var(--text-2);vertical-align:top}
+table.data td b{color:var(--text-1);font-weight:600}
+table.data tr:last-child td{border-bottom:0}
+
+/* ---------- ladder ---------- */
+.ladder{display:grid;gap:8px}
+.rung{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:start;background:var(--surface-1);border:1px solid var(--line);border-left:4px solid var(--rc,var(--nv));border-radius:12px;padding:14px 16px}
+.rung .lv{font-family:var(--mono);font-weight:700;color:var(--rc,var(--nv));font-size:.95rem}
+.rung .lv small{display:block;color:var(--text-3);font-weight:400;font-size:.68rem;letter-spacing:.06em;margin-top:3px}
+.rung p{margin:0;font-size:.9rem;color:var(--text-2)}
+.rung p b{color:var(--text-1)}
+
+/* ---------- details ---------- */
+details.acc{border:1px solid var(--line);border-radius:12px;background:var(--surface-1);margin-bottom:8px;overflow:hidden}
+details.acc summary{cursor:pointer;padding:13px 16px;font-weight:600;font-size:.95rem;list-style:none;display:flex;justify-content:space-between;gap:12px;align-items:center}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary::after{content:"+";color:var(--nv);font-family:var(--mono);font-size:1.1rem;flex:none}
+details.acc[open] summary::after{content:"\2212"}
+details.acc summary:hover{background:var(--surface-2)}
+details.acc .acc-body{padding:0 16px 16px;color:var(--text-2);font-size:.92rem;border-top:1px solid var(--line-soft);padding-top:13px}
+details.acc .acc-body p:last-child{margin-bottom:0}
+
+/* ---------- search ---------- */
+.search-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+input[type="search"]{flex:1 1 260px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 13px;color:var(--text-1);font-family:inherit;font-size:.92rem}
+input[type="search"]::placeholder{color:var(--text-3)}
+.count{font-family:var(--mono);font-size:.78rem;color:var(--text-3)}
+.hidden{display:none !important}
+
+/* ---------- footer ---------- */
+footer{padding:36px 0 60px;color:var(--text-3);font-size:.85rem}
+footer p{max-width:80ch}
+.srclist{columns:2;column-gap:28px}
+.srclist li{break-inside:avoid;margin-bottom:9px;font-size:.85rem}
+@media (max-width:700px){
+  .srclist{columns:1}
+  .bar-row{grid-template-columns:106px 1fr 46px}
+  .rung{grid-template-columns:1fr}
+  section{padding:34px 0}
+}
+@media print{
+  body{background:#fff;color:#000}
+  body::before,nav.sticky{display:none}
+  .card,.panel,.figure,.map-shell,.stat{border-color:#bbb;background:#fff}
+  a{color:#000}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<a class="sr" href="#overview">Skip to content</a>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow"><span class="dot"></span>Field Enablement &middot; Unofficial</span>
+    <h1>NVIDIA AI Enterprise <span class="accent">DoW Explorer</span></h1>
+    <p class="lede">A single-page briefing that maps the NVIDIA AI Enterprise software platform to publicly reported artificial intelligence programs across six Department of War buying centers. Built for sellers who need the program names, the plain-English hook, and the next question to ask.</p>
+    <div class="hero-meta">
+      <span class="chip">Compiled <b>18 Sep 2026</b></span>
+      <span class="chip"><b>6</b> branches</span>
+      <span class="chip"><b id="chip-programs">&mdash;</b> public programs</span>
+      <span class="chip"><b id="chip-sites">&mdash;</b> mapped locations</span>
+      <span class="chip">Sources <b>public only</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="sticky" aria-label="Section navigation">
+  <div class="inner" id="navlinks">
+    <a href="#overview" class="on">Overview</a>
+    <a href="#branches">Branches</a>
+    <a href="#map">Map</a>
+    <a href="#stack">The Stack</a>
+    <a href="#matrix">Fit Matrix</a>
+    <a href="#rtm">Route to Market</a>
+    <a href="#deploy">Deployment</a>
+    <a href="#talk">Talk Tracks</a>
+    <a href="#plays">90-Day Plays</a>
+    <a href="#glossary">Glossary</a>
+    <a href="#sources">Sources</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="notice" role="note">
+    <h3>Read this first</h3>
+    <p>Everything in this guide comes from open, publicly available reporting and public government websites. It contains no proprietary or sensitive information belonging to the Department of War, NVIDIA, or any partner, OEM, or ISV. Nothing here is classified, export-controlled, or drawn from a customer engagement.</p>
+    <p>This is an unofficial working aid, not an NVIDIA product commitment, pricing statement, roadmap, or authorization claim. Program facts change weekly. Re-verify against the linked source before you put any of it in front of a customer, and route anything that looks like a commitment through your normal deal desk and legal review.</p>
+    <p>The Department of Defense was authorized to use &ldquo;Department of War&rdquo; as a secondary title by executive order in September 2025. The legal name remains the Department of Defense unless Congress changes it, so both names appear in official documents and both appear here.</p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section id="overview">
+  <div class="sec-head">
+    <span class="sec-num">01</span>
+    <h2>What this guide is, in one screen</h2>
+    <p>The Department of War is no longer running a handful of AI science projects. It is standing up enterprise platforms that serve millions of users, and simultaneously pushing inference down to ships, aircraft, and command posts. Those two motions need very different infrastructure, and that is the opening for a software platform that runs the same way in both places.</p>
+  </div>
+
+  <div class="grid g4" style="margin-bottom:18px">
+    <div class="stat">
+      <div class="v">3M+</div>
+      <div class="k">Personnel in scope</div>
+      <div class="n">Department-wide population the GenAI.mil enterprise platform is being extended to.</div>
+    </div>
+    <div class="stat">
+      <div class="v">1.7M</div>
+      <div class="k">Onboarded users</div>
+      <div class="n">Unique GenAI.mil users reported nine months after its December 2025 launch.</div>
+    </div>
+    <div class="stat">
+      <div class="v">~$3B</div>
+      <div class="k">Army NGC2, FY26 request</div>
+      <div class="n">Requested funding for Next Generation Command and Control, the Army's data and AI backbone.</div>
+    </div>
+    <div class="stat">
+      <div class="v">$15B</div>
+      <div class="k">Advana ceiling</div>
+      <div class="n">Ten-year multiple-award ceiling for the enterprise analytics platform under Open DAGIR.</div>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="card">
+      <h3>The three patterns worth memorizing</h3>
+      <ul class="clean">
+        <li><b>Enterprise generative AI is consolidating.</b> Service-run chatbots are folding into one department-wide platform. The differentiated conversation is no longer &ldquo;which chatbot&rdquo; but what runs on-premises behind it.</li>
+        <li><b>Mission AI is decentralizing.</b> Computer vision, sensor fusion, autonomy, and command and control are being pushed to edge and tactical networks where commercial cloud does not reach.</li>
+        <li><b>Data platforms are multi-vendor by policy.</b> Open DAGIR and the NGC2 common data layer are explicitly designed so no single vendor owns the stack. Interoperability is the requirement, not a nice-to-have.</li>
+      </ul>
+    </div>
+    <div class="figure">
+      <div class="cap">Breadth of AI workload demand signal</div>
+      <div class="sub">Sum of the nine workload fit ratings in section 05, out of a maximum of 27. It shows how many different kinds of AI work each branch is publicly pursuing, not how much money is behind them.</div>
+      <div id="bars" role="img" aria-label="Bar chart of workload breadth score per branch"></div>
+      <div style="margin-top:12px">
+        <button class="pill" type="button" id="bars-table-toggle" aria-expanded="false">Show data table</button>
+      </div>
+      <div id="bars-table" class="t-scroll hidden" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Where NVIDIA AI Enterprise actually enters the conversation</h3>
+    <p>NVIDIA AI Enterprise is the supported, security-maintained software layer that sits between accelerated hardware and a mission application. A program office rarely buys it because they want &ldquo;AI software.&rdquo; They buy it because they have an accreditation deadline, an air-gapped enclave, a model they cannot send to a commercial endpoint, or a sustainment problem with open-source containers nobody owns.</p>
+    <p style="margin-bottom:0">That means your three strongest entry points are an <b>authorization boundary</b> that will not move, a <b>classified or disconnected environment</b>, and a <b>sustainment and patching obligation</b> that an unsupported open-source stack cannot satisfy. Everything in the branch sections below is organized around finding those three.</p>
+  </div>
+</section>
+
+<section id="branches">
+  <div class="sec-head">
+    <span class="sec-num">02</span>
+    <h2>Six branches, six different buying motions</h2>
+    <p>Pick a branch to see its publicly reported programs, the plain-English reason NVIDIA AI Enterprise is relevant, the contract routes sellers typically use, and the discovery questions that actually move a first meeting forward.</p>
+  </div>
+
+  <div class="search-row">
+    <input type="search" id="prog-search" placeholder="Filter programs across all branches (try: edge, RAG, cyber, simulation)" aria-label="Filter programs">
+    <span class="count" id="search-count"></span>
+  </div>
+
+  <div class="branch-rail" id="branch-rail" role="tablist" aria-label="Department of War branches"></div>
+  <div id="branch-panels"></div>
+</section>
+
+<section id="map">
+  <div class="sec-head">
+    <span class="sec-num">03</span>
+    <h2>Where the work happens</h2>
+    <p>Publicly identified installations, laboratories, and program offices associated with the AI efforts in this guide. Marker size reflects how many tracked programs this guide associates with that location. Filter by branch, then hover or tap a marker.</p>
+  </div>
+  <div class="map-shell">
+    <div class="map-controls" id="map-controls"></div>
+    <div id="map-wrap">
+      <div id="usmap"></div>
+      <div class="tip" id="tip" role="status" aria-live="polite"></div>
+    </div>
+    <div class="legend" id="map-legend"></div>
+    <p class="mx-note">Locations are public headquarters, installation, or laboratory sites. Nothing here indicates the physical location of any specific system, deployment, or customer environment.</p>
+    <div id="map-list" class="t-scroll" style="margin-top:16px"></div>
+  </div>
+</section>
+
+<style>
+.stack{display:grid;grid-template-columns:1fr 262px;gap:14px;align-items:start}
+@media (max-width:760px){.stack{grid-template-columns:1fr}}
+.layers{display:grid;gap:8px}
+.layer{background:var(--surface-1);border:1px solid var(--line);border-radius:12px;padding:13px 16px;position:relative}
+.layer::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:2px;background:var(--lc,var(--nv))}
+.layer h4{font-size:.93rem;margin:0 0 3px;color:var(--text-1)}
+.layer .lsub{font-size:.78rem;color:var(--text-3);font-family:var(--mono);letter-spacing:.05em;text-transform:uppercase}
+.layer .items{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.layer .items span{font-size:.75rem;background:var(--surface-3);border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--text-2)}
+.sidecar{background:linear-gradient(180deg,rgba(118,185,0,.11),rgba(118,185,0,.03));border:1px solid rgba(118,185,0,.35);border-radius:12px;padding:18px;position:sticky;top:78px}
+.sidecar h4{color:var(--nv);font-size:.88rem;margin:0 0 10px;font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.sidecar ul{margin:0;padding-left:16px;font-size:.84rem;color:var(--text-2)}
+.sidecar li{margin-bottom:7px}
+.lane{background:var(--surface-1);border:1px solid var(--line);border-radius:var(--radius);padding:18px;border-top:3px solid var(--lc,var(--nv))}
+.lane h3{font-size:1rem;margin-bottom:4px}
+.lane .role{font-family:var(--mono);font-size:.72rem;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:11px}
+.lane p{font-size:.9rem;color:var(--text-2)}
+</style>
+
+<section id="stack">
+  <div class="sec-head">
+    <span class="sec-num">04</span>
+    <h2>What you are actually selling</h2>
+    <p>NVIDIA AI Enterprise is a subscription to a supported software stack, not a single product. When a customer asks &ldquo;what is in it,&rdquo; this is the answer. Read it bottom to top: hardware at the base, the mission application at the top, and the support and security commitment wrapping all of it.</p>
+  </div>
+  <div class="stack">
+    <div class="layers">
+      <div class="layer" style="--lc:var(--s-ssf)">
+        <div class="lsub">Layer 6 &middot; Outcomes</div>
+        <h4>Blueprints and reference workflows</h4>
+        <p style="margin:6px 0 0;font-size:.88rem;color:var(--text-2)">Packaged, adaptable starting points so a program office is not assembling an application from scratch. This is what shortens a pilot from quarters to weeks.</p>
+        <div class="items"><span>Retrieval-augmented generation</span><span>Multimodal document extraction</span><span>Video search and summarization</span><span>Agentic workflows</span><span>Cybersecurity triage</span></div>
+      </div>
+      <div class="layer" style="--lc:var(--s-af)">
+        <div class="lsub">Layer 5 &middot; Models and microservices</div>
+        <h4>NIM microservices and the NeMo toolchain</h4>
+        <p style="margin:6px 0 0;font-size:.88rem;color:var(--text-2)">Containerized inference endpoints for models the customer chooses, plus the tooling to adapt, guard, evaluate, and retrieve. The point for defense buyers is that the model and the data never have to leave their boundary.</p>
+        <div class="items"><span>NIM inference microservices</span><span>NeMo Customizer</span><span>NeMo Guardrails</span><span>NeMo Retriever</span><span>NeMo Evaluator</span><span>Open Nemotron models</span></div>
+      </div>
+      <div class="layer" style="--lc:var(--s-navy)">
+        <div class="lsub">Layer 4 &middot; Domain libraries</div>
+        <h4>Accelerated frameworks and libraries</h4>
+        <p style="margin:6px 0 0;font-size:.88rem;color:var(--text-2)">The workload-specific pieces. Most mission conversations land on one or two of these long before anyone says the words &ldquo;large language model.&rdquo;</p>
+        <div class="items"><span>Triton Inference Server</span><span>TensorRT</span><span>RAPIDS data science</span><span>cuOpt routing and logistics</span><span>Morpheus cybersecurity</span><span>Riva speech</span><span>Holoscan sensor processing</span><span>Omniverse and Modulus simulation</span></div>
+      </div>
+      <div class="layer" style="--lc:var(--s-4e)">
+        <div class="lsub">Layer 3 &middot; Operations</div>
+        <h4>Cluster, scheduling, and edge management</h4>
+        <p style="margin:6px 0 0;font-size:.88rem;color:var(--text-2)">How a small government team runs a shared accelerated estate without hiring a platform team for every program. Multi-tenancy and fair-share scheduling are the usual pain points.</p>
+        <div class="items"><span>Base Command Manager</span><span>GPU workload scheduling</span><span>Fleet management for edge sites</span><span>Multi-instance partitioning</span></div>
+      </div>
+      <div class="layer" style="--lc:var(--s-disa)">
+        <div class="lsub">Layer 2 &middot; Platform plumbing</div>
+        <h4>Drivers, CUDA, and Kubernetes operators</h4>
+        <p style="margin:6px 0 0;font-size:.88rem;color:var(--text-2)">Version-matched drivers, container runtimes, and operators that keep accelerated nodes healthy under Kubernetes or a virtualized platform. Unglamorous, and the reason unsupported stacks fall over at month nine.</p>
+        <div class="items"><span>GPU Operator</span><span>Network Operator</span><span>CUDA toolkit</span><span>Container runtime</span><span>Virtualization support</span></div>
+      </div>
+      <div class="layer" style="--lc:var(--s-army)">
+        <div class="lsub">Layer 1 &middot; Infrastructure</div>
+        <h4>Certified accelerated systems</h4>
+        <p style="margin:6px 0 0;font-size:.88rem;color:var(--text-2)">Data center systems from OEM partners, NVIDIA-built systems, government cloud instances, and ruggedized or embedded platforms at the tactical edge.</p>
+        <div class="items"><span>OEM certified servers</span><span>NVIDIA DGX systems</span><span>Government cloud instances</span><span>Edge and embedded modules</span></div>
+      </div>
+    </div>
+    <div class="sidecar">
+      <h4>Wrapped around all six</h4>
+      <ul>
+        <li><b style="color:var(--text-1)">Enterprise support</b> with defined response paths, which is what a program manager needs to sign a sustainment plan.</li>
+        <li><b style="color:var(--text-1)">Security maintenance</b>: vulnerability remediation and long-term support branches so an accredited baseline can be kept current without a re-architecture.</li>
+        <li><b style="color:var(--text-1)">Hardened build options</b>, including cryptographic-module and security-guide-aligned container variants published for government-leaning deployments.</li>
+        <li><b style="color:var(--text-1)">API stability</b> across releases, so an application accredited last year still builds this year.</li>
+        <li><b style="color:var(--text-1)">Air-gap support</b>, because a large share of this customer set has no route to a commercial endpoint.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="mx-note">Component names reflect the publicly documented NVIDIA AI Enterprise platform. Always confirm the current component list, version, and entitlement on NVIDIA's public documentation before quoting it to a customer, since the platform changes release to release.</p>
+</section>
+
+<section id="matrix">
+  <div class="sec-head">
+    <span class="sec-num">05</span>
+    <h2>Workload fit by branch</h2>
+    <p>A planning aid, not a forecast. Each cell is this guide's read of how strongly a workload shows up in that branch's publicly reported AI activity. Every cell is labeled in text as well as color, so it reads the same in grayscale or with any form of color vision. Hover a cell for the reasoning.</p>
+  </div>
+  <div class="figure">
+    <div class="mx-scroll"><table class="mx" id="mx"><caption class="sr">Workload fit by branch, rated established, growing, or emerging</caption></table></div>
+    <div class="legend">
+      <span><i style="background:var(--fit-3)"></i> Established &mdash; named in public program reporting</span>
+      <span><i style="background:var(--fit-2)"></i> Growing &mdash; funded activity or stated intent</span>
+      <span><i style="background:var(--fit-1)"></i> Emerging &mdash; adjacent, credible, unproven publicly</span>
+    </div>
+    <p class="mx-note">Ratings are the author's judgment from the public sources listed at the end of this page. They are not NVIDIA pipeline data, not customer-supplied, and should not be presented to a customer as market research.</p>
+  </div>
+</section>
+
+<section id="rtm">
+  <div class="sec-head">
+    <span class="sec-num">06</span>
+    <h2>Route to market</h2>
+    <p>NVIDIA goes to market through partners. In this customer set that is not a preference, it is a requirement: the paper almost always flows through a reseller or integrator holding the right vehicle, and the software usually lands on somebody else's hardware or platform. Know which lane your deal is in before the first meeting.</p>
+  </div>
+  <div class="grid g2">
+    <div class="lane" style="--lc:var(--s-army)">
+      <h3>Hardware OEMs and certified systems</h3>
+      <div class="role">Who owns the box</div>
+      <p>NVIDIA publishes a certified-systems program, and the major server manufacturers build accelerated platforms against it. In defense deals the OEM often carries the sustainment contract, the supply chain paperwork, and the relationship with the installation.</p>
+      <p style="margin-bottom:0"><b style="color:var(--text-1)">Seller move:</b> find out which OEM already has the sustainment contract at that program office before you propose anything. You are joining their deal far more often than they are joining yours.</p>
+    </div>
+    <div class="lane" style="--lc:var(--s-af)">
+      <h3>Government cloud regions and marketplaces</h3>
+      <div class="role">Who owns the environment</div>
+      <p>Accelerated instances and the software platform are offered through government cloud regions and their marketplaces. This is the fastest path for an unclassified or controlled-unclassified workload where the customer already holds a cloud authorization.</p>
+      <p style="margin-bottom:0"><b style="color:var(--text-1)">Seller move:</b> ask which cloud the program is already authorized in. A program with an existing authorization in one region will not move for your convenience.</p>
+    </div>
+    <div class="lane" style="--lc:var(--s-disa)">
+      <h3>ISVs and platform vendors</h3>
+      <div class="role">Who owns the application</div>
+      <p>Most of the programs in this guide are delivered as somebody's application or data platform, not as raw infrastructure. Data platforms, mission autonomy software, generative AI workspaces, and container platforms all run on accelerated compute underneath.</p>
+      <p style="margin-bottom:0"><b style="color:var(--text-1)">Seller move:</b> the ISV is your fastest route to a requirement. If their product needs accelerated inference to hit a performance target, the pull comes from them, not from you.</p>
+    </div>
+    <div class="lane" style="--lc:var(--s-4e)">
+      <h3>Resellers and contract vehicles</h3>
+      <div class="role">Who owns the paper</div>
+      <p>Publicly known routes into this customer set include government-wide acquisition contracts, service-specific IT vehicles, cloud acquisition vehicles, and rapid prototyping authorities used by innovation organizations. Which one applies depends on the buying office, the dollar value, and the urgency.</p>
+      <p style="margin-bottom:0"><b style="color:var(--text-1)">Seller move:</b> confirm vehicle eligibility with your contracts team early. A vehicle mismatch discovered late is the most common reason a funded defense deal slips a quarter.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h3>The question that saves a quarter</h3>
+    <p style="margin-bottom:0">Ask it in the first meeting: <b style="color:var(--nv)">&ldquo;When this gets funded, whose contract does it land on, and is that vehicle already in place?&rdquo;</b> If nobody in the room can answer, you do not have a deal yet. You have an interested engineer, which is a fine place to start and a bad place to forecast from.</p>
+  </div>
+</section>
+
+<section id="deploy">
+  <div class="sec-head">
+    <span class="sec-num">07</span>
+    <h2>Deployment and accreditation, explained plainly</h2>
+    <p>This is the part that trips up sellers coming from commercial accounts. Defense customers cannot run software until an authorizing official signs for the risk. Your job is to make that signature easier to get, and to never claim it on the customer's behalf.</p>
+  </div>
+
+  <div class="ladder" style="margin-bottom:18px">
+    <div class="rung" style="--rc:var(--s-navy)">
+      <div class="lv">IL2<small>Public / low</small></div>
+      <p><b>Non-critical, publicly releasable information.</b> The easiest environment to stand up a demonstration in, and the least representative of where the mission actually runs.</p>
+    </div>
+    <div class="rung" style="--rc:var(--s-af)">
+      <div class="lv">IL4<small>CUI</small></div>
+      <p><b>Controlled unclassified information.</b> Most enterprise and back-office AI work lives here. This is where a large share of generative AI and analytics programs operate today.</p>
+    </div>
+    <div class="rung" style="--rc:var(--s-4e)">
+      <div class="lv">IL5<small>Higher CUI / NSS</small></div>
+      <p><b>Controlled unclassified information with higher sensitivity, and unclassified national security systems.</b> This is the level defense buyers most often name when they say a capability is &ldquo;real.&rdquo; Enterprise generative AI for the department has been targeted at this level publicly.</p>
+    </div>
+    <div class="rung" style="--rc:var(--s-disa)">
+      <div class="lv">IL6<small>Secret</small></div>
+      <p><b>Classified up to Secret.</b> Fewer offerings exist here, connectivity is constrained, and on-premises or sovereign deployment becomes the default rather than an option.</p>
+    </div>
+    <div class="rung" style="--rc:var(--s-ssf)">
+      <div class="lv">Edge<small>Disconnected</small></div>
+      <p><b>Air-gapped, tactical, afloat, or deployed.</b> No commercial endpoint, intermittent bandwidth, and hard size, weight, and power limits. Inference has to happen locally, which is exactly where a portable software stack earns its keep.</p>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Three things to say correctly, every time</h3>
+      <ul class="clean">
+        <li><b>Software is not authorized; systems are.</b> A product can meet controls and ship hardened builds, but the authorization to operate belongs to the system owner and their authorizing official. Never tell a customer a product &ldquo;is FedRAMP&rdquo; or &ldquo;is IL5.&rdquo;</li>
+        <li><b>FedRAMP and impact levels are different ladders.</b> FedRAMP is the civilian-origin cloud authorization program. Impact levels come from the defense cloud computing security requirements guide. Defense customers care about both, for different reasons.</li>
+        <li><b>Continuous authorization is the goal, not a one-time ATO.</b> Several programs in this guide are explicitly building continuous authorization pipelines. A stack that can be patched and re-attested without breaking the baseline is worth more than one that was compliant on the day it shipped.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What makes an accreditation conversation go well</h3>
+      <ul class="clean">
+        <li><b>Bring the artifacts, not adjectives.</b> Software bills of materials, vulnerability remediation cadence, long-term support branch policy, and hardened container variants are what a security engineer actually reads.</li>
+        <li><b>Ask for the boundary diagram.</b> If the customer can show you where their authorization boundary sits, you can tell them in one meeting whether the deployment is straightforward or hard. Most sellers never ask.</li>
+        <li><b>Find the reciprocity angle.</b> If a sister program already carries an authorization for a similar stack, inheriting controls is dramatically faster than starting over. Ask who else in their service has done this.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="talk">
+  <div class="sec-head">
+    <span class="sec-num">08</span>
+    <h2>Objections you will hear</h2>
+    <p>Short answers you can say out loud without overclaiming. Each one is written so that it stays true even if the customer checks.</p>
+  </div>
+  <div id="objections"></div>
+</section>
+
+<section id="plays">
+  <div class="sec-head">
+    <span class="sec-num">09</span>
+    <h2>Three plays for the next 90 days</h2>
+    <p>Sequenced so that each step produces something you can point at in a pipeline review. Adapt the timing to your own account cadence.</p>
+  </div>
+  <div class="grid g3" id="plays-grid"></div>
+</section>
+
+<section id="glossary">
+  <div class="sec-head">
+    <span class="sec-num">10</span>
+    <h2>Glossary</h2>
+    <p>If you are new to this customer set, read this section first. Defense buyers use acronyms as nouns and will not slow down for you.</p>
+  </div>
+  <div id="glossary-list"></div>
+</section>
+
+<section id="sources" style="border-bottom:0">
+  <div class="sec-head">
+    <span class="sec-num">11</span>
+    <h2>Sources</h2>
+    <p>Every factual claim in this guide traces to one of these public pages. Where reporting and official sites disagree, the official site wins. Check the date on each before quoting it.</p>
+  </div>
+  <ul class="srclist" id="srclist"></ul>
+</section>
+
+</main>
+
+<footer class="wrap">
+  <p><b style="color:var(--text-2)">NVIDIA AI Enterprise DoW Explorer</b> &mdash; unofficial field enablement aid, compiled 18 September 2026 from public sources only.</p>
+  <p>Not an NVIDIA publication, product commitment, pricing statement, roadmap, or authorization claim. Contains no information proprietary or sensitive to the Department of War, NVIDIA, or any partner, OEM, or independent software vendor. Verify every program fact against its linked source before customer use, and route commitments through your deal desk and legal review.</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script>
+"use strict";
+
+/* =========================================================================
+   DATA — every entry traces to a public source listed in SOURCES below.
+   Nothing here is proprietary or sensitive to DoW, NVIDIA, or any partner.
+   ========================================================================= */
+
+const BRANCHES = [
+  {
+    id: "army", name: "US Army", short: "Ground force", color: "var(--s-army)",
+    org: "Army Futures Command · PEO IEW&S · PEO C3N · Army CIO/G-6",
+    summary: "The Army is furthest along in turning AI from experiments into programs of record. Two efforts matter most: a command-and-control rebuild that treats data as the weapon system, and a pipeline program meant to make AI models deliverable and trustworthy across every other program office.",
+    programs: [
+      { name: "Next Generation Command and Control (NGC2)", status: "scaling",
+        what: "A rebuild of Army command and control around a unified data layer, replacing fragmented systems for fires, logistics, and airspace with one data fabric that modern applications and AI models run on top of. The Army declared it ready to scale in July 2026 after Project Convergence Capstone 6, and plans expansion to I Corps later in 2026.",
+        hook: "Unified data layers are inference-hungry by design. Every application riding the data layer needs accelerated compute somewhere, and much of it sits forward at the command post, not in a commercial region.",
+        tags: ["Edge inference", "Data platform", "C2", "Tactical"],
+        nvaie: ["NIM microservices", "Triton", "RAPIDS", "Fleet management"],
+        src: { label: "army.mil — NGC2 ready to scale", url: "https://www.army.mil/article/294284/army_leaders_next_generation_command_and_control_ready_to_scale" } },
+      { name: "Project Linchpin", status: "prototype",
+        what: "The Army's effort to build a trusted, repeatable pipeline for developing, validating, and delivering AI and machine learning models into weapons and intelligence systems. It is run in collaboration with the AI Integration Center, Army Research Laboratory, and the department's Chief Digital and AI Office, and is explicitly about standardization, security, and regulatory compliance rather than a single application.",
+        hook: "This is an MLOps and model-assurance conversation, not a chatbot conversation. Pipelines need reproducible, supported, version-locked software far more than they need the newest model.",
+        tags: ["MLOps", "Model assurance", "Computer vision", "Pipeline"],
+        nvaie: ["NeMo toolchain", "Triton", "TensorRT", "Container security"],
+        src: { label: "AFCEA — Project Linchpin as keystone for Army AI", url: "https://www.afcea.org/signal-media/defense-operations/project-linchpin-aims-be-keystone-army-artificial-intelligence" } },
+      { name: "Army Enterprise LLM Workspace", status: "fielding",
+        what: "The Army's enterprise generative AI workspace, launched in 2025 on a five-year commercial contract and accredited for controlled unclassified information. Public reporting described adoption climbing from roughly zero to about 19,000 users inside 45 days, and the Army CIO publicly flagged token and compute cost as the practical limit on which use cases can scale.",
+        hook: "When a customer says the constraint is cost per token, they have just told you the economics of inference are the deal. That is a conversation about where inference runs and on what.",
+        tags: ["Generative AI", "CUI", "Inference economics"],
+        nvaie: ["NIM microservices", "NeMo Retriever", "Guardrails"],
+        src: { label: "army.mil — Army Enterprise LLM Workspace launch", url: "https://www.army.mil/article/285537" } },
+      { name: "CamoGPT", status: "prototype",
+        what: "An Army-built generative AI tool that started as an experiment and, per public reporting in January 2026, was kept on as a research and development capability rather than being retired as the department consolidated onto its enterprise platform.",
+        hook: "Service-built tools that survive consolidation usually survive because they do something the enterprise platform cannot, most often on data that must stay inside a service boundary.",
+        tags: ["Generative AI", "R&D", "Sovereign data"],
+        nvaie: ["NIM microservices", "NeMo Customizer"],
+        src: { label: "DefenseScoop — CamoGPT will not be phased out", url: "https://defensescoop.com/2026/01/27/army-camogpt-dod-genai-mil/" } },
+      { name: "Project Convergence", status: "scaling",
+        what: "The Army's recurring large-scale experimentation campaign, used to stress new command and control, data, and autonomy concepts against realistic conditions. Capstone 6 at Fort Irwin in 2026 concluded a ten-month NGC2 prototyping phase.",
+        hook: "Experimentation campaigns are where integration problems surface publicly. A capability that performed at a capstone event has a much shorter road to a program of record.",
+        tags: ["Experimentation", "Integration", "Autonomy"],
+        nvaie: ["Simulation", "Edge inference", "Sensor processing"],
+        src: { label: "The Defense Post — Army prepares to scale next-gen command", url: "https://thedefensepost.com/2026/08/03/us-army-next-gen-command/" } }
+    ],
+    vehicles: ["Army CHESS IT catalog", "ITES enterprise IT vehicles", "Government-wide acquisition contracts", "Other transaction agreements via Army innovation organizations"],
+    questions: [
+      "Which program office owns the model pipeline for your effort, and are they aligned to the Army's AI pipeline program or building their own?",
+      "How much of your inference has to happen at the command post rather than in a data center, and what is the size, weight, and power budget there?",
+      "What is your cost per unit of inference today, and is that the constraint on which use cases you approve?",
+      "Which authorization boundary will this live in, and has a sister program already accredited a similar stack you could inherit controls from?",
+      "Who holds the sustainment contract at this installation today?"
+    ]
+  },
+  {
+    id: "airforce", name: "US Air Force", short: "Department of the Air Force", color: "var(--s-af)",
+    org: "Air Force Research Laboratory · AFLCMC · DAF CIO · software factories",
+    summary: "The Department of the Air Force moved first on enterprise generative AI, then handed that mission to the department level. What remains distinctly Air Force is the hard stuff: autonomy for uncrewed aircraft, battle management across a contested kill chain, and a research laboratory portfolio that seeds most of it.",
+    programs: [
+      { name: "GenAI.mil transition (NIPRGPT sunset)", status: "fielding",
+        what: "NIPRGPT, built by the Air Force Research Laboratory and launched in June 2024, gave airmen and guardians a safe place to experiment with generative AI and reached hundreds of thousands of users. Public reporting in December 2025 said it would shut down on 31 December, with users moving to the department-wide GenAI.mil platform.",
+        hook: "Consolidation frees the service to spend on what the enterprise platform will never cover: classified, disconnected, and mission-specific inference inside their own boundary.",
+        tags: ["Generative AI", "Consolidation", "Enterprise"],
+        nvaie: ["NIM microservices", "NeMo Retriever"],
+        src: { label: "DefenseScoop — Air Force sunsetting NIPRGPT", url: "https://defensescoop.com/2025/12/18/air-force-sunsetting-niprgpt-generative-ai-platform/" } },
+      { name: "Collaborative Combat Aircraft autonomy", status: "prototype",
+        what: "The Air Force's uncrewed collaborative aircraft effort, where autonomy software is developed and flight-tested as a distinct product line from the airframe itself. Public program materials describe an increment approach with competing vendor aircraft.",
+        hook: "Autonomy is inference under a hard latency budget with no connectivity assumption. Everything about it argues for a portable, supported runtime that behaves the same on a test bench and on the aircraft.",
+        tags: ["Autonomy", "Edge inference", "Latency"],
+        nvaie: ["TensorRT", "Triton", "Holoscan", "Simulation"],
+        src: { label: "af.mil — Air Force news and program releases", url: "https://www.af.mil/News/" } },
+      { name: "Air Force Research Laboratory AI portfolio", status: "scaling",
+        what: "AFRL builds and transitions AI capability across autonomy, sensing, information systems, and space vehicles, spread across directorates including Wright-Patterson, Rome, and Kirtland. It built and ran NIPRGPT, which is a useful indicator of how quickly the lab can field something at scale.",
+        hook: "Laboratories are the easiest first technical win in this branch and the hardest to convert into revenue. Treat them as the place to prove the stack, and plan the transition path before you start.",
+        tags: ["Research", "Transition", "Sensing"],
+        nvaie: ["Full platform", "NeMo toolchain", "Simulation"],
+        src: { label: "AFCEA — Air Force enables responsible generative AI experimenting", url: "https://www.afcea.org/signal-media/defense-operations/air-force-enables-responsible-experimenting-generative-ai" } },
+      { name: "Battle management and the DAF battle network", status: "scaling",
+        what: "The Air Force's contribution to joint all-domain command and control, connecting sensors and shooters across services and pushing decision support forward. It is a family of efforts rather than one program, and the data plumbing dominates the schedule.",
+        hook: "Decision support at machine speed is an inference problem at the edge of a contested network. Ask where the processing happens when the link to the rear is gone.",
+        tags: ["C2", "Sensor fusion", "Edge inference"],
+        nvaie: ["Triton", "NIM microservices", "Holoscan"],
+        src: { label: "Wikipedia — Joint All-Domain Command and Control overview", url: "https://en.wikipedia.org/wiki/Joint_All-Domain_Command_and_Control" } },
+      { name: "Software factories and DevSecOps platforms", status: "scaling",
+        what: "The Air Force pioneered government software factories and hardened container platforms, which set the norm for how defense software gets built, scanned, and authorized. Continuous authorization pipelines grew out of this work.",
+        hook: "These teams care about container provenance, vulnerability response time, and whether your images pass their scanners. Bring the security artifacts, not the benchmark chart.",
+        tags: ["DevSecOps", "Containers", "cATO"],
+        nvaie: ["Hardened container builds", "GPU Operator", "Support branches"],
+        src: { label: "af.mil — Department of the Air Force launches NIPRGPT", url: "https://www.af.mil/News/Article-Display/Article/3800809/department-of-the-air-force-launches-niprgpt/" } }
+    ],
+    vehicles: ["Government-wide acquisition contracts", "Cloud acquisition vehicles", "Small business innovation and strategic funding increments", "Other transaction agreements via AFWERX"],
+    questions: [
+      "Now that enterprise generative AI moved to the department level, what AI work stays inside your boundary and why?",
+      "For autonomy work, what is the latency budget and the assumed connectivity when the link is contested?",
+      "Which software factory or platform team will have to accept our containers, and what do their scanners require?",
+      "Is there an existing continuous authorization pipeline we would inherit, or are we the first?",
+      "What does the transition path look like from the laboratory to a program of record?"
+    ]
+  },
+  {
+    id: "disa", name: "DISA", short: "Defense Information Systems Agency", color: "var(--s-disa)",
+    org: "Defense Information Systems Agency · Hosting and Compute · Cyber",
+    summary: "DISA is the department's infrastructure and network provider, which makes it a different kind of customer. It rarely buys mission AI. It buys the platform everyone else's AI has to run on, and it sets the security conditions the rest of this guide has to satisfy.",
+    programs: [
+      { name: "JWCC Next", status: "planned",
+        what: "The follow-on to the Joint Warfighting Cloud Capability. Public reporting describes a draft performance of work statement that would create a cloud marketplace and expand AI and edge computing, broaden the set of eligible cloud providers, with a solicitation targeted in fiscal 2026 and awards expected in the following period.",
+        hook: "A marketplace structure that explicitly names AI and edge is the single most consequential acquisition event in this guide. Where accelerated offerings sit in that marketplace shapes every service's path of least resistance.",
+        tags: ["Cloud", "Marketplace", "Edge", "Acquisition"],
+        nvaie: ["Cloud marketplace offerings", "Certified instances"],
+        src: { label: "DefenseScoop — JWCC follow-on would create cloud marketplace", url: "https://defensescoop.com/2026/06/01/pentagon-jwcc-ucm-draft-performance-of-work-statement/" } },
+      { name: "Thunderdome", status: "fielding",
+        what: "DISA's zero trust implementation, which reached an advanced zero trust level and is described in congressional testimony as one of the department's major zero trust successes. Agencies migrating onto it inherit zero trust capability rather than building their own.",
+        hook: "Zero trust programs generate enormous volumes of telemetry that nobody can review manually. Accelerated analytics on security data is the natural adjacency, and it is a cyber budget, not an AI budget.",
+        tags: ["Zero trust", "Cybersecurity", "Telemetry"],
+        nvaie: ["Morpheus", "RAPIDS", "Triton"],
+        src: { label: "House Armed Services — DoD CIO posture testimony", url: "https://armedservices.house.gov/uploadedfiles/5.8_arrington_testimony.pdf" } },
+      { name: "DoD Olympus", status: "scaling",
+        what: "A DISA hybrid cloud offering listed publicly among its hosting and compute services, intended to give mission partners a managed environment without each of them standing up their own.",
+        hook: "Managed environments standardize what tenants are allowed to run. Getting an accelerated software stack into the standard catalog is worth more than any single tenant win.",
+        tags: ["Hybrid cloud", "Hosting", "Catalog"],
+        nvaie: ["GPU Operator", "Base Command Manager", "Support branches"],
+        src: { label: "DISA Hybrid Cloud — DoD Olympus offering", url: "https://hybridcloud.disa.mil/offerings/dod-olympus" } },
+      { name: "Joint Operational Edge", status: "scaling",
+        what: "DISA's effort to place cloud capability at overseas and operational locations rather than requiring traffic to return to the continental United States, reported alongside its Olympus work.",
+        hook: "Operational edge nodes are small, constrained, and remote. They are the clearest case in the department for inference that runs locally with a supportable software baseline.",
+        tags: ["Edge", "Overseas", "Latency"],
+        nvaie: ["Fleet management", "NIM microservices", "Air-gap support"],
+        src: { label: "Federal News Network — Olympus and JOE initiatives take hold", url: "https://federalnewsnetwork.com/defense-news/2025/08/as-disa-preps-jwcc-next-olympus-joe-initiatives-take-hold/" } },
+      { name: "AI and automation for workforce gaps", status: "prototype",
+        what: "DISA has publicly discussed using artificial intelligence, machine learning, and automation to cover capability gaps created by workforce vacancies, including in support of keeping its cloud acquisition timeline on track.",
+        hook: "This is an operations efficiency story with a named pain. It is also the most credible internal AI use case DISA has publicly described.",
+        tags: ["Automation", "Operations", "Workforce"],
+        nvaie: ["NIM microservices", "NeMo Retriever", "Agentic workflows"],
+        src: { label: "Breaking Defense — DISA turns to AI and automation", url: "https://breakingdefense.com/2025/05/disa-turns-to-ai-automation-to-bridge-workforce-gaps-attempts-to-stay-on-track-with-jwcc-2-0/" } }
+    ],
+    vehicles: ["Cloud acquisition vehicles", "Government-wide acquisition contracts", "Agency-specific IT services contracts"],
+    questions: [
+      "How will accelerated computing be represented in the next cloud marketplace structure?",
+      "What does a mission partner have to do today to get accelerated capacity in a managed environment, and how long does it take?",
+      "At operational edge sites, what is the ceiling on power and cooling, and what is the plan when connectivity to the rear is lost?",
+      "Who reviews and approves the software baseline that tenants are allowed to run?",
+      "Where does security telemetry analysis run today, and is the volume already beyond what analysts can review?"
+    ]
+  }
+];
+
+BRANCHES.push(
+  {
+    id: "fourthestate", name: "DoD 4th Estate", short: "CDAO, DIU, defense agencies", color: "var(--s-4e)",
+    org: "Chief Digital and AI Office · Defense Innovation Unit · defense agencies and field activities",
+    summary: "The 4th Estate is everything that is not a military service: the Chief Digital and AI Office, the Defense Innovation Unit, and the defense agencies. It is where department-wide AI policy, the enterprise generative AI platform, and the enterprise analytics platform all live, which makes it the highest-leverage and most crowded room in this guide.",
+    programs: [
+      { name: "GenAI.mil", status: "fielding",
+        what: "The department's enterprise generative AI platform, launched 9 December 2025 initially on a single commercial model family and since expanded into a multi-model marketplace. Public reporting in 2026 described additional frontier model offerings being activated, more than 1.7 million unique users onboarded out of a population above 3 million, and agent creation at scale on the platform.",
+        hook: "A platform at this scale makes the department fluent in what generative AI can do, then immediately runs into the two things it cannot do: classified workloads and disconnected operations. That gap is the opportunity, and it grows as adoption grows.",
+        tags: ["Generative AI", "Enterprise", "Agents", "IL5"],
+        nvaie: ["NIM microservices", "NeMo toolchain", "Blueprints"],
+        src: { label: "GovCIO — GenAI.mil debut and commercial AI at scale", url: "https://govciomedia.com/genai-mil-makes-debut-as-dow-pushes-commercial-ai-at-scale/" } },
+      { name: "Advana and Open DAGIR", status: "scaling",
+        what: "Advana is the department's enterprise analytics platform, publicly described as supporting more than one hundred thousand users. Open DAGIR is the acquisition approach that opened it from a single-award contract to a multiple-award ecosystem under a ten-year ceiling reported at fifteen billion dollars, deliberately structured so the government keeps data ownership while industry keeps its intellectual property.",
+        hook: "Multi-vendor by policy means interoperability is a scored requirement, not a differentiator. A software layer that runs the same way across vendors and clouds fits this model better than anything vertically integrated.",
+        tags: ["Data platform", "Analytics", "Multi-vendor", "Acquisition"],
+        nvaie: ["RAPIDS", "Triton", "NeMo Retriever"],
+        src: { label: "Breaking Defense — CDAO opens Advana to multiple vendors", url: "https://breakingdefense.com/2024/07/cdao-opens-advana-analytics-to-multiple-vendors-in-a-push-to-scale-up/" } },
+      { name: "AI Rapid Capabilities Cell", status: "scaling",
+        what: "A cell inside the Chief Digital and AI Office, created in late 2024 to accelerate frontier AI into military use, funded with appropriations reported at one hundred million dollars across two fiscal years and running pilot programs split between warfighting and enterprise management use cases.",
+        hook: "Rapid cells buy speed, not infrastructure. Use them to get a capability proven and referenced, then follow the transition into whichever service picks it up.",
+        tags: ["Frontier AI", "Pilots", "Rapid acquisition"],
+        nvaie: ["Blueprints", "NIM microservices", "NeMo Evaluator"],
+        src: { label: "Federal News Network — DoD introduces AI rapid capabilities cell", url: "https://federalnewsnetwork.com/defense-main/2024/12/dod-sunsets-task-force-lima-introduces-ai-rapid-capabilities-cell/" } },
+      { name: "Project Maven", status: "fielding",
+        what: "The department's long-running computer vision and machine-assisted intelligence effort, which public reporting indicates is expected to reach the point of transmitting fully machine-generated intelligence products to combatant commanders during 2026.",
+        hook: "This is the department's proof that computer vision at operational scale works. It is also the template every service now cites when asking for sensor exploitation of their own.",
+        tags: ["Computer vision", "ISR", "Sensor exploitation"],
+        nvaie: ["TensorRT", "Triton", "Holoscan", "NeMo toolchain"],
+        src: { label: "Apogee — inside the Pentagon's AI acceleration strategy", url: "https://apogee-magazine.com/features/inside-the-pentagons-ai-acceleration-strategy/" } },
+      { name: "Department AI strategy and policy", status: "scaling",
+        what: "The department released an artificial intelligence strategy in 2026, setting the policy frame that services translate into implementation plans. Strategy documents matter to sellers because they supply the vocabulary that program offices must use in their own justifications.",
+        hook: "Quote the customer's own strategy language back to them in your positioning. It is public, it is authoritative inside their building, and it costs you nothing.",
+        tags: ["Policy", "Strategy", "Governance"],
+        nvaie: ["Governance tooling", "Guardrails", "Evaluation"],
+        src: { label: "Inside Government Contracts — Pentagon releases AI strategy", url: "https://www.insidegovernmentcontracts.com/2026/02/pentagon-releases-artificial-intelligence-strategy/" } }
+    ],
+    vehicles: ["Enterprise analytics multiple-award ecosystem", "Government-wide acquisition contracts", "Other transaction agreements and commercial solutions openings", "Rapid prototyping authorities"],
+    questions: [
+      "Which workloads cannot run on the enterprise platform because of classification or connectivity, and who owns those today?",
+      "Under the multi-vendor model, what does the government require for portability between vendors?",
+      "Which pilots are approaching transition, and which service is expected to pick them up?",
+      "What evaluation and guardrail evidence does an AI capability need before it gets approved for operational use?",
+      "Where in your strategy document does this capability map, and who owns that line?"
+    ]
+  },
+  {
+    id: "spaceforce", name: "US Space Force", short: "Space operations", color: "var(--s-ssf)",
+    org: "Space Systems Command · Space Operations Command · Space Development Agency · SpaceWERX",
+    summary: "The Space Force is small, technical, and unusually data-native. Its problems are sensor volume, orbital object tracking, and getting third-party applications onto an authorized platform quickly. Very little of that is a generative AI conversation, and almost all of it is an accelerated computing conversation.",
+    programs: [
+      { name: "Warp Core", status: "fielding",
+        what: "The Space Force data-as-a-service platform, publicly described by Space Systems Command as providing ingestion, processing, normalization, analysis, and visualization across the global space enterprise, built on a commercial data platform and used to retire legacy reporting and systems.",
+        hook: "A data-as-a-service platform is the on-ramp. Ask what analytics run on top of it today and which of those are limited by processing throughput rather than by data availability.",
+        tags: ["Data platform", "Space domain", "Analytics"],
+        nvaie: ["RAPIDS", "Triton", "NIM microservices"],
+        src: { label: "Space Systems Command — SSC awards data platform contract", url: "https://www.ssc.spaceforce.mil/Portals/3/Harnessing%20the%20power%20of%20Data_%20SSC%20awards%20contract%20to%20Palantir%20_%20Space%20Systems%20Command%20_%20Article%20Display_1.pdf" } },
+      { name: "Continuous authorization pipeline for Warp Core apps", status: "scaling",
+        what: "Publicly announced work to establish a continuous authorization to operate pipeline so third-party applications can be delivered onto Warp Core rapidly and repeatedly, funded through a strategic funding increment.",
+        hook: "A continuous authorization pipeline is the single best thing that can happen to a software vendor in this customer set. Find out what a stack has to satisfy to ride it.",
+        tags: ["cATO", "DevSecOps", "Third-party apps"],
+        nvaie: ["Hardened container builds", "Support branches", "GPU Operator"],
+        src: { label: "ExecutiveBiz — STRATFI funding for Warp Core initiative", url: "https://www.executivebiz.com/articles/rise8-spacewerx-funding" } },
+      { name: "Space domain awareness automation", status: "prototype",
+        what: "Publicly reported work to automate space domain awareness workflows, including an AI-enabled system deployed in 2026 after earlier Space Force funding, alongside the service's broader move to operationalize its data platform toward domain awareness missions.",
+        hook: "Object tracking and conjunction analysis are throughput problems with hard deadlines. They respond directly to accelerated compute in a way that is easy to demonstrate.",
+        tags: ["Space domain awareness", "Automation", "Throughput"],
+        nvaie: ["RAPIDS", "cuOpt", "Triton", "Simulation"],
+        src: { label: "Defense Daily — USSF operationalizes Warp Core toward domain awareness", url: "https://www.defensedaily.com/u-s-space-force-operationalizes-warp-core-moving-toward-atlas-for-space-domain-awareness/space/" } },
+      { name: "Proliferated satellite architecture ground processing", status: "scaling",
+        what: "The Space Development Agency is fielding a proliferated architecture of small satellites in tranches, which shifts the hard engineering problem toward the ground segment: ingesting, fusing, and acting on data from many more sources than legacy architectures produced.",
+        hook: "More satellites means more data per minute against the same decision timeline. That is a processing problem before it is an algorithm problem.",
+        tags: ["Ground segment", "Sensor fusion", "Data volume"],
+        nvaie: ["Triton", "TensorRT", "RAPIDS", "Holoscan"],
+        src: { label: "Space Development Agency — official site", url: "https://www.sda.mil/" } },
+      { name: "SpaceWERX and strategic funding increments", status: "scaling",
+        what: "The Space Force innovation arm, which funds small companies through phased research programs and strategic funding increments that pair government dollars with private investment to cross from prototype to program.",
+        hook: "This is the cheapest way to get a capability into a Space Force environment. It is also where partners and independent software vendors find their first Space Force reference.",
+        tags: ["Innovation", "Prototype funding", "Transition"],
+        nvaie: ["Full platform", "Blueprints"],
+        src: { label: "Rise8 — AFWERX and SpaceWERX STRATFI selection", url: "https://www.rise8.us/resources/afwerx-and-spacewerx-select-rise8-for-program-year-2025-stratfi" } }
+    ],
+    vehicles: ["Small business innovation research and strategic funding increments", "Government-wide acquisition contracts", "Space Systems Command contract vehicles", "Other transaction agreements"],
+    questions: [
+      "Which analytics on your data platform are limited by processing throughput rather than data access?",
+      "What does an application have to satisfy to ride the continuous authorization pipeline?",
+      "As satellite counts grow, where does ground processing become the bottleneck, and what is the plan?",
+      "How much processing has to happen at the ground entry point versus in a central enclave?",
+      "Is there an innovation funding path that would let us prove this before a program office has to commit?"
+    ]
+  },
+  {
+    id: "navy", name: "US Navy / USMC", short: "Department of the Navy", color: "var(--s-navy)",
+    org: "DON CIO · NAVWAR and NIWC · Office of Naval Research · Marine Corps",
+    summary: "The Department of the Navy published an AI strategy in 2026 and the Marine Corps is executing a multi-year implementation plan with dated objectives. Their defining constraint is physical: ships, submarines, and dispersed Marine units operate with limited bandwidth, so inference has to travel with the force.",
+    programs: [
+      { name: "Strategy to Weaponize Data and Artificial Intelligence", status: "fielding",
+        what: "The Department of the Navy's AI strategy, published 15 June 2026, establishing a roadmap for a data-ready, AI-enabled force focused on accelerating decision-making and maintaining maritime superiority.",
+        hook: "A fresh strategy means implementation plans, funding lines, and named owners are being written right now. This is the highest-value window to be in the room.",
+        tags: ["Strategy", "Data readiness", "Policy"],
+        nvaie: ["Full platform", "Governance tooling"],
+        src: { label: "DON CIO — Strategy to Weaponize Data and Artificial Intelligence", url: "https://www.doncio.navy.mil/ContentView.aspx?id=20519" } },
+      { name: "Marine Corps AI Implementation Plan", status: "scaling",
+        what: "The Marine Corps implementation plan covering fiscal years 2025 through 2030, developed against the service AI strategy. Public reporting notes an objective to create robust AI infrastructure for storing large volumes of data in a secure environment by December 2026.",
+        hook: "A dated infrastructure objective inside a published plan is the most actionable artifact in this guide. It names a deadline the customer has already committed to publicly.",
+        tags: ["Implementation plan", "Infrastructure", "Deadline"],
+        nvaie: ["Base Command Manager", "GPU Operator", "RAPIDS"],
+        src: { label: "marines.mil — USMC artificial intelligence publication", url: "https://www.marines.mil/Portals/1/Publications/NAVMC%203000.1%20(SECURED).pdf" } },
+      { name: "Marine Corps Aviation Plan AI and machine learning lines", status: "scaling",
+        what: "The 2026 aviation plan was publicly described as moving from strategic direction to measurable, time-bound initiatives, including using AI and machine learning to generate advantage for the Marine Air-Ground Task Force.",
+        hook: "Aviation plans tie AI to readiness and sustainment outcomes. Predictive maintenance is the easiest business case to defend in a budget drill because the savings are already measured.",
+        tags: ["Predictive maintenance", "Readiness", "Aviation"],
+        nvaie: ["RAPIDS", "Triton", "NIM microservices"],
+        src: { label: "Military.com — newest Marine Corps aviation plan blends warfighters and AI", url: "https://www.military.com/daily-news/2026/04/14/2040-and-beyond-newest-marine-corps-aviation-plan-blends-warfighters-ai.html" } },
+      { name: "Tactical AI research for the Marine Corps", status: "prototype",
+        what: "An Office of Naval Research program area focused on tactical artificial intelligence for the Marine Corps, sitting in its human and bioengineered systems portfolio.",
+        hook: "Research programs define what 'tactical' means in requirements language two years before a program office writes it down. Being early here is cheap.",
+        tags: ["Research", "Tactical edge", "Human-machine teaming"],
+        nvaie: ["Edge inference", "TensorRT", "Simulation"],
+        src: { label: "Office of Naval Research — Tactical AI for Marine Corps", url: "https://onr.navy.mil/Science-Technology/Departments/Code-34/All-Programs/human-bioengineered-systems-341/tactical-artificial-intelligence-for-marine-corps" } },
+      { name: "Naval information warfare centers", status: "scaling",
+        what: "The Navy's information warfare centers on both coasts engineer, integrate, and sustain the systems that carry naval data and command and control, which makes them the practical integration point for most naval AI work.",
+        hook: "These centers decide what actually gets installed and sustained. An engineer there who can build with your stack is worth more than a briefing to a flag officer.",
+        tags: ["Integration", "Sustainment", "Afloat"],
+        nvaie: ["GPU Operator", "Fleet management", "Air-gap support"],
+        src: { label: "USNI News — the Navy's strategy to weaponize data and AI", url: "https://news.usni.org/2026/07/16/the-navys-strategy-to-weaponize-data-and-artificial-intelligence" } }
+    ],
+    vehicles: ["Navy services acquisition vehicles", "Government-wide acquisition contracts", "Naval research and innovation agreements", "Other transaction agreements"],
+    questions: [
+      "Which decisions have to be made afloat or forward, without a link back to shore?",
+      "What is the December 2026 infrastructure objective actually going to be built on, and who owns that build?",
+      "Where does predictive maintenance data live today, and what is the measured cost of the failures you are trying to predict?",
+      "Which information warfare center will have to integrate and sustain this, and have they seen it yet?",
+      "What is the power, cooling, and space envelope on the platform this has to fit inside?"
+    ]
+  }
+);
+
+/* ---- Publicly identified locations (headquarters, installations, laboratories) ---- */
+const SITES = [
+  { n:"Aberdeen Proving Ground", s:"MD", b:"army", lon:-76.115, lat:39.466, c:2, note:"Army program executive office for intelligence, electronic warfare and sensors, and the C5ISR Center." },
+  { n:"Austin", s:"TX", b:"army", lon:-97.743, lat:30.267, c:2, note:"Army Futures Command headquarters and its AI integration activity." },
+  { n:"Fort Belvoir", s:"VA", b:"army", lon:-77.146, lat:38.712, c:1, note:"Army program executive office for enterprise information systems." },
+  { n:"Fort Irwin", s:"CA", b:"army", lon:-116.684, lat:35.263, c:1, note:"National Training Center, host of the Project Convergence capstone events." },
+  { n:"Redstone Arsenal", s:"AL", b:"army", lon:-86.654, lat:34.687, c:1, note:"Army materiel, aviation and missile commands." },
+  { n:"Fort Eisenhower", s:"GA", b:"army", lon:-82.140, lat:33.420, c:1, note:"Army Cyber Command." },
+  { n:"Wright-Patterson AFB", s:"OH", b:"airforce", lon:-84.048, lat:39.826, c:2, note:"Air Force Research Laboratory headquarters and the Air Force Life Cycle Management Center." },
+  { n:"Rome", s:"NY", b:"airforce", lon:-75.456, lat:43.213, c:1, note:"Air Force Research Laboratory Information Directorate." },
+  { n:"Kirtland AFB", s:"NM", b:"airforce", lon:-106.550, lat:35.050, c:1, note:"Air Force Research Laboratory Space Vehicles Directorate." },
+  { n:"Hanscom AFB", s:"MA", b:"airforce", lon:-71.277, lat:42.459, c:1, note:"Command, control and battle management acquisition." },
+  { n:"Edwards AFB", s:"CA", b:"airforce", lon:-117.891, lat:34.905, c:1, note:"Flight test center, including uncrewed aircraft and autonomy testing." },
+  { n:"Fort Meade", s:"MD", b:"disa", lon:-76.741, lat:39.108, c:2, note:"Defense Information Systems Agency headquarters." },
+  { n:"Scott AFB", s:"IL", b:"disa", lon:-89.852, lat:38.545, c:1, note:"DISA field activities and US Transportation Command." },
+  { n:"Pentagon / Arlington", s:"VA", b:"fourthestate", lon:-77.056, lat:38.871, c:3, note:"Chief Digital and AI Office and department headquarters staff." },
+  { n:"Mountain View", s:"CA", b:"fourthestate", lon:-122.083, lat:37.386, c:1, note:"Defense Innovation Unit headquarters." },
+  { n:"Los Angeles AFB", s:"CA", b:"spaceforce", lon:-118.380, lat:33.920, c:2, note:"Space Systems Command." },
+  { n:"Peterson SFB", s:"CO", b:"spaceforce", lon:-104.700, lat:38.823, c:2, note:"Space Operations Command." },
+  { n:"Schriever SFB", s:"CO", b:"spaceforce", lon:-104.525, lat:38.803, c:1, note:"Satellite operations and space domain awareness activity." },
+  { n:"Vandenberg SFB", s:"CA", b:"spaceforce", lon:-120.503, lat:34.732, c:1, note:"Space launch delta and range operations." },
+  { n:"San Diego", s:"CA", b:"navy", lon:-117.161, lat:32.716, c:2, note:"Naval Information Warfare Center Pacific." },
+  { n:"Charleston", s:"SC", b:"navy", lon:-79.940, lat:32.790, c:1, note:"Naval Information Warfare Center Atlantic." },
+  { n:"Quantico", s:"VA", b:"navy", lon:-77.300, lat:38.522, c:2, note:"Marine Corps Combat Development Command and headquarters staff." },
+  { n:"Patuxent River", s:"MD", b:"navy", lon:-76.421, lat:38.285, c:1, note:"Naval Air Systems Command." },
+  { n:"Norfolk", s:"VA", b:"navy", lon:-76.285, lat:36.851, c:1, note:"Fleet headquarters and naval network operations." },
+  { n:"Arlington (ONR)", s:"VA", b:"navy", lon:-77.098, lat:38.884, c:1, note:"Office of Naval Research." }
+];
+
+/* ---- Workload fit matrix. 3 = established, 2 = growing, 1 = emerging ---- */
+const WORKLOADS = [
+  { n:"Retrieval and knowledge search",
+    f:{army:3, airforce:3, disa:2, fourthestate:3, spaceforce:2, navy:2},
+    r:{army:"Enterprise generative AI workspace in the field with measured adoption.",
+       airforce:"Built and scaled the department's first large generative AI service.",
+       disa:"Named internally for covering workforce gaps, not yet a fielded program.",
+       fourthestate:"Owns the department-wide platform now serving over a million users.",
+       spaceforce:"Data platform in place; retrieval on top of it is the natural next step.",
+       navy:"Named in the 2026 strategy, implementation still being written."} },
+  { n:"Agentic workflows and automation",
+    f:{army:3, airforce:2, disa:2, fourthestate:3, spaceforce:2, navy:2},
+    r:{army:"Command and control rebuild assumes applications acting on a shared data layer.",
+       airforce:"Follows the department platform rather than leading it.",
+       disa:"Automation is the stated answer to vacancy-driven capability gaps.",
+       fourthestate:"Public reporting describes agent creation at very large scale on the platform.",
+       spaceforce:"Workflow automation is being applied to domain awareness tasks.",
+       navy:"Strategy names decision speed; agent tooling is implied, not yet named."} },
+  { n:"Computer vision and sensor exploitation",
+    f:{army:3, airforce:3, disa:1, fourthestate:3, spaceforce:3, navy:3},
+    r:{army:"The model pipeline program exists largely to deliver sensor AI safely.",
+       airforce:"Core intelligence, surveillance and reconnaissance mission.",
+       disa:"Not a DISA mission; it transports and hosts rather than exploits.",
+       fourthestate:"The department's flagship machine-assisted intelligence effort.",
+       spaceforce:"Proliferated satellite architecture makes this a ground-segment throughput problem.",
+       navy:"Maritime domain awareness and targeting across dispersed sensors."} },
+  { n:"Autonomy and edge inference",
+    f:{army:3, airforce:3, disa:2, fourthestate:2, spaceforce:2, navy:3},
+    r:{army:"Command posts and tactical formations need inference without a link to the rear.",
+       airforce:"Uncrewed collaborative aircraft autonomy is a named acquisition line.",
+       disa:"Operational edge cloud nodes push compute forward, but not autonomy itself.",
+       fourthestate:"Mass-produced autonomous systems initiatives sit here.",
+       spaceforce:"On-orbit and ground-entry processing, growing with constellation size.",
+       navy:"Afloat and dispersed forces operate under hard bandwidth limits."} },
+  { n:"Cybersecurity analytics",
+    f:{army:2, airforce:2, disa:3, fourthestate:2, spaceforce:2, navy:2},
+    r:{army:"Army Cyber Command is a large consumer but not a named AI program here.",
+       airforce:"Handled largely through joint and department-level capability.",
+       disa:"Zero trust at department scale produces telemetry beyond human review.",
+       fourthestate:"Policy and enterprise tooling rather than operational defense.",
+       spaceforce:"Ground segment defense grows with the size of the architecture.",
+       navy:"Fleet network defense across a very large attack surface."} },
+  { n:"Modeling, simulation and digital twins",
+    f:{army:3, airforce:3, disa:1, fourthestate:2, spaceforce:3, navy:3},
+    r:{army:"Large recurring experimentation campaigns depend on synthetic environments.",
+       airforce:"Autonomy cannot be tested at the needed rate without simulation.",
+       disa:"Not a DISA mission area.",
+       fourthestate:"Evaluation and test infrastructure for AI capabilities.",
+       spaceforce:"Digital engineering is standard practice across space acquisition.",
+       navy:"Ship and aircraft design, training, and mission rehearsal."} },
+  { n:"Predictive maintenance and sustainment",
+    f:{army:2, airforce:3, disa:1, fourthestate:2, spaceforce:2, navy:3},
+    r:{army:"Fleet readiness work exists but is less publicly prominent than C2.",
+       airforce:"Aircraft availability is the most defensible business case in the service.",
+       disa:"Infrastructure operations rather than platform sustainment.",
+       fourthestate:"Enterprise analytics platform carries department-wide readiness data.",
+       spaceforce:"Ground systems and launch infrastructure sustainment.",
+       navy:"Named in the 2026 aviation plan with measurable readiness objectives."} },
+  { n:"Logistics and optimization",
+    f:{army:2, airforce:2, disa:1, fourthestate:3, spaceforce:1, navy:2},
+    r:{army:"Logistics is one of the functions the unified data layer is meant to fuse.",
+       airforce:"Mobility and sustainment planning at scale.",
+       disa:"Out of mission scope.",
+       fourthestate:"Enterprise analytics for business and mission operations is the core use.",
+       spaceforce:"Small footprint, limited logistics tail.",
+       navy:"Distributed maritime operations create hard resupply optimization problems."} },
+  { n:"Speech, translation and transcription",
+    f:{army:2, airforce:2, disa:1, fourthestate:2, spaceforce:1, navy:2},
+    r:{army:"Coalition and partner operations create steady demand.",
+       airforce:"Air operations centers generate large volumes of voice traffic.",
+       disa:"Not a named mission need.",
+       fourthestate:"Common enterprise productivity use on the department platform.",
+       spaceforce:"Limited applicability to the mission set.",
+       navy:"Bridge-to-bridge and coalition communications."} }
+];
+
+const OBJECTIONS = [
+  { q:"We already have the department's generative AI platform. Why would we need anything else?",
+    a:"Because that platform covers a specific slice: unclassified and controlled-unclassified work, over a network connection, with commercial models. It does not cover classified enclaves, disconnected and tactical operations, or models a program needs to adapt on data that cannot leave its boundary. The right framing is not replacement. It is the workloads that platform structurally cannot take, which grow as adoption grows." },
+  { q:"Open-source containers are free. Why pay for a supported stack?",
+    a:"The software is free. The accreditation, the patching, and the version compatibility are not. Ask who on their team owns vulnerability remediation for every container in the stack, what happens to their authorization when a critical vulnerability lands, and whether an application accredited last year still builds against this year's libraries. If they have good answers, they genuinely may not need it. Most do not." },
+  { q:"Is your software FedRAMP authorized, or approved at Impact Level 5?",
+    a:"Software by itself is never authorized. Authorization belongs to a system and its authorizing official. What a software vendor can do is meet the applicable controls, publish hardened build options, maintain a bill of materials, and remediate vulnerabilities on a defined cadence, so the system owner's authorization work is shorter. Say that precisely. Overclaiming here is the fastest way to lose a security engineer permanently." },
+  { q:"We don't have the power, cooling, or floor space for accelerated infrastructure.",
+    a:"That is a real constraint and often decisive, especially at forward and afloat sites. Take it seriously rather than arguing. Then separate the two cases: enterprise workloads that can run in an authorized cloud region where power is somebody else's problem, and edge workloads where you should be sizing to their actual envelope from the first conversation rather than proposing a data center they cannot host." },
+  { q:"Our data cannot leave our boundary, so AI is off the table for us.",
+    a:"That is an argument for on-premises inference, not against AI. The entire point of a portable software platform is that the model runs where the data already is. Ask them to draw the boundary. Once it is on a whiteboard, the conversation usually turns technical and productive within ten minutes." },
+  { q:"We are a software program. We don't buy infrastructure.",
+    a:"Correct, and you probably are not selling them infrastructure. You are selling the runtime their application needs to hit its performance requirement, and the support commitment their sustainment plan needs. Find out who does own the infrastructure they run on, and get introduced. That person is your actual buyer." }
+];
+
+const PLAYS = [
+  { n:"Play 1 · Inherit an authorization",
+    g:"Turn a nine-month accreditation problem into a three-month one.",
+    steps:["Week 1–2: identify one program in your account with a live authorization boundary and an AI requirement they have not started.",
+           "Week 3–4: get their boundary diagram and their scanner requirements in writing.",
+           "Week 5–8: find a sister program in the same service that has already accredited a comparable stack, and introduce the two security teams.",
+           "Week 9–12: deliver the security artifact package and get a written statement of what remains before their authorizing official would sign."] },
+  { n:"Play 2 · Win the disconnected workload",
+    g:"Take the workload the enterprise platform can never serve.",
+    steps:["Week 1–2: list every use case the customer wanted but was told to drop because of classification or connectivity.",
+           "Week 3–5: pick the one with a named mission owner and a measurable outcome, not the most technically interesting one.",
+           "Week 6–9: size it honestly against their real power, cooling, and space envelope, with the partner who owns the hardware.",
+           "Week 10–12: run a bounded demonstration in their environment, and agree the success criteria before it starts."] },
+  { n:"Play 3 · Pull through an ISV",
+    g:"Let the application vendor carry the requirement for you.",
+    steps:["Week 1–2: map which independent software vendors already have the account and which of their features need accelerated inference.",
+           "Week 3–4: get on a joint call with their field engineer, not their sales lead.",
+           "Week 5–8: co-build one performance or cost argument the customer already cares about, using the customer's own numbers.",
+           "Week 9–12: land it in the vendor's next delivery increment so it arrives on their contract, not on a new one."] }
+];
+
+const GLOSSARY = [
+  ["Air gap","A network with no physical or logical connection to the public internet. Software has to be installable and updatable from media or an internal mirror, which rules out anything that phones home to license itself."],
+  ["ATO (Authorization to Operate)","The formal decision by a government official to accept the risk of running a system. Without it, nothing runs in production, no matter how good it is."],
+  ["cATO (Continuous ATO)","An approach where a system stays authorized through continuous monitoring and an approved pipeline, instead of a one-time review. It is the difference between shipping quarterly and shipping when you are ready."],
+  ["CDAO","Chief Digital and Artificial Intelligence Office. The department-level organization that sets AI policy and runs the enterprise generative AI and analytics platforms."],
+  ["CUI","Controlled Unclassified Information. Sensitive but not classified. A very large share of defense AI work lives at this level."],
+  ["DISA","Defense Information Systems Agency. The department's network, hosting, and compute provider."],
+  ["DIU","Defense Innovation Unit. The organization built to bring commercial technology into the department quickly, using non-traditional contracting."],
+  ["DoW / DoD","Department of War is the secondary title authorized by executive order in September 2025. Department of Defense remains the legal name. Both appear in official use."],
+  ["FedRAMP","The US government program for authorizing cloud services. Civilian in origin, widely referenced in defense, and distinct from the defense impact levels."],
+  ["FIPS","US federal standards for cryptographic modules. Defense buyers often require validated cryptography inside the software they run."],
+  ["Impact Level (IL)","The defense classification for how sensitive data in a cloud environment is, running from IL2 through IL6. Sellers should treat IL4 and IL5 as the centre of gravity for unclassified work."],
+  ["Inference","Running a trained model to produce an answer. Training is a one-time cost; inference is the recurring one, which is why cost per unit of inference keeps coming up."],
+  ["ISV","Independent Software Vendor. The company whose application the customer actually uses. In this market, the ISV is frequently your fastest route to a requirement."],
+  ["JADC2","Joint All-Domain Command and Control. The department's concept for connecting sensors and decision-makers across all services and domains."],
+  ["JWCC","Joint Warfighting Cloud Capability. The department's multi-vendor cloud contract, with a follow-on in procurement."],
+  ["MLOps","The discipline of building, testing, deploying, and monitoring machine learning models reliably. Defense customers care about it more than commercial ones because they have to prove what a model does."],
+  ["NeMo","NVIDIA's toolchain for adapting, guarding, retrieving for, and evaluating models."],
+  ["NIM","NVIDIA Inference Microservices. Containerized model endpoints that can run inside a customer's own boundary."],
+  ["OEM","Original Equipment Manufacturer. The company that builds the server. In defense deals the OEM often holds the sustainment contract and the installation relationship."],
+  ["OTA","Other Transaction Agreement. A flexible contracting instrument used to move faster than standard federal acquisition allows, common in prototyping."],
+  ["PEO","Program Executive Office. The organization that owns a portfolio of programs, their money, and their schedules. Find the PEO and you have found the buyer."],
+  ["Program of record","A funded, formally established program with a budget line. The distinction between a pilot and a program of record is the distinction between a story and a forecast."],
+  ["RAG","Retrieval-augmented generation. Grounding a model's answers in the customer's own documents instead of relying on what the model memorized. The most common first defense use case."],
+  ["SBOM","Software Bill of Materials. The inventory of everything inside your software. Security engineers ask for it early and judge you by whether you have one."],
+  ["STIG","Security Technical Implementation Guide. The configuration hardening standard defense systems are checked against."],
+  ["Zero trust","A security model that assumes no user or device is trusted by default. It generates enormous telemetry volume, which is why it keeps turning into an analytics problem."]
+];
+
+const SOURCES = [
+  ["The White House — Restoring the United States Department of War","https://www.whitehouse.gov/presidential-actions/2025/09/restoring-the-united-states-department-of-war/"],
+  ["army.mil — NGC2 'ready to scale'","https://www.army.mil/article/294284/army_leaders_next_generation_command_and_control_ready_to_scale"],
+  ["DefenseScoop — Anduril leads NGC2 common data layer baseline","https://defensescoop.com/2026/06/22/army-taps-anduril-lead-ngc2-common-data-layer-baseline/"],
+  ["DefenseScoop — Army plans ~$3B on next-gen C2 in FY26","https://defensescoop.com/2025/07/02/army-next-gen-command-and-control-budget-2026-request-3-billion/"],
+  ["Federal News Network — Lawmakers cap NGC2 funding","https://federalnewsnetwork.com/army/2026/02/lawmakers-cap-ngc2-funding-army-warns-industry-not-to-bring-negativity-to-congress/"],
+  ["The Defense Post — US Army prepares to scale next-gen command","https://thedefensepost.com/2026/08/03/us-army-next-gen-command/"],
+  ["AFCEA — Project Linchpin aims to be the keystone for Army AI","https://www.afcea.org/signal-media/defense-operations/project-linchpin-aims-be-keystone-army-artificial-intelligence"],
+  ["army.mil — PEO Enterprise hot technology of 2025: artificial intelligence","https://www.army.mil/article/282021/peo_enterprise_hot_technology_of_2025_artificial_intelligence"],
+  ["army.mil — Army launches Army Enterprise LLM Workspace","https://www.army.mil/article/285537"],
+  ["DefenseScoop — Army's CamoGPT won't be phased out","https://defensescoop.com/2026/01/27/army-camogpt-dod-genai-mil/"],
+  ["DefenseScoop — Army CIO reining in AI use cases to prevent excess costs","https://defensescoop.com/2025/08/12/army-artificial-intelligence-camogpt-use-cases-cio-leonel-garciga/"],
+  ["DefenseScoop — Air Force sunsetting NIPRGPT","https://defensescoop.com/2025/12/18/air-force-sunsetting-niprgpt-generative-ai-platform/"],
+  ["af.mil — Department of the Air Force launches NIPRGPT","https://www.af.mil/News/Article-Display/Article/3800809/department-of-the-air-force-launches-niprgpt/"],
+  ["AFCEA — Air Force enables responsible experimenting with generative AI","https://www.afcea.org/signal-media/defense-operations/air-force-enables-responsible-experimenting-generative-ai"],
+  ["Air & Space Forces Magazine — Air Force shutting down AI chatbot NIPRGPT","https://www.airandspaceforces.com/air-force-shutting-down-ai-chatbot-niprgpt/"],
+  ["GovCIO — GenAI.mil makes debut as DoW pushes commercial AI at scale","https://govciomedia.com/genai-mil-makes-debut-as-dow-pushes-commercial-ai-at-scale/"],
+  ["war.gov — War Department to expand AI arsenal on GenAI.mil","https://war.gov/News/Releases/Release/Article/4366573/the-war-department-to-expand-ai-arsenal-on-genaimil-with-xai"],
+  ["DefenseScoop — Pentagon uses GenAI.mil to create agents","https://defensescoop.com/2026/04/23/pentagon-uses-genai-mil-to-create-agents/"],
+  ["ExecutiveGov — Pentagon establishes task force to accelerate GenAI.mil adoption","https://www.executivegov.com/articles/pentagon-cdao-genaimil-task-force"],
+  ["Inside Government Contracts — Pentagon releases artificial intelligence strategy","https://www.insidegovernmentcontracts.com/2026/02/pentagon-releases-artificial-intelligence-strategy/"],
+  ["Breaking Defense — CDAO opens Advana analytics to multiple vendors","https://breakingdefense.com/2024/07/cdao-opens-advana-analytics-to-multiple-vendors-in-a-push-to-scale-up/"],
+  ["Breaking Defense — $15 billion, 10-year Advana recompete","https://breakingdefense.com/2024/09/cdao-opens-big-door-for-small-biz-with-15-bilion-10-year-advana-recompete/"],
+  ["ai.mil — Open DAGIR acquisition update for Advana","https://www.ai.mil/Portals/137/Documents/Resources%20Page/ai-mil-news-07-09-24-news-Open-DAGIR-Acquisition-Update-for-Advana-html-2024-10-26-12_29_17.pdf"],
+  ["Federal News Network — DoD introduces AI rapid capabilities cell","https://federalnewsnetwork.com/defense-main/2024/12/dod-sunsets-task-force-lima-introduces-ai-rapid-capabilities-cell/"],
+  ["GovConWire — How the AI Rapid Capabilities Cell is accelerating generative AI","https://www.govconwire.com/articles/jonathan-elliott-dow-ai-rapid-capabilities-army"],
+  ["Apogee — Inside the Pentagon's AI acceleration strategy","https://apogee-magazine.com/features/inside-the-pentagons-ai-acceleration-strategy/"],
+  ["DefenseScoop — JWCC follow-on would create cloud marketplace, expand AI and edge","https://defensescoop.com/2026/06/01/pentagon-jwcc-ucm-draft-performance-of-work-statement/"],
+  ["ExecutiveGov — DISA official offers new information on JWCC-Next","https://www.executivegov.com/articles/disa-jwcc-contract-cloud-service-solicitation-john-hale"],
+  ["Federal News Network — As DISA preps JWCC-Next, Olympus and JOE take hold","https://federalnewsnetwork.com/defense-news/2025/08/as-disa-preps-jwcc-next-olympus-joe-initiatives-take-hold/"],
+  ["DISA Hybrid Cloud — DoD Olympus offering","https://hybridcloud.disa.mil/offerings/dod-olympus"],
+  ["Breaking Defense — DISA turns to AI and automation to bridge workforce gaps","https://breakingdefense.com/2025/05/disa-turns-to-ai-automation-to-bridge-workforce-gaps-attempts-to-stay-on-track-with-jwcc-2-0/"],
+  ["House Armed Services Committee — DoD CIO posture testimony (PDF)","https://armedservices.house.gov/uploadedfiles/5.8_arrington_testimony.pdf"],
+  ["DoW Comptroller — DISA FY2026 budget estimates (PDF)","https://comptroller.war.gov/Portals/45/Documents/defbudget/FY2026/budget_justification/pdfs/01_Operation_and_Maintenance/O_M_VOL_1_PART_1/DISA_OP-5.pdf"],
+  ["Space Systems Command — Harnessing the power of data (PDF)","https://www.ssc.spaceforce.mil/Portals/3/Harnessing%20the%20power%20of%20Data_%20SSC%20awards%20contract%20to%20Palantir%20_%20Space%20Systems%20Command%20_%20Article%20Display_1.pdf"],
+  ["SpaceNews — Space Force extends data-as-a-service contracts","https://spacenews.com/space-force-extends-palantirs-data-as-a-service-contracts/"],
+  ["Defense Daily — USSF operationalizes Warp Core, moving toward ATLAS","https://www.defensedaily.com/u-s-space-force-operationalizes-warp-core-moving-toward-atlas-for-space-domain-awareness/space/"],
+  ["Rise8 — AFWERX and SpaceWERX select Rise8 for STRATFI","https://www.rise8.us/resources/afwerx-and-spacewerx-select-rise8-for-program-year-2025-stratfi"],
+  ["ExecutiveBiz — Rise8 secures STRATFI funding for Warp Core initiative","https://www.executivebiz.com/articles/rise8-spacewerx-funding"],
+  ["Space Development Agency — official site","https://www.sda.mil/"],
+  ["DON CIO — Strategy to Weaponize Data and Artificial Intelligence","https://www.doncio.navy.mil/ContentView.aspx?id=20519"],
+  ["USNI News — The Navy's strategy to weaponize data and artificial intelligence","https://news.usni.org/2026/07/16/the-navys-strategy-to-weaponize-data-and-artificial-intelligence"],
+  ["marines.mil — NAVMC 3000.1 artificial intelligence (PDF)","https://www.marines.mil/Portals/1/Publications/NAVMC%203000.1%20(SECURED).pdf"],
+  ["Military.com — Newest Marine Corps aviation plan blends warfighters and AI","https://www.military.com/daily-news/2026/04/14/2040-and-beyond-newest-marine-corps-aviation-plan-blends-warfighters-ai.html"],
+  ["Office of Naval Research — Tactical AI for Marine Corps","https://onr.navy.mil/Science-Technology/Departments/Code-34/All-Programs/human-bioengineered-systems-341/tactical-artificial-intelligence-for-marine-corps"],
+  ["NVIDIA — AI Enterprise for the public sector","https://www.nvidia.com/en-us/use-cases/government-ready-ai-software/"],
+  ["NVIDIA — AI for the US federal government","https://www.nvidia.com/en-us/industries/government/federal/"],
+  ["NVIDIA — AI Enterprise documentation","https://docs.nvidia.com/ai-enterprise/index.html"],
+  ["AWS — Nemotron and other models receive FedRAMP High and DoD IL4/5 approval in GovCloud","https://aws.amazon.com/about-aws/whats-new/2026/06/addl-bedrock-model-fedramp-il-5-govcloud/"],
+  ["VMware — FIPS and STIG-enabled NVIDIA AI Enterprise containers","https://blogs.vmware.com/cloud-foundation/2025/10/28/fips-stig-enabled-nvidia-ai-enterprise-containers-now-available-vmware-private-ai-foundation-with-nvidia/"]
+];
+
+/* =========================================================================
+   RENDER
+   ========================================================================= */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const byId = Object.fromEntries(BRANCHES.map(b => [b.id, b]));
+const FIT_WORD = { 3:"Established", 2:"Growing", 1:"Emerging" };
+
+/* ---- header chips ---- */
+$("#chip-programs").textContent = BRANCHES.reduce((n, b) => n + b.programs.length, 0);
+$("#chip-sites").textContent = SITES.length;
+
+/* ---- bar chart: programs per branch ---- */
+const BREADTH_MAX = WORKLOADS.length * 3;
+const breadth = (id) => WORKLOADS.reduce((n, w) => n + w.f[id], 0);
+
+(function renderBars(){
+  const rows = BRANCHES.map(b => ({ b, v: breadth(b.id) })).sort((x, y) => y.v - x.v);
+  $("#bars").innerHTML = rows.map(({ b, v }) => `
+    <div class="bar-row">
+      <span class="lab">${esc(b.name)}</span>
+      <span class="bar-track"><span class="bar-fill" style="--bc:${b.color};width:${(v / BREADTH_MAX * 100).toFixed(1)}%"></span></span>
+      <span class="val">${v}/${BREADTH_MAX}</span>
+    </div>`).join("");
+
+  $("#bars-table").innerHTML = `<table class="data"><caption class="sr">Workload breadth score and tracked programs per branch</caption>
+    <thead><tr><th>Branch</th><th>Breadth score</th><th>Programs tracked</th><th>Primary organizations</th></tr></thead>
+    <tbody>${rows.map(({ b, v }) => `<tr><td><b>${esc(b.name)}</b></td><td>${v} of ${BREADTH_MAX}</td><td>${b.programs.length}</td><td>${esc(b.org)}</td></tr>`).join("")}</tbody></table>`;
+
+  const btn = $("#bars-table-toggle");
+  btn.addEventListener("click", () => {
+    const open = $("#bars-table").classList.toggle("hidden") === false;
+    btn.setAttribute("aria-expanded", String(open));
+    btn.textContent = open ? "Hide data table" : "Show data table";
+  });
+})();
+
+/* ---- branch tabs and panels ---- */
+function programCard(p, branch){
+  return `<article class="prog" data-search="${esc((p.name + " " + p.what + " " + p.hook + " " + p.tags.join(" ") + " " + p.nvaie.join(" ") + " " + branch.name).toLowerCase())}">
+    <div class="prog-top">
+      <h4>${esc(p.name)}</h4>
+      <span class="status" data-s="${esc(p.status)}">${esc(p.status)}</span>
+    </div>
+    <p class="body">${esc(p.what)}</p>
+    <div class="hook"><b>Why it matters to you:</b> ${esc(p.hook)}</div>
+    <div class="tagrow">
+      ${p.tags.map(t => `<span class="tag">${esc(t)}</span>`).join("")}
+      ${p.nvaie.map(t => `<span class="tag nv">${esc(t)}</span>`).join("")}
+    </div>
+    <span class="src">Source: <a href="${esc(p.src.url)}" target="_blank" rel="noopener noreferrer">${esc(p.src.label)}</a></span>
+  </article>`;
+}
+
+(function renderBranches(){
+  $("#branch-rail").innerHTML = BRANCHES.map((b, i) => `
+    <button class="bbtn" style="--bc:${b.color}" role="tab" id="tab-${b.id}"
+      aria-controls="panel-${b.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">
+      <span class="bn"><span class="bc-dot"></span>${esc(b.name)}</span>
+      <span class="bs">${esc(b.short)} · ${b.programs.length} programs</span>
+    </button>`).join("");
+
+  $("#branch-panels").innerHTML = BRANCHES.map((b, i) => `
+    <div class="panel ${i === 0 ? "" : "hidden"}" style="--bc:${b.color}" id="panel-${b.id}" role="tabpanel" aria-labelledby="tab-${b.id}" tabindex="0">
+      <div class="panel-head">
+        <h3>${esc(b.name)}</h3>
+        <span class="org">${esc(b.org)}</span>
+      </div>
+      <p class="summary">${esc(b.summary)}</p>
+      <div class="subhead">Publicly reported programs</div>
+      ${b.programs.map(p => programCard(p, b)).join("")}
+      <div class="subhead">Common contract routes</div>
+      <ul class="clean">${b.vehicles.map(v => `<li>${esc(v)}</li>`).join("")}</ul>
+      <p class="mx-note" style="margin-top:4px">Vehicle eligibility varies by office, dollar value, and scope. Confirm with your contracts team before you rely on any of these.</p>
+      <div class="subhead">Discovery questions that move a meeting</div>
+      <ol class="q">${b.questions.map(q => `<li>${esc(q)}</li>`).join("")}</ol>
+    </div>`).join("");
+
+  const tabs = $$("#branch-rail .bbtn");
+  function select(id){
+    tabs.forEach(t => {
+      const on = t.id === "tab-" + id;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+    });
+    BRANCHES.forEach(b => $("#panel-" + b.id).classList.toggle("hidden", b.id !== id));
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => select(BRANCHES[i].id));
+    t.addEventListener("keydown", (e) => {
+      const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const n = (i + d + tabs.length) % tabs.length;
+      tabs[n].focus();
+      select(BRANCHES[n].id);
+    });
+  });
+  window.__selectBranch = select;
+})();
+
+/* ---- cross-branch program search ---- */
+(function search(){
+  const input = $("#prog-search"), count = $("#search-count");
+  const rail = $("#branch-rail"), panels = $("#branch-panels");
+  const results = document.createElement("div");
+  results.className = "panel hidden";
+  results.style.setProperty("--bc", "var(--nv)");
+  panels.parentNode.insertBefore(results, panels.nextSibling);
+
+  const ALL = BRANCHES.flatMap(b => b.programs.map(p => ({ p, b })));
+
+  input.addEventListener("input", () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) {
+      results.classList.add("hidden");
+      panels.classList.remove("hidden");
+      rail.classList.remove("hidden");
+      count.textContent = "";
+      return;
+    }
+    const hits = ALL.filter(x =>
+      (x.p.name + " " + x.p.what + " " + x.p.hook + " " + x.p.tags.join(" ") + " " + x.p.nvaie.join(" ") + " " + x.b.name).toLowerCase().includes(q));
+    count.textContent = hits.length + (hits.length === 1 ? " match" : " matches");
+    panels.classList.add("hidden");
+    rail.classList.add("hidden");
+    results.classList.remove("hidden");
+    results.innerHTML = hits.length
+      ? `<div class="panel-head"><h3>Matching programs</h3><span class="org">${hits.length} of ${ALL.length}</span></div>` +
+        hits.map(x => `<div style="margin-bottom:4px"><span class="tag" style="border-color:${x.b.color};color:${x.b.color}">${esc(x.b.name)}</span></div>${programCard(x.p, x.b)}`).join("")
+      : `<div class="panel-head"><h3>No matches</h3></div><p class="summary">Nothing in this guide matches &ldquo;${esc(input.value)}&rdquo;. Try a broader term such as edge, data, cyber, autonomy, or cloud.</p>`;
+  });
+})();
+
+/* ---- workload fit matrix ---- */
+(function renderMatrix(){
+  const t = $("#mx");
+  const head = `<thead><tr><th class="row">Workload</th>${BRANCHES.map(b =>
+    `<th><span style="display:inline-block;width:9px;height:9px;border-radius:2px;background:${b.color};margin-right:5px"></span>${esc(b.name)}</th>`).join("")}</tr></thead>`;
+  const body = `<tbody>${WORKLOADS.map(w => `<tr>
+      <th class="row">${esc(w.n)}</th>
+      ${BRANCHES.map(b => `<td data-fit="${w.f[b.id]}" title="${esc(b.name)} — ${FIT_WORD[w.f[b.id]]}: ${esc(w.r[b.id])}">${FIT_WORD[w.f[b.id]].toUpperCase()}</td>`).join("")}
+    </tr>`).join("")}</tbody>`;
+  t.innerHTML = head + body;
+})();
+
+/* ---- objections, plays, glossary, sources ---- */
+$("#objections").innerHTML = OBJECTIONS.map(o =>
+  `<details class="acc"><summary>${esc(o.q)}</summary><div class="acc-body"><p>${esc(o.a)}</p></div></details>`).join("");
+
+$("#plays-grid").innerHTML = PLAYS.map(p => `<div class="card">
+    <h3>${esc(p.n)}</h3>
+    <p style="color:var(--nv);font-size:.88rem;margin-bottom:12px">${esc(p.g)}</p>
+    <ul class="clean">${p.steps.map(s => `<li>${esc(s)}</li>`).join("")}</ul>
+  </div>`).join("");
+
+$("#glossary-list").innerHTML = GLOSSARY.map(([term, def]) =>
+  `<details class="acc"><summary>${esc(term)}</summary><div class="acc-body"><p>${esc(def)}</p></div></details>`).join("");
+
+$("#srclist").innerHTML = SOURCES.map(([label, url]) =>
+  `<li><a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a></li>`).join("");
+
+/* ---- site list table (also the accessible view of the map) ---- */
+$("#map-list").innerHTML = `<table class="data"><caption class="sr">Publicly identified locations associated with tracked programs</caption>
+  <thead><tr><th>Location</th><th>Branch</th><th>Programs</th><th>What is there</th></tr></thead>
+  <tbody>${SITES.slice().sort((a, b) => a.n.localeCompare(b.n)).map(s => `<tr>
+    <td><b>${esc(s.n)}, ${esc(s.s)}</b></td>
+    <td><span class="tag" style="border-color:${byId[s.b].color};color:${byId[s.b].color}">${esc(byId[s.b].name)}</span></td>
+    <td>${s.c}</td>
+    <td>${esc(s.note)}</td></tr>`).join("")}</tbody></table>`;
+
+/* ---- interactive map ---- */
+(function renderMap(){
+  const controls = $("#map-controls"), tip = $("#tip"), legend = $("#map-legend");
+  let active = "all";
+
+  controls.innerHTML =
+    `<button class="pill" type="button" data-b="all" aria-pressed="true" style="--pc:var(--nv-glow);--pc2:var(--nv)">All branches</button>` +
+    BRANCHES.map(b => `<button class="pill" type="button" data-b="${b.id}" aria-pressed="false" style="--pc:var(--surface-3);--pc2:${b.color}">${esc(b.name)}</button>`).join("");
+
+  legend.innerHTML =
+    `<span><svg width="30" height="16" aria-hidden="true"><circle cx="6" cy="8" r="5" fill="var(--nv)"></circle><circle cx="21" cy="8" r="8" fill="var(--nv)"></circle></svg> Marker size: 1 to 3 tracked programs</span>` +
+    `<span>Color shows the selected branch. Grey markers are other branches.</span>`;
+
+  if (typeof d3 === "undefined" || typeof topojson === "undefined") {
+    $("#usmap").innerHTML = `<div class="map-fallback"><b>The map could not load.</b> It needs two public libraries from a content delivery network, which some government and corporate networks block. Everything the map shows is listed in the table below.</div>`;
+    return;
+  }
+
+  const W = 960, H = 555;
+  const svg = d3.select("#usmap").append("svg")
+    .attr("viewBox", `0 0 ${W} ${H}`)
+    .attr("role", "img")
+    .attr("aria-label", "Map of the United States showing publicly identified locations associated with the programs in this guide");
+  const gStates = svg.append("g"), gSites = svg.append("g");
+  const projection = d3.geoAlbersUsa().scale(1180).translate([W / 2, H / 2 - 12]);
+  const path = d3.geoPath(projection);
+  const r = d3.scaleSqrt().domain([1, 3]).range([5.5, 11]);
+
+  function place(s){ return projection([s.lon, s.lat]); }
+
+  function paint(){
+    gSites.selectAll("circle")
+      .attr("fill", d => active === "all" ? "var(--nv)" : (d.b === active ? byId[d.b].color : "#5a6053"))
+      .classed("dim", d => active !== "all" && d.b !== active);
+  }
+
+  function showTip(evt, d){
+    const wrap = $("#map-wrap").getBoundingClientRect();
+    tip.innerHTML = `<b>${esc(d.n)}, ${esc(d.s)}</b><span class="t-branch">${esc(byId[d.b].name)} · ${d.c} tracked ${d.c === 1 ? "program" : "programs"}</span><p>${esc(d.note)}</p>`;
+    tip.style.opacity = 1;
+    const x = Math.min(Math.max(evt.clientX - wrap.left + 14, 6), wrap.width - 290);
+    tip.style.left = x + "px";
+    tip.style.top = Math.max(evt.clientY - wrap.top - 10, 6) + "px";
+  }
+  function hideTip(){ tip.style.opacity = 0; }
+
+  d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3.0.1/states-10m.json").then(us => {
+    gStates.selectAll("path.state")
+      .data(topojson.feature(us, us.objects.states).features)
+      .join("path").attr("class", "state").attr("d", path);
+    gStates.append("path").attr("class", "nation")
+      .datum(topojson.mesh(us, us.objects.states, (a, b) => a !== b)).attr("d", path);
+
+    gSites.selectAll("circle")
+      .data(SITES.filter(s => place(s)).slice().sort((a, b) => b.c - a.c))
+      .join("circle")
+      .attr("class", "site")
+      .attr("cx", d => place(d)[0])
+      .attr("cy", d => place(d)[1])
+      .attr("r", d => r(d.c))
+      .attr("tabindex", 0)
+      .attr("role", "button")
+      .attr("aria-label", d => `${d.n}, ${d.s}. ${byId[d.b].name}. ${d.note}`)
+      .on("mousemove", showTip)
+      .on("mouseleave", hideTip)
+      .on("focus", function(){
+        const b = this.getBoundingClientRect();
+        showTip({ clientX: b.left + b.width / 2, clientY: b.top }, d3.select(this).datum());
+      })
+      .on("blur", hideTip);
+    paint();
+  }).catch(() => {
+    $("#usmap").innerHTML = `<div class="map-fallback"><b>Map data could not be downloaded.</b> The base map comes from a public content delivery network that some networks block. Every location is listed in the table below.</div>`;
+  });
+
+  controls.addEventListener("click", (e) => {
+    const btn = e.target.closest(".pill");
+    if (!btn) return;
+    active = btn.dataset.b;
+    $$(".pill", controls).forEach(p => p.setAttribute("aria-pressed", String(p === btn)));
+    paint();
+    hideTip();
+    if (active !== "all" && window.__selectBranch) window.__selectBranch(active);
+  });
+})();
+
+/* ---- scrollspy ---- */
+(function scrollspy(){
+  const links = $$("#navlinks a");
+  const map = new Map(links.map(a => [a.getAttribute("href").slice(1), a]));
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      links.forEach(a => a.classList.remove("on"));
+      const a = map.get(en.target.id);
+      if (a) a.classList.add("on");
+    });
+  }, { rootMargin: "-80px 0px -70% 0px", threshold: 0 });
+  $$("main section").forEach(s => obs.observe(s));
+})();
+</script>
+</body>
+</html>
