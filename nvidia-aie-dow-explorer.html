@@ -31,6 +31,10 @@
   --s-4e:#c98500;
   --s-ssf:#9085e9;
   --s-navy:#199e70;
+  /* cross-cutting orgs: adjacent-validated continuation of the same run */
+  --s-cocom:#d95926;
+  --s-cdao:#2f9fb8;
+  --s-mda:#e66767;
   /* validated 3-step ordinal ramp (dark) */
   --fit-1:#3f6100;
   --fit-2:#639600;
@@ -188,6 +192,7 @@ table.mx td:hover{box-shadow:0 0 0 2px var(--text-1) inset}
 .pill{cursor:pointer;font-family:var(--mono);font-size:.74rem;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--text-2)}
 .pill:hover{color:var(--text-1);border-color:var(--text-3)}
 .pill[aria-pressed="true"]{background:var(--pc,var(--nv-glow));border-color:var(--pc2,var(--nv));color:var(--pc2,var(--nv))}
+.pill-divider{width:1px;align-self:stretch;background:var(--line);margin:0 4px}
 #map-wrap{position:relative;width:100%}
 #usmap svg{width:100%;height:auto;display:block}
 .state{fill:var(--surface-2);stroke:var(--line);stroke-width:.6}
@@ -261,10 +266,11 @@ footer p{max-width:80ch}
   <div class="wrap">
     <span class="eyebrow"><span class="dot"></span>Field Enablement &middot; Unofficial</span>
     <h1>NVIDIA AI Enterprise <span class="accent">DoW Explorer</span></h1>
-    <p class="lede">A single-page briefing that maps the NVIDIA AI Enterprise software platform to publicly reported artificial intelligence programs across six Department of War buying centers. Built for sellers who need the program names, the plain-English hook, and the next question to ask.</p>
+    <p class="lede">A single-page briefing that maps the NVIDIA AI Enterprise software platform to publicly reported artificial intelligence programs across six Department of War buying centers, plus the combatant commands, the Chief Digital and AI Office, and the Missile Defense Agency. Built for sellers who need the program names, the plain-English hook, and the next question to ask.</p>
     <div class="hero-meta">
       <span class="chip">Compiled <b>18 Sep 2026</b></span>
       <span class="chip"><b>6</b> branches</span>
+      <span class="chip"><b>3</b> cross-cutting orgs</span>
       <span class="chip"><b id="chip-programs">&mdash;</b> public programs</span>
       <span class="chip"><b id="chip-sites">&mdash;</b> mapped locations</span>
       <span class="chip">Sources <b>public only</b></span>
@@ -276,6 +282,7 @@ footer p{max-width:80ch}
   <div class="inner" id="navlinks">
     <a href="#overview" class="on">Overview</a>
     <a href="#branches">Branches</a>
+    <a href="#cross">COCOMs &amp; Agencies</a>
     <a href="#map">Map</a>
     <a href="#stack">The Stack</a>
     <a href="#matrix">Fit Matrix</a>
@@ -364,7 +371,7 @@ footer p{max-width:80ch}
   </div>
 
   <div class="search-row">
-    <input type="search" id="prog-search" placeholder="Filter programs across all branches (try: edge, RAG, cyber, simulation)" aria-label="Filter programs">
+    <input type="search" id="prog-search" placeholder="Filter every program in this guide (try: edge, agents, cyber, planning, fire control)" aria-label="Filter programs">
     <span class="count" id="search-count"></span>
   </div>
 
@@ -372,11 +379,52 @@ footer p{max-width:80ch}
   <div id="branch-panels"></div>
 </section>
 
-<section id="map">
+<section id="cross">
   <div class="sec-head">
     <span class="sec-num">03</span>
+    <h2>Cross-cutting: combatant commands, CDAO, and MDA</h2>
+    <p>Three organizations that do not fit the branch model and that you will meet constantly. They generate requirements the services end up paying for, which is exactly why deals with them stall. Read the table first, then pick an organization.</p>
+  </div>
+
+  <div class="figure" style="margin-bottom:18px">
+    <div class="cap">How each one actually buys</div>
+    <div class="sub">The most common reason a deal with these three slips is a mismatch between who wants the capability and who holds the money.</div>
+    <div class="t-scroll">
+      <table class="data">
+        <thead><tr><th>Organization</th><th>What it is really buying</th><th>Who usually holds the money</th><th>Your realistic entry</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>Combatant commands</b></td>
+            <td>Speed, integration, and decision support. Rarely infrastructure.</td>
+            <td>A military service, a defense agency, or a rapid-acquisition organization acting on the command's behalf.</td>
+            <td>A prototype delivered through an innovation organization, with a named service transition partner agreed before it starts.</td>
+          </tr>
+          <tr>
+            <td><b>CDAO</b></td>
+            <td>Enterprise platforms, department policy, and the evaluation gates everyone else has to pass.</td>
+            <td>Its own programs, plus department-wide platform funding.</td>
+            <td>Interoperability with the platforms it already runs, and evidence your stack survives its evaluation expectations.</td>
+          </tr>
+          <tr>
+            <td><b>Missile Defense Agency</b></td>
+            <td>Sensor fusion, battle management, and software in a fire control path.</td>
+            <td>MDA itself, through one very large multiple-award vehicle.</td>
+            <td>A task order team led by a company already holding a seat on that vehicle.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="branch-rail" id="cross-rail" role="tablist" aria-label="Cross-cutting organizations"></div>
+  <div id="cross-panels"></div>
+</section>
+
+<section id="map">
+  <div class="sec-head">
+    <span class="sec-num">04</span>
     <h2>Where the work happens</h2>
-    <p>Publicly identified installations, laboratories, and program offices associated with the AI efforts in this guide. Marker size reflects how many tracked programs this guide associates with that location. Filter by branch, then hover or tap a marker.</p>
+    <p>Publicly identified installations, laboratories, and program offices associated with the AI efforts in this guide, for the six branches and the three cross-cutting organizations. Marker size reflects how many tracked programs this guide associates with that location. Filter, then hover or tap a marker.</p>
   </div>
   <div class="map-shell">
     <div class="map-controls" id="map-controls"></div>
@@ -385,7 +433,7 @@ footer p{max-width:80ch}
       <div class="tip" id="tip" role="status" aria-live="polite"></div>
     </div>
     <div class="legend" id="map-legend"></div>
-    <p class="mx-note">Locations are public headquarters, installation, or laboratory sites. Nothing here indicates the physical location of any specific system, deployment, or customer environment.</p>
+    <p class="mx-note">Locations are public headquarters, installation, or laboratory sites. Nothing here indicates the physical location of any specific system, deployment, or customer environment. The map covers the United States only, so commands headquartered overseas, including European Command and Africa Command in Germany, do not appear.</p>
     <div id="map-list" class="t-scroll" style="margin-top:16px"></div>
   </div>
 </section>
@@ -412,7 +460,7 @@ footer p{max-width:80ch}
 
 <section id="stack">
   <div class="sec-head">
-    <span class="sec-num">04</span>
+    <span class="sec-num">05</span>
     <h2>What you are actually selling</h2>
     <p>NVIDIA AI Enterprise is a subscription to a supported software stack, not a single product. When a customer asks &ldquo;what is in it,&rdquo; this is the answer. Read it bottom to top: hardware at the base, the mission application at the top, and the support and security commitment wrapping all of it.</p>
   </div>
@@ -471,7 +519,7 @@ footer p{max-width:80ch}
 
 <section id="matrix">
   <div class="sec-head">
-    <span class="sec-num">05</span>
+    <span class="sec-num">06</span>
     <h2>Workload fit by branch</h2>
     <p>A planning aid, not a forecast. Each cell is this guide's read of how strongly a workload shows up in that branch's publicly reported AI activity. Every cell is labeled in text as well as color, so it reads the same in grayscale or with any form of color vision. Hover a cell for the reasoning.</p>
   </div>
@@ -482,13 +530,13 @@ footer p{max-width:80ch}
       <span><i style="background:var(--fit-2)"></i> Growing &mdash; funded activity or stated intent</span>
       <span><i style="background:var(--fit-1)"></i> Emerging &mdash; adjacent, credible, unproven publicly</span>
     </div>
-    <p class="mx-note">Ratings are the author's judgment from the public sources listed at the end of this page. They are not NVIDIA pipeline data, not customer-supplied, and should not be presented to a customer as market research.</p>
+    <p class="mx-note">Ratings are the author's judgment from the public sources listed at the end of this page. They are not NVIDIA pipeline data, not customer-supplied, and should not be presented to a customer as market research. The three cross-cutting organizations in section 03 are deliberately left out: a combatant command inherits whichever workload the sponsoring service funds, CDAO touches all nine, and the Missile Defense Agency concentrates almost entirely in sensor fusion and battle management.</p>
   </div>
 </section>
 
 <section id="rtm">
   <div class="sec-head">
-    <span class="sec-num">06</span>
+    <span class="sec-num">07</span>
     <h2>Route to market</h2>
     <p>NVIDIA goes to market through partners. In this customer set that is not a preference, it is a requirement: the paper almost always flows through a reseller or integrator holding the right vehicle, and the software usually lands on somebody else's hardware or platform. Know which lane your deal is in before the first meeting.</p>
   </div>
@@ -526,7 +574,7 @@ footer p{max-width:80ch}
 
 <section id="deploy">
   <div class="sec-head">
-    <span class="sec-num">07</span>
+    <span class="sec-num">08</span>
     <h2>Deployment and accreditation, explained plainly</h2>
     <p>This is the part that trips up sellers coming from commercial accounts. Defense customers cannot run software until an authorizing official signs for the risk. Your job is to make that signature easier to get, and to never claim it on the customer's behalf.</p>
   </div>
@@ -576,7 +624,7 @@ footer p{max-width:80ch}
 
 <section id="talk">
   <div class="sec-head">
-    <span class="sec-num">08</span>
+    <span class="sec-num">09</span>
     <h2>Objections you will hear</h2>
     <p>Short answers you can say out loud without overclaiming. Each one is written so that it stays true even if the customer checks.</p>
   </div>
@@ -585,7 +633,7 @@ footer p{max-width:80ch}
 
 <section id="plays">
   <div class="sec-head">
-    <span class="sec-num">09</span>
+    <span class="sec-num">10</span>
     <h2>Three plays for the next 90 days</h2>
     <p>Sequenced so that each step produces something you can point at in a pipeline review. Adapt the timing to your own account cadence.</p>
   </div>
@@ -594,7 +642,7 @@ footer p{max-width:80ch}
 
 <section id="glossary">
   <div class="sec-head">
-    <span class="sec-num">10</span>
+    <span class="sec-num">11</span>
     <h2>Glossary</h2>
     <p>If you are new to this customer set, read this section first. Defense buyers use acronyms as nouns and will not slow down for you.</p>
   </div>
@@ -603,7 +651,7 @@ footer p{max-width:80ch}
 
 <section id="sources" style="border-bottom:0">
   <div class="sec-head">
-    <span class="sec-num">11</span>
+    <span class="sec-num">12</span>
     <h2>Sources</h2>
     <p>Every factual claim in this guide traces to one of these public pages. Where reporting and official sites disagree, the official site wins. Check the date on each before quoting it.</p>
   </div>
@@ -769,7 +817,7 @@ BRANCHES.push(
   {
     id: "fourthestate", name: "DoD 4th Estate", short: "CDAO, DIU, defense agencies", color: "var(--s-4e)",
     org: "Chief Digital and AI Office · Defense Innovation Unit · defense agencies and field activities",
-    summary: "The 4th Estate is everything that is not a military service: the Chief Digital and AI Office, the Defense Innovation Unit, and the defense agencies. It is where department-wide AI policy, the enterprise generative AI platform, and the enterprise analytics platform all live, which makes it the highest-leverage and most crowded room in this guide.",
+    summary: "The 4th Estate is everything that is not a military service: the Chief Digital and AI Office, the Defense Innovation Unit, and the defense agencies. It is where department-wide AI policy, the enterprise generative AI platform, and the enterprise analytics platform all live, which makes it the highest-leverage and most crowded room in this guide. Section 03 covers the Chief Digital and AI Office itself, including where it now sits organizationally and how it expects industry to engage.",
     programs: [
       { name: "GenAI.mil", status: "fielding",
         what: "The department's enterprise generative AI platform, launched 9 December 2025 initially on a single commercial model family and since expanded into a multi-model marketplace. Public reporting in 2026 described additional frontier model offerings being activated, more than 1.7 million unique users onboarded out of a population above 3 million, and agent creation at scale on the platform.",
@@ -903,6 +951,139 @@ BRANCHES.push(
   }
 );
 
+/* ---- Cross-cutting organizations: combatant commands, CDAO, MDA ---- */
+const CROSS = [
+  {
+    id: "cocom", name: "Combatant Commands", short: "11 unified commands", color: "var(--s-cocom)",
+    org: "INDOPACOM · EUCOM · CENTCOM · CYBERCOM · NORTHCOM · SOUTHCOM · STRATCOM · TRANSCOM · SOCOM · AFRICOM · SPACECOM",
+    summary: "Combatant commands fight. They generally do not own large acquisition budgets, so their AI demand is urgent and their purchasing power is indirect. Almost everything they field arrives through a service, a defense agency, or a rapid-acquisition organization. The pattern of every command working in one shared information space with common tooling goes back to the Global Information Dominance Experiments, and it is the frame the current efforts still use.",
+    programs: [
+      { name: "Thunderforge", status: "scaling",
+        what: "A prototype effort led by the Defense Innovation Unit to give commands generative AI for operational planning, wargaming, and decision support, combining a commercial AI company's agentic applications with an autonomy software platform and commercial large language models. Public reporting named Indo-Pacific Command and European Command as the first recipients, with the intent to scale to other commands afterward.",
+        hook: "Planning and wargaming are token-hungry and iterative, and the interesting versions run on classified networks where a commercial endpoint is not an option. Ask where the model runs when the scenario itself is classified.",
+        tags: ["Planning", "Wargaming", "Agentic", "Classified"],
+        nvaie: ["NIM microservices", "NeMo Customizer", "Blueprints"],
+        src: { label: "DefenseScoop — Combatant commands to get generative AI for planning and wargaming", url: "https://defensescoop.com/2025/03/05/diu-thunderforge-scale-ai-combatant-commands-indopacom-eucom/" } },
+      { name: "Joint Fires Network", status: "scaling",
+        what: "A battle management capability originally prototyped for Indo-Pacific Command to match available weapons to targets across a theater, described publicly as a pillar of the department's combined joint all-domain command and control effort. Public reporting says the Department of the Air Force is taking it over as it transitions into a formal program of record.",
+        hook: "Target and weapon pairing across a theater is a latency problem before it is an algorithm problem. When a prototype transitions to a service, the sustainment and infrastructure decisions get made again, which is a second opening.",
+        tags: ["Battle management", "CJADC2", "Targeting", "Transition"],
+        nvaie: ["Triton", "TensorRT", "RAPIDS"],
+        src: { label: "Air & Space Forces Magazine — Air Force takes lead on Joint Fires Network", url: "https://www.airandspaceforces.com/air-force-indopacom-joint-fires-network-battle-management/" } },
+      { name: "Stormbreaker", status: "prototype",
+        what: "An AI-enabled joint operational planning toolkit supporting course of action development, wargaming, analysis, and execution at the operational level. It sits alongside the Joint Fires Network and the command's mission network under a directorate Indo-Pacific Command stood up specifically to connect industry and innovation efforts to the command.",
+        hook: "A command that built its own directorate to talk to industry is telling you how it wants to be approached. Go through that door rather than around it.",
+        tags: ["Planning", "Course of action", "Operational level"],
+        nvaie: ["NIM microservices", "NeMo Retriever", "Simulation"],
+        src: { label: "DefenseScoop — INDOPACOM moves to plug in emerging tech", url: "https://defensescoop.com/2023/08/28/indo-pacific-command-moves-to-plug-in-emerging-tech-for-dod-through-key-programs-new-directorate/" } },
+      { name: "Cyber Command AI program and task force", status: "scaling",
+        what: "US Cyber Command created an AI task force housed in its Cyber National Mission Force and, in the fiscal 2026 budget, funded a program called Artificial Intelligence for Cyberspace Operations that pilots capabilities in ninety-day cycles. A five-year AI roadmap for cyber operations forces was mandated by Congress and developed jointly with the department CIO, CDAO, DARPA, NSA, and the research and engineering enterprise. Public reporting describes a very large proposed increase in the following budget year to replicate task forces across the command.",
+        hook: "Ninety-day pilot cycles are a gift to a seller. They are short enough to start without a program of record and frequent enough that a good result compounds.",
+        tags: ["Cyber operations", "Agents", "Rapid cycles"],
+        nvaie: ["Morpheus", "RAPIDS", "NIM microservices"],
+        src: { label: "DefenseScoop — Cyber Command creates new AI program in fiscal 2026 budget", url: "https://defensescoop.com/2025/07/07/cyber-command-fy26-budget-request-new-ai-program/" } },
+      { name: "Service cyber component AI task forces", status: "prototype",
+        what: "Service components to Cyber Command are standing up their own AI efforts. Public reporting in August 2026 described an Army cyber task force established earlier that year to build AI agents for specific cyber work roles, including developers, data engineers, host analysts, and exploitation analysts.",
+        hook: "Agents built per work role means many small models and many inference endpoints, not one large deployment. That shape favors a platform that runs the same way everywhere over a single bespoke system.",
+        tags: ["Agents", "Cyber defense", "Service component"],
+        nvaie: ["NIM microservices", "NeMo toolchain", "Morpheus"],
+        src: { label: "DefenseScoop — Army cyber chief reveals AI task force building agents", url: "https://defensescoop.com/2026/08/19/army-cyber-chief-reveals-ai-task-force-building-agents-to-hunt-in-the-dod-networks/" } },
+      { name: "Command innovation task forces", status: "scaling",
+        what: "Central Command pioneered the operational AI task force model, standing up units focused on accelerating data-driven and AI-enabled technology into real missions. The pattern was picked up widely, with service-run task forces following the same approach of experimenting inside an operational command rather than in a laboratory.",
+        hook: "Task forces are where an operator and an engineer sit in the same room. It is the cheapest place in this customer set to learn what actually breaks in the field.",
+        tags: ["Experimentation", "Operational AI", "Unmanned"],
+        nvaie: ["Edge inference", "Triton", "Fleet management"],
+        src: { label: "DefenseScoop — How CENTCOM's task forces are shaping operational AI", url: "https://defensescoop.com/2023/05/10/how-us-central-commands-task-forces-are-shaping-the-future-of-operational-ai/" } }
+    ],
+    vehicles: ["A military service's own acquisition program, acting for the command", "Defense Innovation Unit commercial solutions openings and other transaction agreements", "Combatant command initiative funds for small, urgent needs", "Joint rapid acquisition authorities"],
+    questions: [
+      "Who actually holds the money for this requirement, and have they agreed to it in writing?",
+      "Is there an innovation or rapid-acquisition path already open for this problem, or would we be opening one?",
+      "Which network and classification level does this have to run on in theater?",
+      "Who is the transition partner when the prototype period ends, and do they know they are the transition partner?",
+      "What still has to work when the link back to the continental United States degrades or drops?"
+    ]
+  },
+  {
+    id: "cdao", name: "CDAO", short: "Chief Digital and AI Office", color: "var(--s-cdao)",
+    org: "Chief Digital and Artificial Intelligence Office · realigned under the Under Secretary of Defense for Research and Engineering",
+    summary: "CDAO sets department AI policy, runs the enterprise platforms, and owns the evaluation expectations everyone else has to satisfy. It moved organizationally in 2025, which changed the language it uses and the people it sits next to. The platforms themselves are detailed in the 4th Estate section; this panel is about how the organization works and how you engage it.",
+    programs: [
+      { name: "Realignment under Research and Engineering", status: "fielding",
+        what: "A deputy secretary memo dated 14 August 2025 directed CDAO to realign under the Under Secretary of Defense for Research and Engineering. It had previously reported directly to the deputy secretary. Officials framed the move as connecting laboratory work to fielded capability; a Congressional Research Service analysis noted the counterargument that it could add bureaucratic distance. Reporting also indicated CDAO would eliminate its chief technology officer directorate in the fiscal 2026 budget.",
+        hook: "An organization chart tells you which vocabulary wins. Sitting inside research and engineering means transition-from-laboratory language, not back-office analytics language. Position accordingly.",
+        tags: ["Organization", "Policy", "R&E"],
+        nvaie: ["Full platform", "Evaluation tooling"],
+        src: { label: "Congressional Research Service — Realignment of DoD's CDAO", url: "https://www.congress.gov/crs-product/IN12615" } },
+      { name: "GenAI.mil Task Force and frontier model prototypes", status: "scaling",
+        what: "CDAO established a task force as part of a pilot program to accelerate generative AI integration, and publicly reported prototype agreements with several frontier AI companies to build agentic workflows for national security missions, with ceilings reported at up to two hundred million dollars each.",
+        hook: "Agentic workflows at department scale mean many chained model calls per task rather than one. The compute story changes from training to sustained, bursty inference, and that is an infrastructure conversation.",
+        tags: ["Agents", "Frontier models", "Prototypes"],
+        nvaie: ["NIM microservices", "NeMo toolchain", "Blueprints"],
+        src: { label: "ExecutiveGov — Pentagon establishes task force to accelerate GenAI.mil adoption", url: "https://www.executivegov.com/articles/pentagon-cdao-genaimil-task-force" } },
+      { name: "Open DAGIR as the engagement model", status: "scaling",
+        what: "Open DAGIR is CDAO's framework for a multi-vendor ecosystem where the government keeps ownership of its data and industry keeps its intellectual property. It moved the enterprise analytics platform from a single-award contract to a multiple-award ecosystem, and it is the template for how CDAO expects industry to plug in.",
+        hook: "Read this as published rules of engagement. A stack that runs identically across vendors and clouds is aligned with the model; anything that needs to own the whole environment is not.",
+        tags: ["Multi-vendor", "Data ownership", "Interoperability"],
+        nvaie: ["Portable runtime", "Containers", "Open model support"],
+        src: { label: "ai.mil — Open DAGIR acquisition update for Advana (PDF)", url: "https://www.ai.mil/Portals/137/Documents/Resources%20Page/ai-mil-news-07-09-24-news-Open-DAGIR-Acquisition-Update-for-Advana-html-2024-10-26-12_29_17.pdf" } },
+      { name: "Evaluation, assurance, and responsible AI", status: "scaling",
+        what: "CDAO is the department's focal point for AI assurance, test and evaluation guidance, and responsible use. Capabilities generally have to show evaluation evidence before they are approved for operational use, and the department's 2026 AI strategy sets the surrounding policy frame.",
+        hook: "Evaluation evidence is a deliverable, not a formality. Guardrails, evaluation harnesses, and reproducible model versions are the artifacts that get a capability through this gate.",
+        tags: ["Assurance", "Test and evaluation", "Guardrails"],
+        nvaie: ["NeMo Guardrails", "NeMo Evaluator", "Model versioning"],
+        src: { label: "ai.mil — Chief Digital and Artificial Intelligence Office", url: "https://www.ai.mil/" } }
+    ],
+    vehicles: ["The enterprise analytics multiple-award ecosystem", "Other transaction agreements and commercial solutions openings", "Rapid prototyping authorities inside the office", "Government-wide acquisition contracts"],
+    questions: [
+      "Which existing enterprise platform does this have to interoperate with, and what does that require of us technically?",
+      "What evaluation evidence would this capability need before an operational approval?",
+      "Under the multi-vendor model, what does the government require so it can replace any one vendor later?",
+      "Now that the office sits inside research and engineering, which laboratory or technical organization is the natural co-sponsor?",
+      "Is this something CDAO would run centrally, or something it expects a service to pick up?"
+    ]
+  },
+  {
+    id: "mda", name: "Missile Defense Agency", short: "MDA · Golden Dome", color: "var(--s-mda)",
+    org: "Missile Defense Agency · Redstone Arsenal · Missile Defense Integration and Operations Center",
+    summary: "MDA is where machine-speed decision support stops being a briefing slide and becomes a fire control requirement. The Golden Dome for America initiative pulled an enormous industrial base in through a single multiple-award vehicle, which changes how a software company gets in: the question is no longer whether you can hold a contract, but whose task order team you are on.",
+    programs: [
+      { name: "Golden Dome for America", status: "scaling",
+        what: "The administration's homeland missile defense initiative, intended to integrate sensors and interceptors across land, sea, air, space, and cyber to detect, track, and intercept missile threats. Senior leaders have publicly described a role for artificial intelligence in helping operators handle the data volume coming off that network and decide at machine speed rather than human speed.",
+        hook: "When a customer says the words machine speed, they have described a latency requirement. Ask what the budget is in milliseconds and where the processing has to sit to meet it.",
+        tags: ["Missile defense", "Sensor fusion", "Machine speed", "C2"],
+        nvaie: ["Triton", "TensorRT", "Holoscan", "RAPIDS"],
+        src: { label: "Aviation Week — Golden Dome lead sees AI role to speed decision-making", url: "https://aviationweek.com/defense/missile-defense-weapons/golden-dome-czar-sees-ai-role-speed-decision-making" } },
+      { name: "SHIELD multiple-award vehicle", status: "fielding",
+        what: "The Scalable Homeland Innovative Enterprise Layered Defense multiple-award indefinite delivery, indefinite quantity contract, publicly reported with a ceiling of one hundred fifty-one billion dollars. Awards were made in tranches from December 2025 through January 2026, reportedly bringing the total to more than two thousand one hundred companies spanning primes, mid-tier firms, venture-backed software companies, and space companies.",
+        hook: "A vehicle with more than two thousand holders is a doorway, not a moat. Competitive position comes from which task orders you are shaped into and which awardee is leading that team.",
+        tags: ["Contract vehicle", "IDIQ", "Teaming"],
+        nvaie: ["Full platform", "Certified systems"],
+        src: { label: "GovConWire — MDA expands SHIELD pool with additional awards", url: "https://www.govconwire.com/articles/mda-1086-second-tranche-shield-awards" } },
+      { name: "Command and Control, Battle Management and Communications", status: "scaling",
+        what: "C2BMC is the operational system that gives senior leaders an integrated view of the air and missile defense battle space by integrating data from many different sensors. Public budget material describes continuing work to integrate more sensors, enhance decision-making using AI tools, and enable direct fire control of additional interceptor systems.",
+        hook: "Track correlation and fusion across many dissimilar sensors is a throughput ceiling that gets worse every time a sensor is added. That is a measurable problem with a measurable answer.",
+        tags: ["Battle management", "Track fusion", "Fire control"],
+        nvaie: ["Triton", "TensorRT", "RAPIDS", "Holoscan"],
+        src: { label: "Missile Defense Agency — C2BMC system page", url: "https://www.mda.mil/system/c2bmc.html" } },
+      { name: "Integration across mature command and control systems", status: "prototype",
+        what: "Public analysis of Golden Dome command and control argues that several already-mature systems, including the Army's integrated battle command system, the Navy's Aegis, MDA's own battle management system, and Air Force battle management efforts, can be fielded together for homeland defense rather than waiting on something entirely new.",
+        hook: "Integrating five mature systems is a data movement and latency problem, and the accreditation path is harder than the math. Bring the boundary question early.",
+        tags: ["Integration", "Interoperability", "Homeland defense"],
+        nvaie: ["Portable runtime", "Edge inference", "Containers"],
+        src: { label: "RealClearDefense — Pragmatic solutions for Golden Dome command and control", url: "https://www.realcleardefense.com/articles/2026/05/20/pragmatic_solutions_for_golden_dome_command_and_control_1183790.html" } }
+    ],
+    vehicles: ["The SHIELD multiple-award vehicle, through a team led by an awardee", "MDA broad agency announcements", "Prime and integrator subcontracts", "Small business innovation research"],
+    questions: [
+      "Which company on the multiple-award vehicle would carry this scope, and are we already on their team?",
+      "What is the latency budget from sensor to decision in the thread you care about?",
+      "Where does track correlation run today, and at what point does adding sensors exceed its throughput?",
+      "What safety and accreditation requirements apply to software anywhere near a fire control path?",
+      "Which existing command and control system does this have to interoperate with first?"
+    ]
+  }
+];
+
 /* ---- Publicly identified locations (headquarters, installations, laboratories) ---- */
 const SITES = [
   { n:"Aberdeen Proving Ground", s:"MD", b:"army", lon:-76.115, lat:39.466, c:2, note:"Army program executive office for intelligence, electronic warfare and sensors, and the C5ISR Center." },
@@ -929,7 +1110,16 @@ const SITES = [
   { n:"Quantico", s:"VA", b:"navy", lon:-77.300, lat:38.522, c:2, note:"Marine Corps Combat Development Command and headquarters staff." },
   { n:"Patuxent River", s:"MD", b:"navy", lon:-76.421, lat:38.285, c:1, note:"Naval Air Systems Command." },
   { n:"Norfolk", s:"VA", b:"navy", lon:-76.285, lat:36.851, c:1, note:"Fleet headquarters and naval network operations." },
-  { n:"Arlington (ONR)", s:"VA", b:"navy", lon:-77.098, lat:38.884, c:1, note:"Office of Naval Research." }
+  { n:"Arlington (ONR)", s:"VA", b:"navy", lon:-77.098, lat:38.884, c:1, note:"Office of Naval Research." },
+  { n:"MacDill AFB, Tampa", s:"FL", b:"cocom", lon:-82.521, lat:27.849, c:2, note:"US Central Command and US Special Operations Command." },
+  { n:"Camp H. M. Smith", s:"HI", b:"cocom", lon:-157.903, lat:21.385, c:2, note:"US Indo-Pacific Command." },
+  { n:"Offutt AFB", s:"NE", b:"cocom", lon:-95.912, lat:41.118, c:1, note:"US Strategic Command." },
+  { n:"Colorado Springs (NORTHCOM)", s:"CO", b:"cocom", lon:-104.755, lat:38.858, c:1, note:"North American Aerospace Defense Command and US Northern Command." },
+  { n:"Doral", s:"FL", b:"cocom", lon:-80.352, lat:25.812, c:1, note:"US Southern Command." },
+  { n:"Fort Meade (CYBERCOM)", s:"MD", b:"cocom", lon:-76.772, lat:39.132, c:2, note:"US Cyber Command and its Cyber National Mission Force." },
+  { n:"Pentagon (CDAO)", s:"VA", b:"cdao", lon:-77.038, lat:38.858, c:4, note:"Chief Digital and Artificial Intelligence Office, now within the research and engineering enterprise." },
+  { n:"Redstone Arsenal (MDA)", s:"AL", b:"mda", lon:-86.683, lat:34.702, c:3, note:"Missile Defense Agency headquarters." },
+  { n:"Schriever SFB (MDIOC)", s:"CO", b:"mda", lon:-104.548, lat:38.778, c:1, note:"Missile Defense Integration and Operations Center." }
 ];
 
 /* ---- Workload fit matrix. 3 = established, 2 = growing, 1 = emerging ---- */
@@ -1122,7 +1312,25 @@ const SOURCES = [
   ["NVIDIA — AI for the US federal government","https://www.nvidia.com/en-us/industries/government/federal/"],
   ["NVIDIA — AI Enterprise documentation","https://docs.nvidia.com/ai-enterprise/index.html"],
   ["AWS — Nemotron and other models receive FedRAMP High and DoD IL4/5 approval in GovCloud","https://aws.amazon.com/about-aws/whats-new/2026/06/addl-bedrock-model-fedramp-il-5-govcloud/"],
-  ["VMware — FIPS and STIG-enabled NVIDIA AI Enterprise containers","https://blogs.vmware.com/cloud-foundation/2025/10/28/fips-stig-enabled-nvidia-ai-enterprise-containers-now-available-vmware-private-ai-foundation-with-nvidia/"]
+  ["VMware — FIPS and STIG-enabled NVIDIA AI Enterprise containers","https://blogs.vmware.com/cloud-foundation/2025/10/28/fips-stig-enabled-nvidia-ai-enterprise-containers-now-available-vmware-private-ai-foundation-with-nvidia/"],
+  ["DefenseScoop — Combatant commands to get generative AI for planning and wargaming","https://defensescoop.com/2025/03/05/diu-thunderforge-scale-ai-combatant-commands-indopacom-eucom/"],
+  ["Air & Space Forces Magazine — Air Force takes lead on Joint Fires Network","https://www.airandspaceforces.com/air-force-indopacom-joint-fires-network-battle-management/"],
+  ["DefenseScoop — INDOPACOM moves to plug in emerging tech","https://defensescoop.com/2023/08/28/indo-pacific-command-moves-to-plug-in-emerging-tech-for-dod-through-key-programs-new-directorate/"],
+  ["DefenseScoop — Cyber Command creates new AI program in fiscal 2026 budget","https://defensescoop.com/2025/07/07/cyber-command-fy26-budget-request-new-ai-program/"],
+  ["US Cyber Command — USCYBERCOM unveils AI roadmap for cyber operations","https://www.cybercom.mil/Media/News/Article/3905064/uscybercom-unveils-ai-roadmap-for-cyber-operations/"],
+  ["Breaking Defense — CYBERCOM requests large increase in AI for cyber operations","https://breakingdefense.com/2026/05/cybercom-requests-2660-percent-increase-in-ai-for-cyber-operations/"],
+  ["DefenseScoop — How CENTCOM's task forces are shaping operational AI","https://defensescoop.com/2023/05/10/how-us-central-commands-task-forces-are-shaping-the-future-of-operational-ai/"],
+  ["DefenseScoop — Army cyber chief reveals AI task force building agents","https://defensescoop.com/2026/08/19/army-cyber-chief-reveals-ai-task-force-building-agents-to-hunt-in-the-dod-networks/"],
+  ["US Northern Command — NORAD and USNORTHCOM lead the third Global Information Dominance Experiment","https://www.northcom.mil/Newsroom/News/Article/Article/2702954/norad-and-us-northern-command-lead-the-third-global-information-dominance-exper/"],
+  ["Congressional Research Service — Realignment of DoD's Chief Digital and AI Officer","https://www.congress.gov/crs-product/IN12615"],
+  ["MeriTalk — DoD moves CDAO under research and engineering arm","https://www.meritalk.com/articles/dod-moves-cdao-under-research-engineering-arm/"],
+  ["MeriTalk — CDAO to cut CTO directorate in FY2026 budget","https://www.meritalk.com/articles/dod-cdao-to-cut-cto-directorate-in-fy2026-budget/"],
+  ["ai.mil — Chief Digital and Artificial Intelligence Office","https://www.ai.mil/"],
+  ["Aviation Week — Golden Dome lead sees AI role to speed decision-making","https://aviationweek.com/defense/missile-defense-weapons/golden-dome-czar-sees-ai-role-speed-decision-making"],
+  ["GovConWire — MDA expands SHIELD pool with additional awards","https://www.govconwire.com/articles/mda-1086-second-tranche-shield-awards"],
+  ["Defense Security Monitor — Pentagon mobilizes industrial base with SHIELD award","https://dsm.forecastinternational.com/2026/01/16/pentagon-mobilizes-industrial-base-for-golden-dome-missile-shield-with-151b-shield-award/"],
+  ["Missile Defense Agency — C2BMC system page","https://www.mda.mil/system/c2bmc.html"],
+  ["RealClearDefense — Pragmatic solutions for Golden Dome command and control","https://www.realcleardefense.com/articles/2026/05/20/pragmatic_solutions_for_golden_dome_command_and_control_1183790.html"]
 ];
 
 /* =========================================================================
@@ -1131,11 +1339,12 @@ const SOURCES = [
 const $ = (s, r) => (r || document).querySelector(s);
 const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-const byId = Object.fromEntries(BRANCHES.map(b => [b.id, b]));
+const ENTITIES = BRANCHES.concat(CROSS);
+const byId = Object.fromEntries(ENTITIES.map(b => [b.id, b]));
 const FIT_WORD = { 3:"Established", 2:"Growing", 1:"Emerging" };
 
 /* ---- header chips ---- */
-$("#chip-programs").textContent = BRANCHES.reduce((n, b) => n + b.programs.length, 0);
+$("#chip-programs").textContent = ENTITIES.reduce((n, b) => n + b.programs.length, 0);
 $("#chip-sites").textContent = SITES.length;
 
 /* ---- bar chart: programs per branch ---- */
@@ -1180,15 +1389,15 @@ function programCard(p, branch){
   </article>`;
 }
 
-(function renderBranches(){
-  $("#branch-rail").innerHTML = BRANCHES.map((b, i) => `
+function renderGroup(list, railSel, panelsSel){
+  $(railSel).innerHTML = list.map((b, i) => `
     <button class="bbtn" style="--bc:${b.color}" role="tab" id="tab-${b.id}"
       aria-controls="panel-${b.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">
       <span class="bn"><span class="bc-dot"></span>${esc(b.name)}</span>
-      <span class="bs">${esc(b.short)} · ${b.programs.length} programs</span>
+      <span class="bs">${esc(b.short)} &middot; ${b.programs.length} programs</span>
     </button>`).join("");
 
-  $("#branch-panels").innerHTML = BRANCHES.map((b, i) => `
+  $(panelsSel).innerHTML = list.map((b, i) => `
     <div class="panel ${i === 0 ? "" : "hidden"}" style="--bc:${b.color}" id="panel-${b.id}" role="tabpanel" aria-labelledby="tab-${b.id}" tabindex="0">
       <div class="panel-head">
         <h3>${esc(b.name)}</h3>
@@ -1204,28 +1413,35 @@ function programCard(p, branch){
       <ol class="q">${b.questions.map(q => `<li>${esc(q)}</li>`).join("")}</ol>
     </div>`).join("");
 
-  const tabs = $$("#branch-rail .bbtn");
+  const tabs = $$(railSel + " .bbtn");
   function select(id){
     tabs.forEach(t => {
       const on = t.id === "tab-" + id;
       t.setAttribute("aria-selected", String(on));
       t.tabIndex = on ? 0 : -1;
     });
-    BRANCHES.forEach(b => $("#panel-" + b.id).classList.toggle("hidden", b.id !== id));
+    list.forEach(b => $("#panel-" + b.id).classList.toggle("hidden", b.id !== id));
   }
   tabs.forEach((t, i) => {
-    t.addEventListener("click", () => select(BRANCHES[i].id));
+    t.addEventListener("click", () => select(list[i].id));
     t.addEventListener("keydown", (e) => {
       const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
       if (!d) return;
       e.preventDefault();
       const n = (i + d + tabs.length) % tabs.length;
       tabs[n].focus();
-      select(BRANCHES[n].id);
+      select(list[n].id);
     });
   });
-  window.__selectBranch = select;
-})();
+  return select;
+}
+
+const selectBranch = renderGroup(BRANCHES, "#branch-rail", "#branch-panels");
+const selectCross = renderGroup(CROSS, "#cross-rail", "#cross-panels");
+window.__selectEntity = (id) => {
+  if (BRANCHES.some(b => b.id === id)) selectBranch(id);
+  else if (CROSS.some(b => b.id === id)) selectCross(id);
+};
 
 /* ---- cross-branch program search ---- */
 (function search(){
@@ -1236,27 +1452,26 @@ function programCard(p, branch){
   results.style.setProperty("--bc", "var(--nv)");
   panels.parentNode.insertBefore(results, panels.nextSibling);
 
-  const ALL = BRANCHES.flatMap(b => b.programs.map(p => ({ p, b })));
+  const ALL = ENTITIES.flatMap(b => b.programs.map(p => ({ p, b })));
 
   input.addEventListener("input", () => {
     const q = input.value.trim().toLowerCase();
+    const groups = [rail, panels, $("#cross-rail"), $("#cross-panels")];
     if (!q) {
       results.classList.add("hidden");
-      panels.classList.remove("hidden");
-      rail.classList.remove("hidden");
+      groups.forEach(el => el.classList.remove("hidden"));
       count.textContent = "";
       return;
     }
     const hits = ALL.filter(x =>
       (x.p.name + " " + x.p.what + " " + x.p.hook + " " + x.p.tags.join(" ") + " " + x.p.nvaie.join(" ") + " " + x.b.name).toLowerCase().includes(q));
     count.textContent = hits.length + (hits.length === 1 ? " match" : " matches");
-    panels.classList.add("hidden");
-    rail.classList.add("hidden");
+    groups.forEach(el => el.classList.add("hidden"));
     results.classList.remove("hidden");
     results.innerHTML = hits.length
-      ? `<div class="panel-head"><h3>Matching programs</h3><span class="org">${hits.length} of ${ALL.length}</span></div>` +
+      ? `<div class="panel-head"><h3>Matching programs</h3><span class="org">${hits.length} of ${ALL.length}, across all branches and cross-cutting organizations</span></div>` +
         hits.map(x => `<div style="margin-bottom:4px"><span class="tag" style="border-color:${x.b.color};color:${x.b.color}">${esc(x.b.name)}</span></div>${programCard(x.p, x.b)}`).join("")
-      : `<div class="panel-head"><h3>No matches</h3></div><p class="summary">Nothing in this guide matches &ldquo;${esc(input.value)}&rdquo;. Try a broader term such as edge, data, cyber, autonomy, or cloud.</p>`;
+      : `<div class="panel-head"><h3>No matches</h3></div><p class="summary">Nothing in this guide matches &ldquo;${esc(input.value)}&rdquo;. Try a broader term such as edge, data, cyber, autonomy, planning, or cloud.</p>`;
   });
 })();
 
@@ -1290,7 +1505,7 @@ $("#srclist").innerHTML = SOURCES.map(([label, url]) =>
 
 /* ---- site list table (also the accessible view of the map) ---- */
 $("#map-list").innerHTML = `<table class="data"><caption class="sr">Publicly identified locations associated with tracked programs</caption>
-  <thead><tr><th>Location</th><th>Branch</th><th>Programs</th><th>What is there</th></tr></thead>
+  <thead><tr><th>Location</th><th>Organization</th><th>Programs</th><th>What is there</th></tr></thead>
   <tbody>${SITES.slice().sort((a, b) => a.n.localeCompare(b.n)).map(s => `<tr>
     <td><b>${esc(s.n)}, ${esc(s.s)}</b></td>
     <td><span class="tag" style="border-color:${byId[s.b].color};color:${byId[s.b].color}">${esc(byId[s.b].name)}</span></td>
@@ -1302,13 +1517,16 @@ $("#map-list").innerHTML = `<table class="data"><caption class="sr">Publicly ide
   const controls = $("#map-controls"), tip = $("#tip"), legend = $("#map-legend");
   let active = "all";
 
+  const pill = (b) => `<button class="pill" type="button" data-b="${b.id}" aria-pressed="false" style="--pc:var(--surface-3);--pc2:${b.color}">${esc(b.name)}</button>`;
   controls.innerHTML =
-    `<button class="pill" type="button" data-b="all" aria-pressed="true" style="--pc:var(--nv-glow);--pc2:var(--nv)">All branches</button>` +
-    BRANCHES.map(b => `<button class="pill" type="button" data-b="${b.id}" aria-pressed="false" style="--pc:var(--surface-3);--pc2:${b.color}">${esc(b.name)}</button>`).join("");
+    `<button class="pill" type="button" data-b="all" aria-pressed="true" style="--pc:var(--nv-glow);--pc2:var(--nv)">All</button>` +
+    BRANCHES.map(pill).join("") +
+    `<span class="pill-divider" aria-hidden="true"></span>` +
+    CROSS.map(pill).join("");
 
   legend.innerHTML =
     `<span><svg width="30" height="16" aria-hidden="true"><circle cx="6" cy="8" r="5" fill="var(--nv)"></circle><circle cx="21" cy="8" r="8" fill="var(--nv)"></circle></svg> Marker size: 1 to 3 tracked programs</span>` +
-    `<span>Color shows the selected branch. Grey markers are other branches.</span>`;
+    `<span>Color shows the selected organization. Grey markers are the others.</span>`;
 
   if (typeof d3 === "undefined" || typeof topojson === "undefined") {
     $("#usmap").innerHTML = `<div class="map-fallback"><b>The map could not load.</b> It needs two public libraries from a content delivery network, which some government and corporate networks block. Everything the map shows is listed in the table below.</div>`;
@@ -1379,7 +1597,7 @@ $("#map-list").innerHTML = `<table class="data"><caption class="sr">Publicly ide
     $$(".pill", controls).forEach(p => p.setAttribute("aria-pressed", String(p === btn)));
     paint();
     hideTip();
-    if (active !== "all" && window.__selectBranch) window.__selectBranch(active);
+    if (active !== "all" && window.__selectEntity) window.__selectEntity(active);
   });
 })();
 
