@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DoW Acquisition Org Chart</title>
+<meta name="description" content="One-page chart of the Department of War acquisition chain, from the defense acquisition executive down to the portfolio executives that now own each mission area.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23000'/%3E%3Cpath d='M6 22V10h4l6 8v-8h4v12h-4l-6-8v8z' fill='%2376b900'/%3E%3C/svg%3E">
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#000;
+  --surface-1:#101110;
+  --surface-2:#171916;
+  --surface-3:#1e211d;
+  --line:#2f332c;
+  --text-1:#f3f5f0;
+  --text-2:#bcc2b6;
+  --text-3:#8b9284;
+  --nv:#76b900;
+  --on-chip:#0b1400;
+  --s-army:#6aa300; --s-navy:#199e70; --s-af:#3987e5;
+  --s-ssf:#9085e9; --s-disa:#d55181; --s-cdao:#2f9fb8; --s-mda:#e66767;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#ffffff;
+  --surface-1:#ffffff;
+  --surface-2:#f4f5f1;
+  --surface-3:#eceee7;
+  --line:#c7ccbf;
+  --text-1:#14180f;
+  --text-2:#3f4636;
+  --text-3:#6b7360;
+  --nv:#4a7000;
+  --on-chip:#ffffff;
+  --s-army:#4a7000; --s-navy:#0f6e4e; --s-af:#1f5fa8;
+  --s-ssf:#5b4bbf; --s-disa:#a52f5c; --s-cdao:#1b6b80; --s-mda:#b83b3b;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text-1);font-family:var(--sans);line-height:1.55}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 16px 60px}
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between;margin-bottom:6px}
+h1{font-size:clamp(1.3rem,1rem + 1.3vw,1.9rem);margin:0;letter-spacing:-.01em}
+h1 span{color:var(--nv)}
+.meta{font-family:var(--mono);font-size:.72rem;color:var(--text-3);letter-spacing:.06em;margin-top:6px}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+button{cursor:pointer;font-family:var(--mono);font-size:.74rem;padding:8px 13px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2);color:var(--text-2)}
+button:hover{color:var(--text-1);border-color:var(--text-3)}
+button:focus-visible{outline:2px solid var(--nv);outline-offset:2px}
+.lede{color:var(--text-2);font-size:.93rem;max-width:80ch;margin:10px 0 18px}
+figure{margin:0}
+svg{width:100%;height:auto;display:block;background:var(--surface-1);border:1px solid var(--line);border-radius:12px}
+figcaption{font-size:.83rem;color:var(--text-3);margin-top:10px;max-width:90ch}
+/* SVG element styling, kept outside the svg so it themes with the page */
+.band{fill:var(--surface-3);stroke:var(--nv);stroke-width:1.2}
+.bandtext{fill:var(--text-1);font-weight:700}
+.bandsub{fill:var(--nv)}
+.conn{stroke:var(--line);stroke-width:1.4;fill:none}
+.chip{stroke:none}
+.chiptext{fill:var(--on-chip);font-weight:700}
+.sae{fill:var(--surface-2);stroke:var(--line);stroke-width:1}
+.saetext{fill:var(--text-1)}
+.saesym{fill:var(--nv);font-family:var(--mono)}
+.pbox{fill:var(--surface-2);stroke:var(--line);stroke-width:1}
+.prule{stroke:none}
+.ptext{fill:var(--text-1)}
+.pwho{fill:var(--text-3);font-style:italic}
+.pwho.known{fill:var(--text-2);font-style:normal}
+.dot{fill:var(--nv)}
+.foot{fill:var(--text-3)}
+.footstrong{fill:var(--text-2)}
+svg text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.tablewrap{margin-top:28px}
+.tablewrap h2{font-size:1rem;margin:0 0 10px}
+details{border:1px solid var(--line);border-radius:12px;background:var(--surface-1);overflow:hidden}
+summary{cursor:pointer;padding:12px 16px;font-size:.92rem;font-weight:600}
+summary:hover{background:var(--surface-2)}
+.tscroll{overflow-x:auto;padding:0 16px 16px}
+table{border-collapse:collapse;width:100%;font-size:.85rem;min-width:620px}
+th{text-align:left;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--line);padding:8px 12px 8px 0}
+td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line);color:var(--text-2);vertical-align:top}
+td:first-child{color:var(--text-1);font-weight:600;white-space:nowrap}
+.note{font-size:.85rem;color:var(--text-3);max-width:90ch;margin-top:18px}
+.note b{color:var(--text-2)}
+@media print{
+  @page{size:letter landscape;margin:8mm}
+  /* print light so a one-pager does not dump ink, whatever the screen theme */
+  :root,:root[data-theme="dark"],:root[data-theme="light"]{
+    --bg:#fff; --surface-1:#fff; --surface-2:#f6f7f3; --surface-3:#edefe8;
+    --line:#b9bfb1; --text-1:#111409; --text-2:#3a4132; --text-3:#666e5c; --nv:#3f6100; --on-chip:#fff;
+    --s-army:#3f6100; --s-navy:#0d6047; --s-af:#1b5496; --s-ssf:#4f41a8; --s-disa:#93294f; --s-cdao:#175f73; --s-mda:#a63434;
+  }
+  body{background:#fff;color:#111409}
+  .tools,.tablewrap,.lede,.note{display:none}
+  .wrap{padding:0;margin:0;max-width:none}
+  header{margin-bottom:3pt;display:block}
+  h1{font-size:12pt}
+  .meta{font-size:6.5pt;margin-top:1pt}
+  figure{margin:0;page-break-inside:avoid;break-inside:avoid}
+  svg{border:0;border-radius:0;height:6.5in;width:auto;max-width:100%;margin:0 auto}
+  figcaption{font-size:6.5pt;margin-top:3pt;color:#3a4132}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Department of War <span>Acquisition Chain</span></h1>
+      <div class="meta">Public sources only &middot; compiled 20 Sep 2026 &middot; unofficial working aid</div>
+    </div>
+    <div class="tools">
+      <button type="button" id="theme">Light for slides</button>
+      <button type="button" id="print">Print or save as PDF</button>
+    </div>
+  </header>
+
+  <p class="lede">One page, seven chains. Program Executive Offices are being replaced across every service by Portfolio Acquisition Executives who own a whole mission area from development through sustainment. Contracting officers now report into that chain, which is the part that changes how a deal gets done. Print landscape, or switch to light and screenshot it for a deck.</p>
+
+  <figure>
+    <svg id="chart" viewBox="0 0 1100 770" role="img" aria-label="Organization chart of the Department of War acquisition chain, showing the defense acquisition executive above the service and component acquisition executives for the Army, Navy and Marine Corps, Air Force, Space Force, DISA, CDAO and the Missile Defense Agency, each with the portfolio acquisition executives beneath them."></svg>
+    <figcaption id="cap"></figcaption>
+  </figure>
+
+  <div class="tablewrap">
+    <details>
+      <summary>Same chart as a table, for screen readers and for copying into a deck</summary>
+      <div class="tscroll"><table id="tbl"><caption class="sr"></caption></table></div>
+    </details>
+  </div>
+
+  <p class="note"><b>Accuracy.</b> Names are as reported in public trade press and official announcements, and many officials are serving in an acting or interim capacity while the transition runs into 2027. Where a role could not be confirmed from an open source the chart says so rather than guessing, and that means unconfirmed, not vacant. The Air Force has seventeen portfolios and the Space Force nine; the ones not consistently published in open sources are shown as a single summary box. Verify on the relevant service acquisition site before a customer meeting.</p>
+  <p class="note"><b>Sources.</b> Secretary of War acquisition transformation memoranda of 7 November 2025; section 1802 of the National Defense Authorization Act for Fiscal Year 2026; and service announcements and trade reporting through September 2026. Full source list is in the NVIDIA AI Enterprise DoW Explorer, section 14.</p>
+</div>
+
+<script>
+"use strict";
+const DASH = "—";
+
+const ORGS = [
+  { name:"US Army", color:"var(--s-army)",
+    sae:{ t:"Asst Secretary of the Army (Acquisition, Logistics & Technology)", sym:"ASA(ALT)" },
+    rows:[
+      { n:"Fires", w:DASH, hq:"Redstone Arsenal, AL" },
+      { n:"C2 / Counter C2", w:"BG Jack Taylor (CPE C3N)", hq:"Aberdeen Proving Ground, MD", star:true },
+      { n:"Maneuver Ground", w:DASH, hq:"Fort Benning, GA" },
+      { n:"Maneuver Air", w:DASH, hq:"Fort Rucker, AL" },
+      { n:"Agile Sustainment & Ammo", w:"MG John Reim", hq:"Picatinny Arsenal, NJ" },
+      { n:"Layered Protection & CBRN", w:DASH, hq:"Fort Leonard Wood, MO" },
+      { n:"CPE Enterprise Software & Services", w:DASH, hq:"Fort Belvoir, VA", star:true }
+    ] },
+  { name:"Navy / USMC", color:"var(--s-navy)",
+    sae:{ t:"Asst Secretary of the Navy (Research, Development & Acquisition)", sym:"ASN(RD&A)" },
+    rows:[
+      { n:"Mission Systems", w:"Jim Day (interim)", hq:"Absorbed systems command functions", star:true },
+      { n:"Robotic & Autonomous Systems", w:DASH, hq:"First portfolio stood up" },
+      { n:"Aviation", w:"VADM J. Dougherty (interim)", hq:"Established May 2026", star:true },
+      { n:"Munitions", w:"Paul Mann (interim)", hq:"Established May 2026" },
+      { n:"Maritime", w:"Chris Miller", hq:"From NAVSEA executive director role" },
+      { n:"Undersea", w:"VADM Robert Gaucher", hq:"" },
+      { n:"Marine Corps", w:DASH, hq:"Quantico, VA", star:true },
+      { n:"Industrial Operations", w:DASH, hq:"Shipyards and depots" },
+      { n:"Strategic Systems Programs", w:DASH, hq:"" }
+    ] },
+  { name:"Air Force", color:"var(--s-af)",
+    sae:{ t:"Asst Secretary of the Air Force (Acquisition, Technology & Logistics)", sym:"SAF/AQ" },
+    rows:[
+      { n:"C3BM", w:"Maj Gen Luke Cropsey", hq:"DAF battle network integrator", star:true },
+      { n:"Digital", w:DASH, hq:"Enterprise software and DevSecOps", star:true },
+      { n:"Fighters & Advanced Aircraft", w:DASH, hq:"Includes collaborative combat aircraft", star:true },
+      { n:"Nuclear Systems & ICBM", w:DASH, hq:"Air Force Nuclear Weapons Center" },
+      { n:"Business & Enterprise Systems", w:DASH, hq:"" },
+      { n:"12 further portfolios", w:"Not published", hq:"Mobility, bombers, ISR and SOF, weapons, sustainment and others" }
+    ] },
+  { name:"Space Force", color:"var(--s-ssf)",
+    sae:{ t:"Asst Secretary of the Air Force (Space Acquisition & Integration)", sym:"SAF/SQ" },
+    rows:[
+      { n:"BMC3 & Space Intelligence", w:"Shannon Pallone", hq:"Permanent", star:true },
+      { n:"Space-Based Sensing & Targeting", w:"Col Ryan Frazier (acting)", hq:"", star:true },
+      { n:"Missile Warning & Tracking", w:"Gurpartap Sandhoo", hq:"", star:true },
+      { n:"Space Access", w:"Col E. Zarybnisky (acting)", hq:"Launch and range" },
+      { n:"Infrastructure", w:"Col Corey Klopstein", hq:"Permanent" },
+      { n:"Satellite Communications", w:DASH, hq:"" },
+      { n:"Positioning, Navigation & Timing", w:DASH, hq:"" },
+      { n:"2 further portfolios", w:"Not published", hq:"Completing the nine" }
+    ] },
+  { name:"DISA", color:"var(--s-disa)",
+    sae:{ t:"DISA Component Acquisition Executive", sym:"CAE" },
+    rows:[
+      { n:"Cyber & Zero Trust", w:DASH, hq:"Thunderdome", star:true },
+      { n:"Hosting & Compute", w:DASH, hq:"Olympus and Joint Operational Edge", star:true },
+      { n:"Cloud Acquisition", w:DASH, hq:"JWCC Next", star:true },
+      { n:"Enterprise Services", w:DASH, hq:"" }
+    ] },
+  { name:"CDAO", color:"var(--s-cdao)",
+    sae:{ t:"Chief Digital & AI Officer, under Research & Engineering", sym:"Not a traditional buyer" },
+    rows:[
+      { n:"Enterprise Analytics", w:DASH, hq:"Advana under Open DAGIR", star:true },
+      { n:"Rapid Capability Pilots", w:DASH, hq:"AI Rapid Capabilities Cell", star:true },
+      { n:"Enterprise GenAI Platform", w:DASH, hq:"GenAI.mil and its task force", star:true },
+      { n:"Assurance & Evaluation", w:DASH, hq:"Gates every service portfolio must clear" }
+    ] },
+  { name:"MDA", color:"var(--s-mda)",
+    sae:{ t:"Director, Missile Defense Agency", sym:"Agency acquisition authority" },
+    rows:[
+      { n:"Golden Dome for America", w:DASH, hq:"Contracted largely through SHIELD", star:true },
+      { n:"C2BMC", w:DASH, hq:"Battle management and track fusion", star:true },
+      { n:"Sensors", w:DASH, hq:"" },
+      { n:"Interceptors", w:DASH, hq:"" }
+    ] }
+];
+
+/* ---------- geometry ---------- */
+const W = 1100, H = 770, M = 16, GAP = 10, N = ORGS.length;
+const COLW = (W - M * 2 - GAP * (N - 1)) / N;
+const colX = i => M + i * (COLW + GAP);
+const colC = i => colX(i) + COLW / 2;
+const BAND_Y = 16, BAND_H = 42, BUS_Y = 72, CHIP_Y = 96, CHIP_H = 30;
+const SAE_Y = 136, SAE_H = 62, LABEL_Y = 210, ROW_Y0 = 218, ROW_H = 48, ROW_GAP = 5;
+
+const esc = s => String(s).replace(/[&<>]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;" }[c]));
+
+function wrap(text, fs, boxW, maxLines){
+  const budget = Math.max(6, Math.floor(boxW / (fs * 0.53)));
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let cur = "";
+  for (const word of words){
+    const next = cur ? cur + " " + word : word;
+    if (next.length <= budget) { cur = next; continue; }
+    if (cur) lines.push(cur);
+    cur = word;
+    if (lines.length === maxLines) break;
+  }
+  if (cur && lines.length < maxLines) lines.push(cur);
+  if (lines.length > maxLines) lines.length = maxLines;
+  const used = lines.join(" ").length;
+  if (used < String(text).replace(/\s+/g, " ").length) {
+    lines[lines.length - 1] = lines[lines.length - 1].replace(/.{1}$/, "") + "…";
+  }
+  return lines;
+}
+
+function textBlock(x, y, fs, lineH, cls, lines, anchor){
+  return lines.map((ln, i) =>
+    `<text x="${x}" y="${(y + i * lineH).toFixed(1)}" font-size="${fs}" class="${cls}"${anchor ? ` text-anchor="${anchor}"` : ""}>${esc(ln)}</text>`
+  ).join("");
+}
+
+/* ---------- draw ---------- */
+(function draw(){
+  const p = [];
+
+  // department band
+  p.push(`<rect x="${M}" y="${BAND_Y}" width="${W - M * 2}" height="${BAND_H}" rx="8" class="band"/>`);
+  p.push(`<text x="${W / 2}" y="${BAND_Y + 19}" font-size="14" class="bandtext" text-anchor="middle">Under Secretary of War for Acquisition and Sustainment</text>`);
+  p.push(`<text x="${W / 2}" y="${BAND_Y + 34}" font-size="9.5" class="bandsub" text-anchor="middle">Defense Acquisition Executive &#183; designates the service and component acquisition executives below</text>`);
+
+  // spine and bus
+  p.push(`<path d="M${W / 2} ${BAND_Y + BAND_H} V${BUS_Y}" class="conn"/>`);
+  p.push(`<path d="M${colC(0).toFixed(1)} ${BUS_Y} H${colC(N - 1).toFixed(1)}" class="conn"/>`);
+
+  ORGS.forEach((org, i) => {
+    const x = colX(i), c = colC(i);
+    p.push(`<path d="M${c.toFixed(1)} ${BUS_Y} V${CHIP_Y}" class="conn"/>`);
+
+    // org chip
+    p.push(`<rect x="${x.toFixed(1)}" y="${CHIP_Y}" width="${COLW.toFixed(1)}" height="${CHIP_H}" rx="6" class="chip" fill="${org.color}"/>`);
+    p.push(`<text x="${c.toFixed(1)}" y="${CHIP_Y + 20}" font-size="12.5" class="chiptext" text-anchor="middle">${esc(org.name)}</text>`);
+
+    // acquisition executive
+    p.push(`<path d="M${c.toFixed(1)} ${CHIP_Y + CHIP_H} V${SAE_Y}" class="conn"/>`);
+    p.push(`<rect x="${x.toFixed(1)}" y="${SAE_Y}" width="${COLW.toFixed(1)}" height="${SAE_H}" rx="6" class="sae"/>`);
+    p.push(textBlock(x + 7, SAE_Y + 15, 8.8, 10.8, "saetext", wrap(org.sae.t, 8.8, COLW - 12, 3)));
+    p.push(`<text x="${(x + 7).toFixed(1)}" y="${SAE_Y + SAE_H - 8}" font-size="8.5" class="saesym">${esc(org.sae.sym)}</text>`);
+
+    // portfolio stack
+    p.push(`<path d="M${c.toFixed(1)} ${SAE_Y + SAE_H} V${ROW_Y0}" class="conn"/>`);
+    p.push(`<text x="${(x + 1).toFixed(1)}" y="${LABEL_Y}" font-size="8" class="foot" letter-spacing="1.1">PORTFOLIOS (${org.rows.length})</text>`);
+
+    org.rows.forEach((r, j) => {
+      const y = ROW_Y0 + j * (ROW_H + ROW_GAP);
+      p.push(`<rect x="${x.toFixed(1)}" y="${y}" width="${COLW.toFixed(1)}" height="${ROW_H}" rx="5" class="pbox"/>`);
+      p.push(`<rect x="${x.toFixed(1)}" y="${y}" width="3.5" height="${ROW_H}" rx="1.5" class="prule" fill="${org.color}"/>`);
+      p.push(textBlock(x + 10, y + 15, 10.5, 12, "ptext", wrap(r.n, 10.5, COLW - 26, 2)));
+      const known = r.w !== DASH && r.w !== "Not published";
+      p.push(`<text x="${(x + 10).toFixed(1)}" y="${y + ROW_H - 7}" font-size="8.5" class="pwho${known ? " known" : ""}">${esc(wrap(r.w, 8.5, COLW - 15, 1)[0] || DASH)}</text>`);
+      if (r.star) p.push(`<circle cx="${(x + COLW - 9).toFixed(1)}" cy="${y + 9}" r="3.5" class="dot"/>`);
+    });
+  });
+
+  // legend
+  const LY = H - 56;
+  p.push(`<circle cx="${M + 5}" cy="${LY - 4}" r="3.5" class="dot"/>`);
+  p.push(`<text x="${M + 15}" y="${LY}" font-size="9" class="footstrong">Owns a program tracked in the Explorer</text>`);
+  p.push(`<text x="${M + 250}" y="${LY}" font-size="9" class="foot">${DASH} officeholder not confirmed in open sources</text>`);
+  p.push(`<text x="${M + 560}" y="${LY}" font-size="9" class="foot">Portfolio executives own a mission area end to end; contracting officers report into this chain</text>`);
+  p.push(`<text x="${M}" y="${LY + 18}" font-size="9" class="foot">Directed by Secretary of War memoranda of 7 Nov 2025 and codified by section 1802 of the FY2026 National Defense Authorization Act. Transition runs into 2027, so names change.</text>`);
+  p.push(`<text x="${M}" y="${LY + 34}" font-size="9" class="foot">Public sources only. No information proprietary or sensitive to the Department of War, NVIDIA, or any partner, OEM or independent software vendor. Compiled 20 September 2026.</text>`);
+
+  document.getElementById("chart").innerHTML = p.join("");
+
+  const total = ORGS.reduce((n, o) => n + o.rows.length, 0);
+  document.getElementById("cap").textContent =
+    `Seven acquisition chains, ${total} portfolios. Read top to bottom: the department acquisition executive designates each service or component acquisition executive, who designates the portfolio executives that now own whole mission areas. Green dots mark the portfolios that own a program tracked in the Explorer.`;
+})();
+
+/* ---------- table fallback ---------- */
+(function table(){
+  const rows = ORGS.flatMap(o => o.rows.map((r, i) => `<tr>
+    <td>${i === 0 ? esc(o.name) : ""}</td>
+    <td>${i === 0 ? esc(o.sae.sym) : ""}</td>
+    <td>${esc(r.n)}</td>
+    <td>${esc(r.w)}</td>
+    <td>${esc(r.hq || DASH)}</td>
+    <td>${r.star ? "Yes" : "No"}</td></tr>`)).join("");
+  document.getElementById("tbl").innerHTML =
+    `<caption class="sr">Department of War acquisition portfolios by organization</caption>
+     <thead><tr><th>Organization</th><th>Acq executive</th><th>Portfolio</th><th>Reported leader</th><th>Notes</th><th>Tracked program</th></tr></thead>
+     <tbody>${rows}</tbody>`;
+})();
+
+/* ---------- controls ---------- */
+document.getElementById("print").addEventListener("click", () => window.print());
+document.getElementById("theme").addEventListener("click", (e) => {
+  const light = document.documentElement.getAttribute("data-theme") === "light";
+  document.documentElement.setAttribute("data-theme", light ? "dark" : "light");
+  e.target.textContent = light ? "Light for slides" : "Back to dark";
+});
+</script>
+</body>
+</html>
