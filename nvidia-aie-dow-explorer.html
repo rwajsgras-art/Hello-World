@@ -282,6 +282,7 @@ footer p{max-width:80ch}
   <div class="inner" id="navlinks">
     <a href="#overview" class="on">Overview</a>
     <a href="#budget">FY27 Budget</a>
+    <a href="#pae">Who Buys (PAEs)</a>
     <a href="#branches">Branches</a>
     <a href="#cross">COCOMs &amp; Agencies</a>
     <a href="#map">Map</a>
@@ -469,9 +470,110 @@ footer p{max-width:80ch}
   </div>
 </section>
 
-<section id="branches">
+<style>
+.chain{display:grid;gap:0;margin:0 0 6px}
+.chain-step{position:relative;background:var(--surface-1);border:1px solid var(--line);border-left:4px solid var(--cc,var(--nv));border-radius:12px;padding:14px 16px;margin-bottom:26px}
+.chain-step:last-child{margin-bottom:0}
+.chain-step::after{content:"";position:absolute;left:50%;bottom:-20px;width:2px;height:14px;background:var(--line);transform:translateX(-50%)}
+.chain-step:last-child::after{display:none}
+.chain-step .cs-role{font-family:var(--mono);font-size:.68rem;letter-spacing:.11em;text-transform:uppercase;color:var(--cc,var(--nv))}
+.chain-step h4{font-size:1rem;margin:4px 0 5px}
+.chain-step p{margin:0;font-size:.89rem;color:var(--text-2)}
+.pullquote{border-left:3px solid var(--nv);background:rgba(118,185,0,.06);border-radius:0 10px 10px 0;padding:16px 18px;margin:0 0 18px}
+.pullquote p{font-size:.97rem;color:var(--text-1);margin:0 0 8px;line-height:1.6}
+.pullquote cite{font-style:normal;font-family:var(--mono);font-size:.74rem;color:var(--text-3)}
+.exec{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:14px}
+.exec .ex-role{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-3)}
+.exec .ex-title{font-size:1rem;font-weight:650;margin:4px 0 2px;color:var(--text-1)}
+.exec .ex-sym{font-family:var(--mono);font-size:.78rem;color:var(--nv)}
+.exec .ex-who{font-size:.89rem;color:var(--text-2);margin-top:7px}
+table.pae{border-collapse:collapse;width:100%;font-size:.87rem;min-width:620px}
+table.pae th{text-align:left;font-size:.68rem;font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--line);padding:8px 12px 8px 0}
+table.pae td{padding:10px 12px 10px 0;border-bottom:1px solid var(--line-soft);color:var(--text-2);vertical-align:top}
+table.pae td:first-child{color:var(--text-1);font-weight:600;white-space:nowrap}
+table.pae tr:last-child td{border-bottom:0}
+.who{font-size:.83rem}
+.who.unk{color:var(--text-3);font-style:italic}
+.maprow{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;font-size:.89rem}
+@media (max-width:640px){.maprow{grid-template-columns:1fr;gap:4px 0}}
+.maprow .mp{color:var(--text-1);padding:7px 0;border-bottom:1px solid var(--line-soft)}
+.maprow .mo{color:var(--text-2);padding:7px 0;border-bottom:1px solid var(--line-soft)}
+@media (max-width:640px){.maprow .mp{padding-bottom:0;border-bottom:0}.maprow .mo{padding-top:2px}}
+</style>
+
+<section id="pae">
   <div class="sec-head">
     <span class="sec-num">03</span>
+    <h2>Who actually buys: the PAE chain</h2>
+    <p>The acquisition org chart most sellers learned is being dismantled. Program Executive Offices are being replaced by Portfolio Acquisition Executives across every service, contracting officers now report into that chain, and the names on the doors are changing while the transition runs. This section is the current map, plus an honest account of what is not yet published.</p>
+  </div>
+
+  <div class="notice" role="note">
+    <h3>The org chart changed under you</h3>
+    <p>On 7 November 2025 the Secretary of War issued memoranda directing that Program Executive Officers be replaced by Portfolio Acquisition Executives with authority across a whole mission area, and that major acquisition activity transition to them within two years. Section 1802 of the fiscal 2026 defense authorization act then wrote the role into law.</p>
+    <p>Every service has moved. The Army stood up six portfolio executives with a further layer beneath them, the Air Force consolidated into seventeen, the Space Force into nine, and the Department of the Navy into nine. Many of the people named below are acting or interim, and the transition continues into 2027. <b>Treat every name here as a starting point to verify, not as a fact to repeat.</b></p>
+  </div>
+
+  <div class="pullquote">
+    <p>A portfolio acquisition executive is &ldquo;the senior acquisition official designated by the component acquisition executive or the service acquisition executive of the military department concerned, as applicable, to lead a portfolio of capabilities, with authority for plans, budgets, and execution of programs assigned to the portfolio, including life-cycle management.&rdquo;</p>
+    <cite>Section 1802, National Defense Authorization Act for Fiscal Year 2026</cite>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:18px">
+    <div>
+      <div class="subhead" style="margin-top:0">The chain, top to bottom</div>
+      <div class="chain">
+        <div class="chain-step" style="--cc:var(--s-4e)">
+          <div class="cs-role">Department level</div>
+          <h4>Under Secretary for Acquisition and Sustainment</h4>
+          <p>The defense acquisition executive. Sets policy for the whole department and was directed to execute the transformation.</p>
+        </div>
+        <div class="chain-step" style="--cc:var(--s-af)">
+          <div class="cs-role">Service or agency level</div>
+          <h4>Service or Component Acquisition Executive</h4>
+          <p>One per military department, or per defense agency. This is the official who designates the portfolio executives beneath them. Army, Navy and Air Force each have a Senate-confirmed assistant secretary in this role.</p>
+        </div>
+        <div class="chain-step" style="--cc:var(--nv)">
+          <div class="cs-role">Where your deal lives</div>
+          <h4>Portfolio Acquisition Executive</h4>
+          <p>Owns an entire mission area from development through sustainment, with authority over plans, budgets and execution. Contracting officers now report into this chain, which is the change that matters most to a seller.</p>
+        </div>
+        <div class="chain-step" style="--cc:var(--s-navy)">
+          <div class="cs-role">Execution</div>
+          <h4>Program Manager</h4>
+          <p>Still owns an individual program, its schedule and its technical baseline. The engineer you meet first usually works here.</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="subhead" style="margin-top:0">What changes for you</div>
+      <ul class="clean">
+        <li><b>Authority moved up and consolidated.</b> One person can now trade money and schedule across a whole mission area. That makes a single good meeting far more valuable than it used to be, and a single bad one more expensive.</li>
+        <li><b>Contracting moved into the chain.</b> Contracting officers reporting to the portfolio executive means the technical case and the contracting path are decided closer together.</li>
+        <li><b>Names and boxes are unstable.</b> Offices are being renamed, merged and realigned while the transition runs. A stale org chart in a briefing is an unforced error your competitors are also making.</li>
+        <li><b>The old names still work as search terms.</b> Program offices carry their history, so searching the former Program Executive Office name will usually still find the right people.</li>
+        <li><b>Ask rather than assume.</b> &ldquo;Which portfolio does this sit under now, and who is the portfolio executive?&rdquo; is a question that gets a straight answer and makes you look current.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="branch-rail" id="pae-rail" role="tablist" aria-label="Acquisition organizations"></div>
+  <div id="pae-panels"></div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>How to check any of this before a meeting</h3>
+    <ul class="clean">
+      <li><b>Start at the service acquisition site.</b> The Army acquisition support center, the Air Force life cycle management center, Space Systems Command, and the naval systems commands all publish leadership pages that are more current than any trade article.</li>
+      <li><b>Search the former office name.</b> Public reporting and official sites still use the old Program Executive Office names alongside the new ones, so searching both finds the transition announcement.</li>
+      <li><b>Watch for acting and interim.</b> Many portfolio roles are filled on an interim basis during the transition. An acting executive can still sign, but the strategy may change when the permanent official arrives.</li>
+      <li><b>Confirm with the customer.</b> Asking which portfolio owns a requirement is not a naive question right now. Everyone is recalibrating, and asking signals that you are tracking the change.</li>
+    </ul>
+  </div>
+</section>
+
+<section id="branches">
+  <div class="sec-head">
+    <span class="sec-num">04</span>
     <h2>Six branches, six different buying motions</h2>
     <p>Pick a branch to see its publicly reported programs, the plain-English reason NVIDIA AI Enterprise is relevant, the contract routes sellers typically use, and the discovery questions that actually move a first meeting forward.</p>
   </div>
@@ -487,7 +589,7 @@ footer p{max-width:80ch}
 
 <section id="cross">
   <div class="sec-head">
-    <span class="sec-num">04</span>
+    <span class="sec-num">05</span>
     <h2>Cross-cutting: combatant commands, CDAO, and MDA</h2>
     <p>Three organizations that do not fit the branch model and that you will meet constantly. They generate requirements the services end up paying for, which is exactly why deals with them stall. Read the table first, then pick an organization.</p>
   </div>
@@ -528,7 +630,7 @@ footer p{max-width:80ch}
 
 <section id="map">
   <div class="sec-head">
-    <span class="sec-num">05</span>
+    <span class="sec-num">06</span>
     <h2>Where the work happens</h2>
     <p>Publicly identified installations, laboratories, and program offices associated with the AI efforts in this guide, for the six branches and the three cross-cutting organizations. Marker size reflects how many tracked programs this guide associates with that location. Filter, then hover or tap a marker.</p>
   </div>
@@ -566,7 +668,7 @@ footer p{max-width:80ch}
 
 <section id="stack">
   <div class="sec-head">
-    <span class="sec-num">06</span>
+    <span class="sec-num">07</span>
     <h2>What you are actually selling</h2>
     <p>NVIDIA AI Enterprise is a subscription to a supported software stack, not a single product. When a customer asks &ldquo;what is in it,&rdquo; this is the answer. Read it bottom to top: hardware at the base, the mission application at the top, and the support and security commitment wrapping all of it.</p>
   </div>
@@ -625,7 +727,7 @@ footer p{max-width:80ch}
 
 <section id="matrix">
   <div class="sec-head">
-    <span class="sec-num">07</span>
+    <span class="sec-num">08</span>
     <h2>Workload fit by branch</h2>
     <p>A planning aid, not a forecast. Each cell is this guide's read of how strongly a workload shows up in that branch's publicly reported AI activity. Every cell is labeled in text as well as color, so it reads the same in grayscale or with any form of color vision. Hover a cell for the reasoning.</p>
   </div>
@@ -636,13 +738,13 @@ footer p{max-width:80ch}
       <span><i style="background:var(--fit-2)"></i> Growing &mdash; funded activity or stated intent</span>
       <span><i style="background:var(--fit-1)"></i> Emerging &mdash; adjacent, credible, unproven publicly</span>
     </div>
-    <p class="mx-note">Ratings are the author's judgment from the public sources listed at the end of this page. They are not NVIDIA pipeline data, not customer-supplied, and should not be presented to a customer as market research. The three cross-cutting organizations in section 04 are deliberately left out: a combatant command inherits whichever workload the sponsoring service funds, CDAO touches all nine, and the Missile Defense Agency concentrates almost entirely in sensor fusion and battle management.</p>
+    <p class="mx-note">Ratings are the author's judgment from the public sources listed at the end of this page. They are not NVIDIA pipeline data, not customer-supplied, and should not be presented to a customer as market research. The three cross-cutting organizations in section 05 are deliberately left out: a combatant command inherits whichever workload the sponsoring service funds, CDAO touches all nine, and the Missile Defense Agency concentrates almost entirely in sensor fusion and battle management.</p>
   </div>
 </section>
 
 <section id="rtm">
   <div class="sec-head">
-    <span class="sec-num">08</span>
+    <span class="sec-num">09</span>
     <h2>Route to market</h2>
     <p>NVIDIA goes to market through partners. In this customer set that is not a preference, it is a requirement: the paper almost always flows through a reseller or integrator holding the right vehicle, and the software usually lands on somebody else's hardware or platform. Know which lane your deal is in before the first meeting.</p>
   </div>
@@ -680,7 +782,7 @@ footer p{max-width:80ch}
 
 <section id="deploy">
   <div class="sec-head">
-    <span class="sec-num">09</span>
+    <span class="sec-num">10</span>
     <h2>Deployment and accreditation, explained plainly</h2>
     <p>This is the part that trips up sellers coming from commercial accounts. Defense customers cannot run software until an authorizing official signs for the risk. Your job is to make that signature easier to get, and to never claim it on the customer's behalf.</p>
   </div>
@@ -730,7 +832,7 @@ footer p{max-width:80ch}
 
 <section id="talk">
   <div class="sec-head">
-    <span class="sec-num">10</span>
+    <span class="sec-num">11</span>
     <h2>Objections you will hear</h2>
     <p>Short answers you can say out loud without overclaiming. Each one is written so that it stays true even if the customer checks.</p>
   </div>
@@ -739,7 +841,7 @@ footer p{max-width:80ch}
 
 <section id="plays">
   <div class="sec-head">
-    <span class="sec-num">11</span>
+    <span class="sec-num">12</span>
     <h2>Three plays for the next 90 days</h2>
     <p>Sequenced so that each step produces something you can point at in a pipeline review. Adapt the timing to your own account cadence.</p>
   </div>
@@ -748,7 +850,7 @@ footer p{max-width:80ch}
 
 <section id="glossary">
   <div class="sec-head">
-    <span class="sec-num">12</span>
+    <span class="sec-num">13</span>
     <h2>Glossary</h2>
     <p>If you are new to this customer set, read this section first. Defense buyers use acronyms as nouns and will not slow down for you.</p>
   </div>
@@ -757,7 +859,7 @@ footer p{max-width:80ch}
 
 <section id="sources" style="border-bottom:0">
   <div class="sec-head">
-    <span class="sec-num">13</span>
+    <span class="sec-num">14</span>
     <h2>Sources</h2>
     <p>Every factual claim in this guide traces to one of these public pages. Where reporting and official sites disagree, the official site wins. Check the date on each before quoting it.</p>
   </div>
@@ -923,7 +1025,7 @@ BRANCHES.push(
   {
     id: "fourthestate", name: "DoD 4th Estate", short: "CDAO, DIU, defense agencies", color: "var(--s-4e)",
     org: "Chief Digital and AI Office · Defense Innovation Unit · defense agencies and field activities",
-    summary: "The 4th Estate is everything that is not a military service: the Chief Digital and AI Office, the Defense Innovation Unit, and the defense agencies. It is where department-wide AI policy, the enterprise generative AI platform, and the enterprise analytics platform all live, which makes it the highest-leverage and most crowded room in this guide. Section 04 covers the Chief Digital and AI Office itself, including where it now sits organizationally and how it expects industry to engage.",
+    summary: "The 4th Estate is everything that is not a military service: the Chief Digital and AI Office, the Defense Innovation Unit, and the defense agencies. It is where department-wide AI policy, the enterprise generative AI platform, and the enterprise analytics platform all live, which makes it the highest-leverage and most crowded room in this guide. Section 05 covers the Chief Digital and AI Office itself, including where it now sits organizationally and how it expects industry to engage.",
     programs: [
       { name: "GenAI.mil", status: "fielding",
         what: "The department's enterprise generative AI platform, launched 9 December 2025 initially on a single commercial model family and since expanded into a multi-model marketplace. Public reporting in 2026 described additional frontier model offerings being activated, more than 1.7 million unique users onboarded out of a population above 3 million, and agent creation at scale on the platform.",
@@ -1340,6 +1442,174 @@ const PLAYS = [
            "Week 9–12: land it in the vendor's next delivery increment so it arrives on their contract, not on a new one."] }
 ];
 
+/* ---- Acquisition chain: service and component acquisition executives, and the
+       portfolio acquisition executives beneath them. Public reporting, 20 Sep 2026.
+       Names marked acting or interim change frequently during the transition.     ---- */
+const UNK = "Not published";
+
+const ACQ = [
+  {
+    id:"acq-army", name:"US Army", short:"6 portfolios + CPEs", color:"var(--s-army)",
+    sae:{ title:"Assistant Secretary of the Army for Acquisition, Logistics and Technology", sym:"ASA(ALT), also titled the Army Acquisition Executive",
+          who:"Senate-confirmed assistant secretary. Confirm the current incumbent on the Army acquisition support center site before using a name." },
+    status:"The Army went first and went furthest. Its twelve Program Executive Offices were consolidated under six Portfolio Acquisition Executives, each aligned to a capability area, with a further Army-specific layer called Capability Program Executives sitting between the portfolio executive and the program manager. Portfolios were still being adjusted as recently as July 2026.",
+    cols:["Portfolio Acquisition Executive","What it covers","Reported leader","Headquarters"],
+    portfolios:[
+      { n:"Fires", c:"Offensive, defensive and integrated fires. Capability Program Executives for Offensive Fires, Defensive Fires and Integrated Fires were activated beneath it.", w:UNK, h:"Redstone Arsenal, AL" },
+      { n:"Command and Control / Counter C2", c:"Network, command and control, intelligence, electronic warfare and sensors. Home of Capability Program Executive C3N and Capability Program Executive Intelligence and Spectrum Warfare.", w:"Brig. Gen. Jack Taylor leads CPE C3N, as reported", h:"Aberdeen Proving Ground, MD" },
+      { n:"Maneuver Ground", c:"Soldier systems and ground combat platforms, brought together as Capability Program Executive Ground when the former Soldier and Ground Combat Systems offices merged.", w:UNK, h:"Fort Benning, GA" },
+      { n:"Maneuver Air", c:"Army aviation and air maneuver platforms.", w:UNK, h:"Fort Rucker, AL" },
+      { n:"Agile Sustainment and Ammunition", c:"Sustainment and the ammunition industrial base, stood up to speed munitions acquisition.", w:"Maj. Gen. John Reim, as reported", h:"Picatinny Arsenal, NJ" },
+      { n:"Layered Protection and CBRN Defense", c:"Air and missile defense of formations, and chemical, biological, radiological and nuclear defense. Capability Program Executive Mission Autonomy was realigned here in July 2026.", w:UNK, h:"Fort Leonard Wood, MO" },
+      { n:"Enterprise Software and Services (CPE ES2)", c:"The former Program Executive Office Enterprise, redesignated as a Capability Program Executive that works alongside the six portfolios rather than inside one. Owns enterprise business and software systems.", w:UNK, h:"Fort Belvoir, VA" }
+    ],
+    mapping:[
+      ["Next Generation Command and Control","Capability Program Executive C3N, under the Command and Control portfolio"],
+      ["Project Linchpin","Capability Program Executive Intelligence and Spectrum Warfare, the former PEO IEW&S"],
+      ["Army Enterprise LLM Workspace","Capability Program Executive Enterprise Software and Services, the former PEO Enterprise"],
+      ["CamoGPT","Army CIO and research organizations. Not an acquisition portfolio program."],
+      ["Project Convergence","Army Futures Command experimentation. Not an acquisition portfolio program."]
+    ],
+    src:{ label:"Federal News Network — Army reshapes its acquisition enterprise along portfolio lines", url:"https://federalnewsnetwork.com/army/2025/12/army-begins-to-reshape-its-acquisition-enterprise-along-portfolio-lines/" }
+  },
+  {
+    id:"acq-navy", name:"US Navy / USMC", short:"9 portfolios", color:"var(--s-navy)",
+    sae:{ title:"Assistant Secretary of the Navy for Research, Development and Acquisition", sym:"ASN(RD&A)",
+          who:"Jason Potter reported as performing the duties of the assistant secretary. Confirm before use." },
+    status:"The Department of the Navy stood up its first portfolio executive for robotic and autonomous systems in December, then added others through 2026, reaching nine. Notably, the portfolio executives took over technical, contracting and sustainment functions that previously sat inside the systems commands, which is a larger structural shift than a simple rename.",
+    cols:["Portfolio Acquisition Executive","What it covers","Reported leader","Notes"],
+    portfolios:[
+      { n:"Mission Systems", c:"Combat and information systems across platforms. The portfolio most relevant to naval AI, data and command and control work.", w:"Jim Day, interim, as reported", h:"Absorbed functions from the systems commands" },
+      { n:"Robotic and Autonomous Systems", c:"Unmanned and autonomous platforms across domains. The first portfolio the department stood up.", w:UNK, h:"Established December" },
+      { n:"Aviation", c:"Naval and Marine aviation platforms and their mission systems.", w:"Vice Adm. John Dougherty, interim, as reported", h:"Established May 2026" },
+      { n:"Munitions", c:"Weapons and the munitions industrial base.", w:"Paul Mann, interim, as reported", h:"Established May 2026" },
+      { n:"Maritime", c:"Surface ships and the shipbuilding portfolio.", w:"Chris Miller, as reported", h:"From the Naval Sea Systems Command executive director role" },
+      { n:"Undersea", c:"Submarines and undersea warfare systems.", w:"Vice Adm. Robert Gaucher, as reported", h:"" },
+      { n:"Marine Corps", c:"Marine Corps ground systems and Marine-specific programs, the former Marine Corps systems and land systems organizations.", w:UNK, h:"Quantico, VA" },
+      { n:"Industrial Operations", c:"Shipyards, depots and the organic industrial base.", w:UNK, h:"" },
+      { n:"Strategic Systems Programs", c:"Sea-based strategic deterrent.", w:UNK, h:"" }
+    ],
+    mapping:[
+      ["Marine Corps AI Implementation Plan","The Marine Corps portfolio, with department policy set by the Navy CIO"],
+      ["Marine Corps Aviation Plan AI lines","The Aviation portfolio"],
+      ["Naval information warfare centers","Supporting the Mission Systems portfolio, having moved functions out of the systems commands"],
+      ["Strategy to Weaponize Data and AI","Department policy under the assistant secretary and the Navy CIO. Not a portfolio program."],
+      ["Tactical AI research for the Marine Corps","Office of Naval Research. Transitions into a portfolio when it matures."]
+    ],
+    src:{ label:"Breaking Defense — Navy unveils three new PAEs for aviation, mission systems, munitions", url:"https://breakingdefense.com/2026/05/navy-unveils-three-new-paes-for-aviation-mission-systems-munitions/" }
+  },
+  {
+    id:"acq-af", name:"US Air Force", short:"17 portfolios", color:"var(--s-af)",
+    sae:{ title:"Assistant Secretary of the Air Force for Acquisition, Technology and Logistics", sym:"SAF/AQ",
+          who:"Senate-confirmed assistant secretary. Confirm the current incumbent before using a name." },
+    status:"The Air Force announced on 27 July 2026 that it had finished consolidating all of its Program Executive Offices into seventeen organizations led by portfolio acquisition executives, each with authority across the full life cycle of everything in its mission area. The complete roster of seventeen is not published in one place in open sources, so the entries below are the ones most relevant to this guide.",
+    cols:["Portfolio","What it covers","Reported leader","Notes"],
+    portfolios:[
+      { n:"Command, Control, Communications and Battle Management", c:"The Department of the Air Force battle network, connecting sensors, effectors and logistics systems. The integrator role for Air Force command and control.", w:"Maj. Gen. Luke Cropsey, as reported", h:"Formerly PEO C3BM. An aerial networks division was realigned under it." },
+      { n:"Digital", c:"Enterprise software, agile development practices and digital infrastructure. The former battle management office, renamed.", w:UNK, h:"Formerly PEO Digital, within the life cycle management center" },
+      { n:"Fighters and Advanced Aircraft", c:"Fighter platforms and the uncrewed collaborative aircraft effort.", w:UNK, h:"" },
+      { n:"Nuclear Systems and Intercontinental Ballistic Missiles", c:"Nuclear weapon systems. A separate intercontinental ballistic missile portfolio executive role was established in April.", w:UNK, h:"Air Force Nuclear Weapons Center" },
+      { n:"Business and Enterprise Systems", c:"Business systems and enterprise IT.", w:UNK, h:"" },
+      { n:"Remaining portfolios", c:"Mobility and training aircraft, bombers, intelligence and special operations forces, weapons, rapid sustainment and others. The full list of seventeen is not consistently published.", w:UNK, h:"Verify on the life cycle management center site" }
+    ],
+    mapping:[
+      ["Battle management and the DAF battle network","The command, control, communications and battle management portfolio"],
+      ["Software factories and DevSecOps platforms","The Digital portfolio"],
+      ["Collaborative Combat Aircraft autonomy","The fighters and advanced aircraft portfolio"],
+      ["Air Force Research Laboratory AI portfolio","Science and technology. Transitions into a portfolio when it matures."],
+      ["GenAI.mil transition","Department level, run by the Chief Digital and AI Office. Not an Air Force portfolio."]
+    ],
+    src:{ label:"DefenseScoop — Portfolio executives describe changing roles as Air Force completes acquisition overhaul", url:"https://defensescoop.com/2026/08/06/air-force-portfolio-executives-acquisition-reform/" }
+  },
+  {
+    id:"acq-ssf", name:"US Space Force", short:"9 portfolios", color:"var(--s-ssf)",
+    sae:{ title:"Assistant Secretary of the Air Force for Space Acquisition and Integration", sym:"SAF/SQ, the space service acquisition executive",
+          who:"Erich Hernandez-Baquero since 24 August 2026, with Brig. Gen. Kristin Panzenhagen confirmed as military deputy on 30 July 2026, as reported." },
+    status:"The Space Force completed its reorganization through a memo dated 22 June 2026, creating nine mission-area portfolios with broad authority over development and procurement. In September 2026 it also created a separate office to accelerate innovative technology acquisition. Several portfolio executives are serving in an acting capacity.",
+    cols:["Portfolio Acquisition Executive","What it covers","Reported leader","Notes"],
+    portfolios:[
+      { n:"Battle Management, Command, Control, Communications and Space Intelligence", c:"Space command and control, data platforms and space intelligence. The portfolio most relevant to the data and analytics work in this guide.", w:"Shannon Pallone, permanent, as reported", h:"" },
+      { n:"Space-Based Sensing and Targeting", c:"Sensing and targeting from orbit.", w:"Col. Ryan Frazier, acting, as reported", h:"" },
+      { n:"Missile Warning and Tracking", c:"Missile warning and tracking architectures.", w:"Gurpartap Sandhoo, as reported", h:"" },
+      { n:"Space Access", c:"Launch and range.", w:"Col. Eric Zarybnisky, acting, as reported", h:"" },
+      { n:"Infrastructure", c:"Ground infrastructure and enterprise services. Reported as a portfolio of roughly four billion dollars being shifted to a Colorado base.", w:"Col. Corey Klopstein, permanent, as reported", h:"" },
+      { n:"Satellite Communications", c:"Military satellite communications.", w:UNK, h:"" },
+      { n:"Positioning, Navigation and Timing", c:"Positioning, navigation and timing systems.", w:UNK, h:"" },
+      { n:"Remaining portfolios", c:"Two further portfolios complete the nine. Names are not consistently published in open sources.", w:UNK, h:"Verify with Space Systems Command" }
+    ],
+    mapping:[
+      ["Warp Core","The battle management, command and control and space intelligence portfolio"],
+      ["Continuous authorization pipeline for Warp Core apps","Same portfolio, delivered with innovation funding"],
+      ["Space domain awareness automation","Space-based sensing and targeting, with missile warning and tracking adjacent"],
+      ["Proliferated satellite architecture ground processing","Space Development Agency, which reports separately rather than through a portfolio"],
+      ["SpaceWERX and strategic funding increments","Innovation funding that feeds the portfolios rather than a portfolio itself"]
+    ],
+    src:{ label:"Air & Space Forces Magazine — Space Force finalizes new acquisition structure", url:"https://www.airandspaceforces.com/space-force-finalizes-new-acquisition-structure-9-portfolio-executives/" }
+  },
+  {
+    id:"acq-disa", name:"DISA", short:"Component acquisition executive", color:"var(--s-disa)",
+    sae:{ title:"DISA Component Acquisition Executive", sym:"CAE",
+          who:"A component acquisition executive rather than a Senate-confirmed service assistant secretary. Confirm the current incumbent on the agency site." },
+    status:"DISA adopted a portfolio acquisition structure that public reporting describes as predating the department-wide mandate and aligning with it. The approach gives portfolio executives decision authority over integrated capability portfolios rather than individual programs. The portfolio names are not consistently published in open sources.",
+    cols:["Portfolio area","What it covers","Reported leader","Notes"],
+    portfolios:[
+      { n:"Cyber and zero trust", c:"Zero trust implementation and cybersecurity services across mission partners.", w:UNK, h:"Aligns to the Thunderdome effort" },
+      { n:"Hosting and compute", c:"Cloud, hybrid cloud and compute services provided to mission partners.", w:UNK, h:"Aligns to the Olympus and operational edge efforts" },
+      { n:"Cloud acquisition", c:"The joint cloud contract and its follow-on.", w:UNK, h:"Aligns to the JWCC Next procurement" },
+      { n:"Enterprise services", c:"Collaboration, identity and enterprise IT delivered agency-wide.", w:UNK, h:"" }
+    ],
+    mapping:[
+      ["JWCC Next","The cloud acquisition portfolio, with the procurement itself run by the agency's contracting organization"],
+      ["Thunderdome","The cyber and zero trust portfolio"],
+      ["DoD Olympus","The hosting and compute portfolio"],
+      ["Joint Operational Edge","The hosting and compute portfolio"],
+      ["AI and automation for workforce gaps","An internal agency effort rather than an acquisition portfolio program"]
+    ],
+    src:{ label:"ExecutiveGov — DISA aligns acquisition model with War Department reform push", url:"https://www.executivegov.com/articles/disa-pae-acquisition-guidance-jason-martin-dow" }
+  },
+  {
+    id:"acq-cdao", name:"CDAO", short:"Not a traditional buyer", color:"var(--s-cdao)",
+    sae:{ title:"Chief Digital and Artificial Intelligence Officer", sym:"Under the Under Secretary of War for Research and Engineering since the August 2025 realignment",
+          who:"Leadership has turned over during the realignment. Confirm the current officeholder before using a name." },
+    status:"CDAO is not a conventional acquisition command and does not fit the portfolio model the services are adopting. It buys largely through other transaction agreements, commercial solutions openings, and the multiple-award ecosystem behind the enterprise analytics platform, with contracting support provided by other organizations. Treat it as a requirements and policy engine whose decisions create buying elsewhere.",
+    cols:["Buying route","What it covers","Reported leader","Notes"],
+    portfolios:[
+      { n:"Enterprise analytics ecosystem", c:"The multiple-award ecosystem behind the department's analytics platform, structured so the government keeps data ownership and industry keeps its intellectual property.", w:UNK, h:"Open DAGIR" },
+      { n:"Rapid capability pilots", c:"Frontier AI pilots and prototype agreements run on short cycles rather than through a program of record.", w:UNK, h:"AI Rapid Capabilities Cell" },
+      { n:"Enterprise generative AI platform", c:"The department-wide generative AI platform and its multi-model marketplace.", w:UNK, h:"GenAI.mil and its task force" },
+      { n:"Assurance and evaluation", c:"Test, evaluation and responsible AI expectations that capabilities have to satisfy before operational approval.", w:UNK, h:"Applies across every service portfolio" }
+    ],
+    mapping:[
+      ["GenAI.mil","Run centrally by CDAO. Model providers hold prototype agreements directly."],
+      ["Advana and Open DAGIR","The enterprise analytics ecosystem"],
+      ["AI Rapid Capabilities Cell","Rapid pilots, contracted through other transaction agreements"],
+      ["Project Maven","A department-level program whose output flows to combatant commands"],
+      ["Department AI strategy and policy","Policy. It shapes what every portfolio has to satisfy."]
+    ],
+    src:{ label:"Congressional Research Service — Realignment of DoD's Chief Digital and AI Officer", url:"https://www.congress.gov/crs-product/IN12615" }
+  },
+  {
+    id:"acq-mda", name:"Missile Defense Agency", short:"Agency acquisition authority", color:"var(--s-mda)",
+    sae:{ title:"Director, Missile Defense Agency", sym:"Exercises the agency's acquisition authority, reporting through the research and engineering enterprise",
+          who:"Confirm the current director on the agency site. The Golden Dome effort also has its own senior leadership reported separately." },
+    status:"MDA is an agency rather than a service, and its acquisition authority sits with the director rather than a service assistant secretary. In practice, the Golden Dome for America effort has reshaped how work reaches industry: a single very large multiple-award vehicle now holds more than two thousand one hundred companies, so the competitive action is at the task order and teaming level rather than at the vehicle level.",
+    cols:["Program area","What it covers","Reported leader","Notes"],
+    portfolios:[
+      { n:"Golden Dome for America", c:"Homeland missile defense integrating sensors and interceptors across land, sea, air, space and cyber. Senior leaders have publicly described a role for AI in handling data volume and deciding at machine speed.", w:UNK, h:"Has its own senior leadership structure reported separately from MDA program directorates" },
+      { n:"Command and Control, Battle Management and Communications", c:"The system that gives senior leaders an integrated air and missile defense picture by fusing data from many dissimilar sensors.", w:UNK, h:"Budget material describes enhancing decisions with AI tools" },
+      { n:"Sensors", c:"Ground, sea and space-based sensing contributing tracks to the architecture.", w:UNK, h:"" },
+      { n:"Interceptors", c:"Kinetic and non-kinetic defeat capability.", w:UNK, h:"" }
+    ],
+    mapping:[
+      ["Golden Dome for America","The Golden Dome effort, contracted largely through the SHIELD vehicle"],
+      ["SHIELD multiple-award vehicle","The contracting route for most Golden Dome work"],
+      ["Command and Control, Battle Management and Communications","The battle management program area"],
+      ["Integration across mature command and control systems","Spans MDA, Army, Navy and Air Force programs, which is why it is hard"]
+    ],
+    src:{ label:"GovConWire — MDA expands SHIELD pool with additional awards", url:"https://www.govconwire.com/articles/mda-1086-second-tranche-shield-awards" }
+  }
+];
+
 /* ---- FY2027 budget request and appropriations status (public reporting, 20 Sep 2026) ---- */
 const BUDGET = {
   tiles: [
@@ -1372,6 +1642,12 @@ const BUDGET = {
 };
 
 const GLOSSARY = [
+  ["CAE","Component Acquisition Executive. The senior acquisition official at a defense agency, filling the role a service assistant secretary fills in a military department."],
+  ["CPE","Capability Program Executive. An Army-specific layer between the portfolio executive and the program manager. Most former Army Program Executive Offices were redesignated as one of these."],
+  ["DAE","Defense Acquisition Executive. The Under Secretary for Acquisition and Sustainment, who sets acquisition policy for the whole department."],
+  ["PAE","Portfolio Acquisition Executive. The official who now owns a whole mission area from development through sustainment, with authority over plans, budgets and execution. Defined in law by section 1802 of the fiscal 2026 defense authorization act, and replacing Program Executive Offices across every service."],
+  ["Program manager","The person who owns one program, its schedule and its technical baseline. Usually the first person a seller meets, and no longer the person who can move money across programs."],
+  ["SAE","Service Acquisition Executive. The senior acquisition official of a military department: ASA(ALT) for the Army, ASN(RD&A) for the Navy and Marine Corps, SAF/AQ for the Air Force, and SAF/SQ for space programs."],
   ["Anomaly","An exception written into a continuing resolution that lets the department do something the resolution otherwise forbids, such as a new start. They are requested often and granted rarely."],
   ["Appropriation","The law that actually provides money. Distinct from an authorization, which only sets policy and recommends levels. Only an appropriation lets a program spend."],
   ["Authorization (NDAA)","The annual National Defense Authorization Act. It sets policy, creates programs, and recommends funding levels, but it does not hand over a dollar."],
@@ -1404,7 +1680,7 @@ const GLOSSARY = [
   ["NIM","NVIDIA Inference Microservices. Containerized model endpoints that can run inside a customer's own boundary."],
   ["OEM","Original Equipment Manufacturer. The company that builds the server. In defense deals the OEM often holds the sustainment contract and the installation relationship."],
   ["OTA","Other Transaction Agreement. A flexible contracting instrument used to move faster than standard federal acquisition allows, common in prototyping."],
-  ["PEO","Program Executive Office. The organization that owns a portfolio of programs, their money, and their schedules. Find the PEO and you have found the buyer."],
+  ["PEO","Program Executive Office. The organization that used to own a portfolio of programs, their money and their schedules. Being replaced across every service by Portfolio Acquisition Executives, though the old names remain useful as search terms and are still in wide informal use."],
   ["Program of record","A funded, formally established program with a budget line. The distinction between a pilot and a program of record is the distinction between a story and a forecast."],
   ["RAG","Retrieval-augmented generation. Grounding a model's answers in the customer's own documents instead of relying on what the model memorized. The most common first defense use case."],
   ["SBOM","Software Bill of Materials. The inventory of everything inside your software. Security engineers ask for it early and judge you by whether you have one."],
@@ -1498,7 +1774,34 @@ const SOURCES = [
   ["House Appropriations Committee — FY27 defense appropriations bill release","https://appropriations.house.gov/news/press-releases/committee-releases-fy27-defense-appropriations-bill"],
   ["Senate Appropriations Committee — FY2027 continuing appropriations section by section (PDF)","https://www.appropriations.senate.gov/imo/media/doc/section-by-section.pdf"],
   ["GAO — How DoD manages within continuing resolution constraints (PDF)","https://www.gao.gov/assets/gao-21-541.pdf"],
-  ["CSIS — Tracking FY 2027 defense appropriations, reconciliation, and the supplemental request","https://www.csis.org/analysis/tracking-fy-2027-defense-appropriations-reconciliation-and-supplemental-request"]
+  ["CSIS — Tracking FY 2027 defense appropriations, reconciliation, and the supplemental request","https://www.csis.org/analysis/tracking-fy-2027-defense-appropriations-reconciliation-and-supplemental-request"],
+  ["Holland & Knight — War Secretary announces strategy regarding defense acquisition reform","https://www.hklaw.com/en/insights/publications/2025/11/war-secretary-announces-strategy-regarding-defense-acquisition-reform"],
+  ["Wiley — Secretary issues directives to transform acquisition and the defense industrial base","https://www.wiley.law/newsletter-Secretary-Hegseth-Issues-Directives-to-Transform-Acquisition-Process-and-Defense-Industrial-Base"],
+  ["Public Procurement International — FY2026 NDAA summary of acquisition reforms, including section 1802","https://publicprocurementinternational.com/national-defense-authorization-act-ndaa-for-fiscal-year-2026-summary-of-acquisition-reforms/"],
+  ["Breaking Defense — The Army is changing its acquisition structure, the details","https://breakingdefense.com/2025/11/army-acquisition-reform-driscoll-peo-major-changes/"],
+  ["DefenseScoop — Army introduces sweeping reform of its acquisition structure","https://defensescoop.com/2025/11/14/army-acquisition-reform-2025/"],
+  ["Federal News Network — Army reshapes its acquisition enterprise along portfolio lines","https://federalnewsnetwork.com/army/2025/12/army-begins-to-reshape-its-acquisition-enterprise-along-portfolio-lines/"],
+  ["Breaking Defense — Army makes new tweaks to acquisition portfolios, realigns autonomy office","https://breakingdefense.com/2026/07/army-makes-new-tweaks-to-acquisition-portfolios-realigns-autonomy-office/"],
+  ["army.mil — Portfolio Acquisition Fires activates three Capability Program Executives","https://www.army.mil/article/290576/portfolio_acquisition_fires_activates_three_capability_program_executives_cpes"],
+  ["army.mil — PEOs Soldier and Ground Combat Systems merge to form CPE Ground","https://www.army.mil/article/291997/a_new_force_in_army_acquisition_peos_soldier_ground_combat_systems_merge_to_form_cpe_ground"],
+  ["army.mil — US Army activates CPE Mission Autonomy","https://www.army.mil/article/291043/u_s_army_activates_cpe_mission_autonomy"],
+  ["ExecutiveGov — Army continues shift from PEOs with CPE Enterprise Software and Services activation","https://www.executivegov.com/articles/army-cpe-es2-activation-peo-enterprise"],
+  ["ExecutiveGov — Army reorganizes PEO C3N to accelerate next-gen C2 modernization","https://www.executivegov.com/articles/army-peo-c3n-restructure-ngc2"],
+  ["ExecutiveGov — Army establishes new PAE for agile sustainment and ammunition","https://www.executivegov.com/articles/army-activates-pae-agile-sustainment-ammunition"],
+  ["Army Acquisition Support Center — Capability Program Executives","https://asc.army.mil/web/capability-program-executives/"],
+  ["USNI News — SECNAV stands up five new offices for Navy and Marine acquisition","https://news.usni.org/2026/03/16/secnav-phelan-stands-up-5-new-offices-for-navy-marine-acquisition"],
+  ["Breaking Defense — Navy unveils three new PAEs for aviation, mission systems, munitions","https://breakingdefense.com/2026/05/navy-unveils-three-new-paes-for-aviation-mission-systems-munitions/"],
+  ["NAVAIR — Navy establishes Portfolio Acquisition Executive for Aviation","https://www.navair.navy.mil/news/Navy-Establishes-Portfolio-Acquisition-Executive-Aviation/Mon-05112026-0943"],
+  ["DefenseScoop — Portfolio executives describe changing roles as Air Force completes acquisition overhaul","https://defensescoop.com/2026/08/06/air-force-portfolio-executives-acquisition-reform/"],
+  ["Breaking Defense — How the Air Force is revamping its acquisition shop with new portfolios","https://breakingdefense.com/2026/01/how-the-air-force-is-revamping-its-acquisition-shop-with-new-portfolios/"],
+  ["DAF Modernization Process Model — Transition from PEOs to Portfolio Acquisition Executives","https://www.afacpo.com/mpm/2026/07/06/transition-from-program-executive-officers-peos-to-portfolio-acquisition-executives-paes/"],
+  ["AFLCMC — DAF PEO for Command, Control, Communications and Battle Management overview","https://www.aflcmc.af.mil/NEWS/Article/4079270/department-of-the-air-force-program-executive-office-for-command-control-commun/"],
+  ["Air & Space Forces Magazine — Space Force finalizes new acquisition structure","https://www.airandspaceforces.com/space-force-finalizes-new-acquisition-structure-9-portfolio-executives/"],
+  ["SpaceNews — Space Force completes procurement reorganization, creating nine portfolios","https://spacenews.com/space-force-completes-procurement-reorganization-creating-nine-acquisition-portfolios/"],
+  ["DefenseScoop — Space Force drives additional acquisition reforms with new portfolios","https://defensescoop.com/2026/03/18/space-force-new-pae-portfolio-acquisition-executives/"],
+  ["DefenseScoop — Space Force creates office to accelerate innovative tech acquisition","https://defensescoop.com/2026/09/15/space-force-creates-office-to-accelerate-innovative-tech-acquisition/"],
+  ["ExecutiveGov — DISA aligns acquisition model with War Department reform push","https://www.executivegov.com/articles/disa-pae-acquisition-guidance-jason-martin-dow"],
+  ["Space Systems Command — organization chart (PDF)","https://www.ssc.spaceforce.mil/Portals/3/ORG%20Charts/External%20SSC%20Org%20Chart_Jun2025.pdf"]
 ];
 
 /* =========================================================================
@@ -1575,6 +1878,74 @@ const breadth = (id) => WORKLOADS.reduce((n, w) => n + w.f[id], 0);
       <span><span class="mt">${esc(m.t)}<span class="mstate">${esc(m.label)}</span></span><span class="mn">${esc(m.n)}</span></span>
       <span class="md">${esc(m.d)}</span>
     </div>`).join("");
+})();
+
+/* ---- acquisition chain tabs ---- */
+(function renderAcq(){
+  $("#pae-rail").innerHTML = ACQ.map((a, i) => `
+    <button class="bbtn" style="--bc:${a.color}" role="tab" id="tab-${a.id}"
+      aria-controls="panel-${a.id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}">
+      <span class="bn"><span class="bc-dot"></span>${esc(a.name)}</span>
+      <span class="bs">${esc(a.short)}</span>
+    </button>`).join("");
+
+  $("#pae-panels").innerHTML = ACQ.map((a, i) => `
+    <div class="panel ${i === 0 ? "" : "hidden"}" style="--bc:${a.color}" id="panel-${a.id}" role="tabpanel" aria-labelledby="tab-${a.id}" tabindex="0">
+      <div class="panel-head"><h3>${esc(a.name)}</h3></div>
+
+      <div class="exec" style="margin-top:14px">
+        <div class="ex-role">Acquisition executive</div>
+        <div class="ex-title">${esc(a.sae.title)}</div>
+        <div class="ex-sym">${esc(a.sae.sym)}</div>
+        <div class="ex-who">${esc(a.sae.who)}</div>
+      </div>
+
+      <p class="summary" style="margin-bottom:0">${esc(a.status)}</p>
+
+      <div class="subhead">Portfolios beneath the acquisition executive</div>
+      <div class="t-scroll">
+        <table class="pae">
+          <caption class="sr">${esc(a.name)} acquisition portfolios</caption>
+          <thead><tr>${a.cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr></thead>
+          <tbody>${a.portfolios.map(f => `<tr>
+            <td>${esc(f.n)}</td>
+            <td>${esc(f.c)}</td>
+            <td><span class="who${f.w === UNK ? " unk" : ""}">${esc(f.w)}</span></td>
+            <td>${esc(f.h || "—")}</td>
+          </tr>`).join("")}</tbody>
+        </table>
+      </div>
+
+      <p class="mx-note" style="margin-top:10px">&ldquo;Not published&rdquo; means this guide could not confirm the current officeholder from an open source, not that the role is vacant. Names shown are as reported in public trade press on the dates in the linked source, and many are acting or interim while the transition runs.</p>
+
+      <div class="subhead">Where this guide's programs sit</div>
+      <div class="maprow">
+        ${a.mapping.map(([prog, owner]) => `<span class="mp">${esc(prog)}</span><span class="mo">${esc(owner)}</span>`).join("")}
+      </div>
+
+      <span class="src" style="margin-top:16px">Source: <a href="${esc(a.src.url)}" target="_blank" rel="noopener noreferrer">${esc(a.src.label)}</a></span>
+    </div>`).join("");
+
+  const tabs = $$("#pae-rail .bbtn");
+  function select(id){
+    tabs.forEach(t => {
+      const on = t.id === "tab-" + id;
+      t.setAttribute("aria-selected", String(on));
+      t.tabIndex = on ? 0 : -1;
+    });
+    ACQ.forEach(a => $("#panel-" + a.id).classList.toggle("hidden", a.id !== id));
+  }
+  tabs.forEach((t, i) => {
+    t.addEventListener("click", () => select(ACQ[i].id));
+    t.addEventListener("keydown", (e) => {
+      const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+      if (!d) return;
+      e.preventDefault();
+      const n = (i + d + tabs.length) % tabs.length;
+      tabs[n].focus();
+      select(ACQ[n].id);
+    });
+  });
 })();
 
 /* ---- branch tabs and panels ---- */
