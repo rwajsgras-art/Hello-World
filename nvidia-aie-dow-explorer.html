@@ -268,7 +268,7 @@ footer p{max-width:80ch}
     <h1>NVIDIA AI Enterprise <span class="accent">DoW Explorer</span></h1>
     <p class="lede">A single-page briefing that maps the NVIDIA AI Enterprise software platform to publicly reported artificial intelligence programs across six Department of War buying centers, plus the combatant commands, the Chief Digital and AI Office, and the Missile Defense Agency. Built for sellers who need the program names, the plain-English hook, and the next question to ask.</p>
     <div class="hero-meta">
-      <span class="chip">Compiled <b>18 Sep 2026</b></span>
+      <span class="chip">Compiled <b>20 Sep 2026</b></span>
       <span class="chip"><b>6</b> branches</span>
       <span class="chip"><b>3</b> cross-cutting orgs</span>
       <span class="chip"><b id="chip-programs">&mdash;</b> public programs</span>
@@ -281,6 +281,7 @@ footer p{max-width:80ch}
 <nav class="sticky" aria-label="Section navigation">
   <div class="inner" id="navlinks">
     <a href="#overview" class="on">Overview</a>
+    <a href="#budget">FY27 Budget</a>
     <a href="#branches">Branches</a>
     <a href="#cross">COCOMs &amp; Agencies</a>
     <a href="#map">Map</a>
@@ -363,9 +364,114 @@ footer p{max-width:80ch}
   </div>
 </section>
 
-<section id="branches">
+<style>
+.asof{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--warn);border:1px solid rgba(201,133,0,.4);background:rgba(201,133,0,.08);padding:4px 10px;border-radius:999px;margin-bottom:12px}
+.sb-row{display:grid;grid-template-columns:196px 1fr 118px;gap:14px;align-items:center;margin-bottom:12px}
+.sb-row .lab{font-size:.88rem;color:var(--text-1);text-align:right;line-height:1.3}
+.sb-row .lab small{display:block;color:var(--text-3);font-family:var(--mono);font-size:.7rem;margin-top:2px}
+.sb-track{display:flex;height:26px;border-radius:5px;overflow:hidden;background:var(--surface-3)}
+.sb-seg{display:flex;align-items:center;justify-content:flex-end;padding:0 8px;min-width:5px;font-family:var(--mono);font-size:.72rem;font-weight:700;white-space:nowrap;box-shadow:2px 0 0 0 var(--surface-1)}
+.sb-row .note{font-family:var(--mono);font-size:.72rem;color:var(--text-2);line-height:1.35}
+.sb-row .note b{color:var(--s-army);font-weight:700}
+.sb-seg:last-child{box-shadow:none}
+.sb-base{background:var(--s-army);color:#0b1400}
+.sb-recon{background:repeating-linear-gradient(45deg,#7d8375,#7d8375 5px,#646a5d 5px,#646a5d 10px);color:#f3f5f0}
+.mstone{display:grid;grid-template-columns:22px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.mstone:last-child{border-bottom:0}
+.mstone .mk{font-family:var(--mono);font-weight:700;font-size:.9rem;line-height:1.5;text-align:center}
+.mstone[data-st="done"] .mk{color:var(--s-army)}
+.mstone[data-st="partial"] .mk{color:var(--warn)}
+.mstone[data-st="none"] .mk{color:var(--text-3)}
+.mstone .mt{font-size:.92rem;color:var(--text-1)}
+.mstone .mn{font-size:.85rem;color:var(--text-2);margin-top:3px}
+.mstone .md{font-family:var(--mono);font-size:.72rem;color:var(--text-3);white-space:nowrap;text-align:right;padding-top:2px}
+.mstate{display:inline-block;font-family:var(--mono);font-size:.64rem;letter-spacing:.07em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:2px 7px;margin-left:8px;vertical-align:1px}
+.mstone[data-st="done"] .mstate{border-color:rgba(106,163,0,.5);color:var(--s-army)}
+.mstone[data-st="partial"] .mstate{border-color:rgba(201,133,0,.5);color:var(--warn)}
+.mstone[data-st="none"] .mstate{color:var(--text-3)}
+@media (max-width:760px){
+  .sb-row{grid-template-columns:1fr;gap:5px;margin-bottom:18px}
+  .sb-row .lab,.sb-row .lab small,.sb-row .note{text-align:left}
+  .mstone{grid-template-columns:20px 1fr;gap:10px}
+  .mstone .md{grid-column:2;text-align:left;padding-top:4px}
+}
+</style>
+
+<section id="budget">
   <div class="sec-head">
     <span class="sec-num">02</span>
+    <h2>Where the money is, and whether it can be spent</h2>
+    <p>The fiscal 2027 request is the largest defense budget ever proposed, and it names artificial intelligence infrastructure explicitly. Almost none of that headline money is available to spend today. This section separates what was asked for from what Congress has actually provided, because confusing the two is the fastest way to build a pipeline that evaporates.</p>
+  </div>
+
+  <div class="notice" role="note">
+    <h3>This is a snapshot</h3>
+    <p>Budget status changes weekly and this section dates faster than anything else in the guide. It reflects public reporting as of <b>20 September 2026</b>. Re-check the linked sources before you repeat any of it in front of a customer, and never present a requested figure as though it were appropriated.</p>
+  </div>
+
+  <div class="grid g4" id="budget-tiles" style="margin-bottom:18px"></div>
+
+  <div class="figure" style="margin-bottom:18px">
+    <div class="cap">Three headline lines, split by whether the money exists yet</div>
+    <div class="sub">Requested amounts in billions of dollars. The solid portion sits in the base discretionary request. The hatched portion is mandatory funding that depends on a reconciliation bill Congress has not passed.</div>
+    <div id="split-bars" role="img" aria-label="Stacked bar chart comparing base request against reconciliation-dependent funding for three budget lines"></div>
+    <div class="legend">
+      <span><i style="background:var(--s-army)"></i> In the base discretionary request</span>
+      <span><i style="background:repeating-linear-gradient(45deg,#7d8375,#7d8375 3px,#646a5d 3px,#646a5d 6px)"></i> Depends on reconciliation, not yet enacted</span>
+    </div>
+    <p class="mx-note">Figures are drawn from public reporting on the request. Totals are approximate and rounded, and the base and mandatory split is not published at the same level of detail for every line.</p>
+  </div>
+
+  <div class="grid g2" style="margin-bottom:18px">
+    <div class="card">
+      <h3>The rest of the AI request</h3>
+      <p>Four components of the artificial intelligence and joint command and control request were itemized publicly. They total roughly fifty-seven billion dollars of the fifty-eight and a half billion headline; the remainder is not broken out in the public summaries.</p>
+      <div class="t-scroll"><table class="data" id="ai-lines"></table></div>
+    </div>
+    <div class="card">
+      <h3>How to read these numbers</h3>
+      <ul class="clean">
+        <li><b>A request is not an appropriation.</b> The department asked for this. Congress has not provided it. Those are separate events, often months and sometimes years apart.</li>
+        <li><b>The headline AI and autonomy money is contingent.</b> Most of it is mandatory funding riding on a reconciliation bill, and reconciliation first requires a budget resolution that has not passed.</li>
+        <li><b>The committees have acted on the base portion only.</b> Against a request of roughly fifty-five billion dollars for the autonomous warfare organization, the House and Senate armed services committees and House appropriators each wrote down about one billion.</li>
+        <li><b>One phrase is worth memorizing.</b> The request describes prioritizing enterprise-scale AI infrastructure. That is the department, in its own budget language, describing what you sell. Quote it back to them rather than inventing your own framing.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="figure" style="margin-bottom:18px">
+    <div class="cap">Where fiscal 2027 stands today</div>
+    <div class="sub">Fiscal 2027 begins 1 October 2026. Everything below is the public record as of 20 September 2026.</div>
+    <div id="milestones"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>What a continuing resolution does to your pipeline</h3>
+      <ul class="clean">
+        <li><b>No new starts.</b> A program office generally cannot begin something new with money provided under a continuing resolution.</li>
+        <li><b>No multiyear contracts and no production rate increases</b> without a specific exception.</li>
+        <li><b>Exceptions are rare.</b> They are called anomalies. Across fiscal years 2013 to 2017, thirteen of three hundred eighty-eight anomaly requests made it into legislation.</li>
+        <li><b>This is normal, not a crisis.</b> Since fiscal year 2000 the department has begun twenty-one of twenty-seven fiscal years under a continuing resolution or a shutdown. It last started a year with full-year appropriations in fiscal 2019.</li>
+        <li><b>The practical effect on you:</b> until full-year appropriations arrive, money moves through things that already exist. Task orders on vehicles already awarded, existing program lines, and options on current contracts.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>What to do between now and 11 December</h3>
+      <ul class="clean">
+        <li><b>Map every opportunity to a funding line or an existing vehicle.</b> If it maps to neither, it is not fundable this quarter, whatever the customer's enthusiasm.</li>
+        <li><b>Ask which of their fiscal 2027 plans assume reconciliation.</b> Many program staff have not been told, and the answer tells you whether their timeline is real.</li>
+        <li><b>Get onto task order teams now.</b> Under a continuing resolution, an award through an existing vehicle is the path of least resistance, and teaming decisions are made before the money moves.</li>
+        <li><b>Watch three dates.</b> 1 October, when fiscal 2027 begins under the stopgap. 11 December, when the stopgap expires. And whenever a fiscal 2027 budget resolution moves, because that is the gate for everything contingent.</li>
+        <li><b>Treat reconciliation money as upside, never as forecast.</b> Build the number you commit to on base lines you can point at.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="branches">
+  <div class="sec-head">
+    <span class="sec-num">03</span>
     <h2>Six branches, six different buying motions</h2>
     <p>Pick a branch to see its publicly reported programs, the plain-English reason NVIDIA AI Enterprise is relevant, the contract routes sellers typically use, and the discovery questions that actually move a first meeting forward.</p>
   </div>
@@ -381,7 +487,7 @@ footer p{max-width:80ch}
 
 <section id="cross">
   <div class="sec-head">
-    <span class="sec-num">03</span>
+    <span class="sec-num">04</span>
     <h2>Cross-cutting: combatant commands, CDAO, and MDA</h2>
     <p>Three organizations that do not fit the branch model and that you will meet constantly. They generate requirements the services end up paying for, which is exactly why deals with them stall. Read the table first, then pick an organization.</p>
   </div>
@@ -422,7 +528,7 @@ footer p{max-width:80ch}
 
 <section id="map">
   <div class="sec-head">
-    <span class="sec-num">04</span>
+    <span class="sec-num">05</span>
     <h2>Where the work happens</h2>
     <p>Publicly identified installations, laboratories, and program offices associated with the AI efforts in this guide, for the six branches and the three cross-cutting organizations. Marker size reflects how many tracked programs this guide associates with that location. Filter, then hover or tap a marker.</p>
   </div>
@@ -460,7 +566,7 @@ footer p{max-width:80ch}
 
 <section id="stack">
   <div class="sec-head">
-    <span class="sec-num">05</span>
+    <span class="sec-num">06</span>
     <h2>What you are actually selling</h2>
     <p>NVIDIA AI Enterprise is a subscription to a supported software stack, not a single product. When a customer asks &ldquo;what is in it,&rdquo; this is the answer. Read it bottom to top: hardware at the base, the mission application at the top, and the support and security commitment wrapping all of it.</p>
   </div>
@@ -519,7 +625,7 @@ footer p{max-width:80ch}
 
 <section id="matrix">
   <div class="sec-head">
-    <span class="sec-num">06</span>
+    <span class="sec-num">07</span>
     <h2>Workload fit by branch</h2>
     <p>A planning aid, not a forecast. Each cell is this guide's read of how strongly a workload shows up in that branch's publicly reported AI activity. Every cell is labeled in text as well as color, so it reads the same in grayscale or with any form of color vision. Hover a cell for the reasoning.</p>
   </div>
@@ -530,13 +636,13 @@ footer p{max-width:80ch}
       <span><i style="background:var(--fit-2)"></i> Growing &mdash; funded activity or stated intent</span>
       <span><i style="background:var(--fit-1)"></i> Emerging &mdash; adjacent, credible, unproven publicly</span>
     </div>
-    <p class="mx-note">Ratings are the author's judgment from the public sources listed at the end of this page. They are not NVIDIA pipeline data, not customer-supplied, and should not be presented to a customer as market research. The three cross-cutting organizations in section 03 are deliberately left out: a combatant command inherits whichever workload the sponsoring service funds, CDAO touches all nine, and the Missile Defense Agency concentrates almost entirely in sensor fusion and battle management.</p>
+    <p class="mx-note">Ratings are the author's judgment from the public sources listed at the end of this page. They are not NVIDIA pipeline data, not customer-supplied, and should not be presented to a customer as market research. The three cross-cutting organizations in section 04 are deliberately left out: a combatant command inherits whichever workload the sponsoring service funds, CDAO touches all nine, and the Missile Defense Agency concentrates almost entirely in sensor fusion and battle management.</p>
   </div>
 </section>
 
 <section id="rtm">
   <div class="sec-head">
-    <span class="sec-num">07</span>
+    <span class="sec-num">08</span>
     <h2>Route to market</h2>
     <p>NVIDIA goes to market through partners. In this customer set that is not a preference, it is a requirement: the paper almost always flows through a reseller or integrator holding the right vehicle, and the software usually lands on somebody else's hardware or platform. Know which lane your deal is in before the first meeting.</p>
   </div>
@@ -574,7 +680,7 @@ footer p{max-width:80ch}
 
 <section id="deploy">
   <div class="sec-head">
-    <span class="sec-num">08</span>
+    <span class="sec-num">09</span>
     <h2>Deployment and accreditation, explained plainly</h2>
     <p>This is the part that trips up sellers coming from commercial accounts. Defense customers cannot run software until an authorizing official signs for the risk. Your job is to make that signature easier to get, and to never claim it on the customer's behalf.</p>
   </div>
@@ -624,7 +730,7 @@ footer p{max-width:80ch}
 
 <section id="talk">
   <div class="sec-head">
-    <span class="sec-num">09</span>
+    <span class="sec-num">10</span>
     <h2>Objections you will hear</h2>
     <p>Short answers you can say out loud without overclaiming. Each one is written so that it stays true even if the customer checks.</p>
   </div>
@@ -633,7 +739,7 @@ footer p{max-width:80ch}
 
 <section id="plays">
   <div class="sec-head">
-    <span class="sec-num">10</span>
+    <span class="sec-num">11</span>
     <h2>Three plays for the next 90 days</h2>
     <p>Sequenced so that each step produces something you can point at in a pipeline review. Adapt the timing to your own account cadence.</p>
   </div>
@@ -642,7 +748,7 @@ footer p{max-width:80ch}
 
 <section id="glossary">
   <div class="sec-head">
-    <span class="sec-num">11</span>
+    <span class="sec-num">12</span>
     <h2>Glossary</h2>
     <p>If you are new to this customer set, read this section first. Defense buyers use acronyms as nouns and will not slow down for you.</p>
   </div>
@@ -651,7 +757,7 @@ footer p{max-width:80ch}
 
 <section id="sources" style="border-bottom:0">
   <div class="sec-head">
-    <span class="sec-num">12</span>
+    <span class="sec-num">13</span>
     <h2>Sources</h2>
     <p>Every factual claim in this guide traces to one of these public pages. Where reporting and official sites disagree, the official site wins. Check the date on each before quoting it.</p>
   </div>
@@ -661,7 +767,7 @@ footer p{max-width:80ch}
 </main>
 
 <footer class="wrap">
-  <p><b style="color:var(--text-2)">NVIDIA AI Enterprise DoW Explorer</b> &mdash; unofficial field enablement aid, compiled 18 September 2026 from public sources only.</p>
+  <p><b style="color:var(--text-2)">NVIDIA AI Enterprise DoW Explorer</b> &mdash; unofficial field enablement aid, compiled 20 September 2026 from public sources only.</p>
   <p>Not an NVIDIA publication, product commitment, pricing statement, roadmap, or authorization claim. Contains no information proprietary or sensitive to the Department of War, NVIDIA, or any partner, OEM, or independent software vendor. Verify every program fact against its linked source before customer use, and route commitments through your deal desk and legal review.</p>
 </footer>
 
@@ -817,7 +923,7 @@ BRANCHES.push(
   {
     id: "fourthestate", name: "DoD 4th Estate", short: "CDAO, DIU, defense agencies", color: "var(--s-4e)",
     org: "Chief Digital and AI Office · Defense Innovation Unit · defense agencies and field activities",
-    summary: "The 4th Estate is everything that is not a military service: the Chief Digital and AI Office, the Defense Innovation Unit, and the defense agencies. It is where department-wide AI policy, the enterprise generative AI platform, and the enterprise analytics platform all live, which makes it the highest-leverage and most crowded room in this guide. Section 03 covers the Chief Digital and AI Office itself, including where it now sits organizationally and how it expects industry to engage.",
+    summary: "The 4th Estate is everything that is not a military service: the Chief Digital and AI Office, the Defense Innovation Unit, and the defense agencies. It is where department-wide AI policy, the enterprise generative AI platform, and the enterprise analytics platform all live, which makes it the highest-leverage and most crowded room in this guide. Section 04 covers the Chief Digital and AI Office itself, including where it now sits organizationally and how it expects industry to engage.",
     programs: [
       { name: "GenAI.mil", status: "fielding",
         what: "The department's enterprise generative AI platform, launched 9 December 2025 initially on a single commercial model family and since expanded into a multi-model marketplace. Public reporting in 2026 described additional frontier model offerings being activated, more than 1.7 million unique users onboarded out of a population above 3 million, and agent creation at scale on the platform.",
@@ -1234,7 +1340,50 @@ const PLAYS = [
            "Week 9–12: land it in the vendor's next delivery increment so it arrives on their contract, not on a new one."] }
 ];
 
+/* ---- FY2027 budget request and appropriations status (public reporting, 20 Sep 2026) ---- */
+const BUDGET = {
+  tiles: [
+    { v:"$1.5T", k:"FY27 defense request", n:"Released 3 April 2026. Reported as the largest single-year increase since the Korean War, about $445 billion above the fiscal 2026 level." },
+    { v:"$58.5B", k:"AI and CJADC2 requested", n:"The combined artificial intelligence and joint all-domain command and control request for fiscal 2027." },
+    { v:"$46B", k:"Sovereign AI arsenal", n:"Multi-year mandatory request described as prioritizing enterprise-scale AI infrastructure. Contingent on reconciliation." },
+    { v:"11 Dec", k:"When the stopgap expires", n:"The continuing resolution signed 1 September funds the government only through 11 December 2026." }
+  ],
+  splits: [
+    { n:"Sovereign AI arsenal", sub:"Enterprise-scale AI infrastructure", base:0, recon:46 },
+    { n:"Autonomous warfare organization", sub:"Roughly $225M in FY26", base:1, recon:53.6 },
+    { n:"Golden Dome for America", sub:"Homeland missile defense", base:0.4, recon:17.1 }
+  ],
+  aiLines: [
+    { amt:"$46B", what:"Multi-year mandatory investment in a sovereign AI arsenal, prioritizing enterprise-scale AI infrastructure.", where:"Reconciliation" },
+    { amt:"$6.8B", what:"Integrating department-developed and commercially available AI into platforms, systems, and workflows.", where:"Not broken out publicly" },
+    { amt:"$2.3B", what:"Maven Smart System and the Joint Fires Network, delivering joint all-domain command and control.", where:"Not broken out publicly" },
+    { amt:"$2.2B", what:"Leading-edge research and development of AI technical approaches and capabilities.", where:"Not broken out publicly" }
+  ],
+  milestones: [
+    { st:"done", t:"President's budget request released", n:"Proposed $1.5 trillion in total defense spending, combining base discretionary funding with $350 billion assumed through reconciliation.", d:"3 Apr 2026", label:"Done" },
+    { st:"done", t:"Senate Armed Services reported its FY27 defense authorization", n:"An authorization sets policy and recommends funding levels. It does not provide money.", d:"15 Jun 2026", label:"Done" },
+    { st:"done", t:"House Appropriations completed committee action on all twelve FY27 bills", n:"Reported as the earliest completion of the full committee process since fiscal 2020.", d:"Summer 2026", label:"Done" },
+    { st:"none", t:"Senate Appropriations reported an FY27 defense bill from full committee", n:"As of early September, no fiscal 2027 appropriations bill had been reported from the Senate committee.", d:"Not yet", label:"Not started" },
+    { st:"done", t:"Continuing resolution signed", n:"Funds the government at current levels through 11 December 2026, with the usual prohibition on new starts.", d:"1 Sep 2026", label:"Done" },
+    { st:"none", t:"Full-year FY27 appropriations enacted", n:"Fiscal 2027 begins 1 October 2026 under the stopgap rather than under full-year funding.", d:"Not yet", label:"Not started" },
+    { st:"partial", t:"FY27 budget resolution passed", n:"Required before a reconciliation bill can carry defense money. The House version reported $60 billion for defense against the $350 billion the request assumes.", d:"In progress", label:"Partial" },
+    { st:"none", t:"Defense reconciliation enacted", n:"The bulk of the artificial intelligence, autonomy, and missile defense request rides on this. Until it passes, those figures are proposals.", d:"Not yet", label:"Not started" }
+  ]
+};
+
 const GLOSSARY = [
+  ["Anomaly","An exception written into a continuing resolution that lets the department do something the resolution otherwise forbids, such as a new start. They are requested often and granted rarely."],
+  ["Appropriation","The law that actually provides money. Distinct from an authorization, which only sets policy and recommends levels. Only an appropriation lets a program spend."],
+  ["Authorization (NDAA)","The annual National Defense Authorization Act. It sets policy, creates programs, and recommends funding levels, but it does not hand over a dollar."],
+  ["Base budget vs mandatory funding","Base discretionary money is the normal annual defense budget Congress appropriates. Mandatory funding comes through a separate reconciliation law. Most of the fiscal 2027 AI and autonomy request is the second kind, which is why it is not spendable today."],
+  ["Budget resolution","A congressional framework that has to pass before a reconciliation bill can move. No budget resolution means no reconciliation, which means no mandatory defense money."],
+  ["Colors of money","Shorthand for the category an appropriation falls into, such as operations and maintenance, research and development, or procurement. Each has its own rules and its own expiration date, and money cannot be moved freely between them."],
+  ["Continuing resolution (CR)","A stopgap law that keeps the government funded at the previous year's levels when full-year appropriations are late. It generally bars new starts, multiyear contracts, and production rate increases."],
+  ["New start","A program or activity that did not exist in the prior year's appropriation. Continuing resolutions normally prohibit them, which is why a customer may love your idea in October and still be unable to buy it."],
+  ["President's Budget (PB)","The administration's annual funding request to Congress. It is a proposal and an opening position, not money."],
+  ["Program element (PE)","The specific accounting line a defense activity is funded under. If an opportunity does not map to a program element or an existing contract, it is not funded."],
+  ["RDT&E","Research, development, test and evaluation. The appropriation category most early AI work is funded from."],
+  ["Reconciliation","A special legislative process that can move mandatory spending with a simple Senate majority. The fiscal 2027 request assumes a large defense reconciliation bill that has not been enacted."],
   ["Air gap","A network with no physical or logical connection to the public internet. Software has to be installable and updatable from media or an internal mirror, which rules out anything that phones home to license itself."],
   ["ATO (Authorization to Operate)","The formal decision by a government official to accept the risk of running a system. Without it, nothing runs in production, no matter how good it is."],
   ["cATO (Continuous ATO)","An approach where a system stays authorized through continuous monitoring and an approved pipeline, instead of a one-time review. It is the difference between shipping quarterly and shipping when you are ready."],
@@ -1330,7 +1479,26 @@ const SOURCES = [
   ["GovConWire — MDA expands SHIELD pool with additional awards","https://www.govconwire.com/articles/mda-1086-second-tranche-shield-awards"],
   ["Defense Security Monitor — Pentagon mobilizes industrial base with SHIELD award","https://dsm.forecastinternational.com/2026/01/16/pentagon-mobilizes-industrial-base-for-golden-dome-missile-shield-with-151b-shield-award/"],
   ["Missile Defense Agency — C2BMC system page","https://www.mda.mil/system/c2bmc.html"],
-  ["RealClearDefense — Pragmatic solutions for Golden Dome command and control","https://www.realcleardefense.com/articles/2026/05/20/pragmatic_solutions_for_golden_dome_command_and_control_1183790.html"]
+  ["RealClearDefense — Pragmatic solutions for Golden Dome command and control","https://www.realcleardefense.com/articles/2026/05/20/pragmatic_solutions_for_golden_dome_command_and_control_1183790.html"],
+  ["The White House — Fiscal Year 2027 topline fact sheet (PDF)","https://www.whitehouse.gov/wp-content/uploads/2026/04/fiscal-year-2027-topline-fact-sheet.pdf"],
+  ["DoW Comptroller — FY 2027 budget request overview book (PDF)","https://comptroller.war.gov/Portals/45/Documents/defbudget/FY2027/FY2027_Budget_Request_Overview_Book.pdf"],
+  ["DoW Comptroller — FY 2027 mandatory funding overview (PDF)","https://comptroller.war.gov/Portals/45/Documents/defbudget/FY2027/DoW_FY2027_Mandatory_Funding_Overview.pdf"],
+  ["National Law Review — Understanding the President's FY 2027 budget request for the Department of War","https://natlawreview.com/article/understanding-presidents-fy-2027-budget-request-department-war"],
+  ["InsideDefense — Pentagon seeks nearly $60B for AI, with bulk tied to FY-27 reconciliation","https://insidedefense.com/daily-news/pentagon-seeks-nearly-60b-ai-bulk-tied-fy-27-reconciliation"],
+  ["InsideDefense — Funding for new autonomous warfare group slated to reach $54.6B in FY-27","https://insidedefense.com/daily-news/funding-new-autonomous-drone-warfare-group-slated-skyrocket-546b-fy-27"],
+  ["defense-aerospace — DAWG asked for $54.6B, three committees wrote down $1B","https://www.defense-aerospace.com/dawg-54b-requested-1b-written-down/"],
+  ["DefenseScoop — DoD wants more than $2B in fiscal 2027 to move beyond fragmented CJADC2","https://defensescoop.com/2026/05/28/dod-fy27-budget-cjadc2-maven-smart-system-palantir/"],
+  ["Federal News Network — White House seeks $17.5B for Golden Dome, most funding hinges on reconciliation","https://federalnewsnetwork.com/budget/2026/04/white-house-seeks-17-5-billion-for-golden-dome-but-most-funding-hinges-on-reconciliation/"],
+  ["Breaking Defense — Details of the $1.5T defense budget request","https://breakingdefense.com/2026/04/golden-dome-out-years-and-lots-of-missiles-details-of-trumps-1-5t-defense-budget-request/"],
+  ["Breaking Defense — 13 key issues for Congress to resolve on the FY27 defense budget","https://breakingdefense.com/2026/08/the-fight-over-the-fy27-defense-budget-is-on-heres-13-key-issues-for-congress-to-resolve/"],
+  ["SpacePolicyOnline — House clears FY2027 continuing resolution","https://spacepolicyonline.com/news/house-clears-fy2027-cr-now-to-the-president/"],
+  ["Committee for a Responsible Federal Budget — Appropriations Watch: FY 2027","https://www.crfb.org/blogs/appropriations-watch-fy-2027"],
+  ["Congress.gov — FY2027 appropriations status table","https://www.congress.gov/crs-appropriations-status-table"],
+  ["Congress.gov — FY2027 NDAA summary of funding authorizations","https://www.congress.gov/crs-product/IN12703"],
+  ["House Appropriations Committee — FY27 defense appropriations bill release","https://appropriations.house.gov/news/press-releases/committee-releases-fy27-defense-appropriations-bill"],
+  ["Senate Appropriations Committee — FY2027 continuing appropriations section by section (PDF)","https://www.appropriations.senate.gov/imo/media/doc/section-by-section.pdf"],
+  ["GAO — How DoD manages within continuing resolution constraints (PDF)","https://www.gao.gov/assets/gao-21-541.pdf"],
+  ["CSIS — Tracking FY 2027 defense appropriations, reconciliation, and the supplemental request","https://www.csis.org/analysis/tracking-fy-2027-defense-appropriations-reconciliation-and-supplemental-request"]
 ];
 
 /* =========================================================================
@@ -1370,6 +1538,43 @@ const breadth = (id) => WORKLOADS.reduce((n, w) => n + w.f[id], 0);
     btn.setAttribute("aria-expanded", String(open));
     btn.textContent = open ? "Hide data table" : "Show data table";
   });
+})();
+
+/* ---- FY27 budget section ---- */
+(function renderBudget(){
+  $("#budget-tiles").innerHTML = BUDGET.tiles.map(t =>
+    `<div class="stat"><div class="v">${esc(t.v)}</div><div class="k">${esc(t.k)}</div><div class="n">${esc(t.n)}</div></div>`).join("");
+
+  const max = Math.max(...BUDGET.splits.map(d => d.base + d.recon));
+  const fmt = (v) => "$" + (v % 1 === 0 ? v : v.toFixed(1)) + "B";
+  $("#split-bars").innerHTML = BUDGET.splits.map(d => {
+    const total = d.base + d.recon;
+    const w = (v) => (v / max * 100).toFixed(2) + "%";
+    const segs =
+      (d.base > 0 ? `<span class="sb-seg sb-base" style="width:${w(d.base)}">${d.base >= 4 ? fmt(d.base) : ""}</span>` : "") +
+      (d.recon > 0 ? `<span class="sb-seg sb-recon" style="width:${w(d.recon)}">${fmt(d.recon)}</span>` : "");
+    const note = d.base === 0
+      ? "no base request"
+      : `<b>${fmt(d.base)}</b> in the base`;
+    return `<div class="sb-row">
+      <span class="lab">${esc(d.n)}<small>${esc(d.sub)} &middot; ${fmt(total)} requested</small></span>
+      <span class="sb-track">${segs}</span>
+      <span class="note">${note}</span>
+    </div>`;
+  }).join("");
+
+  $("#ai-lines").innerHTML = `<caption class="sr">Itemized components of the FY27 artificial intelligence request</caption>
+    <thead><tr><th>Amount</th><th>What it funds</th><th>Where it sits</th></tr></thead>
+    <tbody>${BUDGET.aiLines.map(l =>
+      `<tr><td><b>${esc(l.amt)}</b></td><td>${esc(l.what)}</td><td>${esc(l.where)}</td></tr>`).join("")}</tbody>`;
+
+  const mark = { done: "✓", partial: "•", none: "—" };
+  $("#milestones").innerHTML = BUDGET.milestones.map(m =>
+    `<div class="mstone" data-st="${esc(m.st)}">
+      <span class="mk" aria-hidden="true">${mark[m.st]}</span>
+      <span><span class="mt">${esc(m.t)}<span class="mstate">${esc(m.label)}</span></span><span class="mn">${esc(m.n)}</span></span>
+      <span class="md">${esc(m.d)}</span>
+    </div>`).join("");
 })();
 
 /* ---- branch tabs and panels ---- */
